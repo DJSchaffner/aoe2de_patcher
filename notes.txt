@@ -1,0 +1,20 @@
+appid: 813780
+depots:	813781 813782 813783 813784 
+depot link: https://steamdb.info/depot/<ID>
+manifest link: https://steamdb.info/depot/<ID>/manifests/
+command: dotnet DepotDownloader.dll -app <ID> -depot <ID> -manifest <ID> -username <YOURSTEAMACCOUNT> -dir <DIR>
+
+Create filelist:
+https://steamdb.info/depot/813784/history/?changeid=M:1674774852845174442
+https://steamdb.info/depot/813781/history/
+List of REMOVED and MODIFIED files from target patch to current patch
+Would need to look for a way to generate lists for older patches than 1 in the past
+
+Downgrading process:
+Backup files (Affected directories only? Keep track of added/removed files and only back those up?)
+Remove Files that were added in depot during current patch
+Download files that were MODIFIED and REMOVED during current patch 
+
+
+DOT.NET
+https://dotnet.microsoft.com/download/dotnet-core/
