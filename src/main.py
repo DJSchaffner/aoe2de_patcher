@@ -21,6 +21,7 @@ if __name__ == '__main__':
   # @TODO Check if Dot.NET core is installed
   # @TODO Generate file list to minimize download size
   # @TODO Grab manifest IDs from steamdb automatically
+  # @TODO Remove previous download dir before process starts
   app_id = "813780"
   depots = ["813781", "813782", "813783", "813784"]
   manifests = ["620891448408726573", "8112931571790254060", "8481199905487006177", "5123643355926127017"]
@@ -36,11 +37,17 @@ if __name__ == '__main__':
   password = getpass()
 
   # Backup game folder
+  print("Starting backup of AoE2DE folder")
   backup(game_path)
+  print("Finished backup!")
 
   # Get all necessary depots
   for depot, manifest in zip(depots, manifests):
     get_depot(depot, manifest, username, password)
 
+  a = input("a")
+
   # Move downloaded files to game directory and override files
+  print("Copying downloaded files")
   shutil.copytree(download_path, game_path)
+  print("Done!")
