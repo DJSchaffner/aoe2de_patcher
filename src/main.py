@@ -45,9 +45,9 @@ if __name__ == '__main__':
   for depot, manifest in zip(depots, manifests):
     get_depot(depot, manifest, username, password)
 
-  a = input("a")
-
   # Move downloaded files to game directory and override files
   print("Copying downloaded files")
   shutil.copytree(download_path, game_path)
   print("Done!")
+
+  input("Press enter to exit...")
