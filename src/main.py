@@ -35,6 +35,8 @@ if __name__ == '__main__':
   # @TODO Make a GUI for this whole thing
   # @TODO Generate file list to minimize download size
   # @TODO Grab manifest IDs from steamdb automatically
+  # @TODO Grab Update list from steamdb automatically
+  # @TODO Add restore functionality
   # @TODO Improve backup mechanism
   try:
     app_id = "813780"
@@ -52,10 +54,6 @@ if __name__ == '__main__':
     game_path = pathlib.Path(input("Enter Path to AoE2DE: "))
     username = input("Username: ")
     password = getpass()
-    print(utils.base_path().absolute())
-    print(download_path.absolute())
-    print(backup_path.absolute())
-    print(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
 
     # Remove previous download / backup folder if it exists
     # Create empty folders afterwards
