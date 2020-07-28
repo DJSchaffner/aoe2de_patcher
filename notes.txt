@@ -4,11 +4,14 @@ depot link: https://steamdb.info/depot/<ID>
 manifest link: https://steamdb.info/depot/<ID>/manifests/
 command: dotnet DepotDownloader.dll -app <ID> -depot <ID> -manifest <ID> -username <YOURSTEAMACCOUNT> -dir <DIR>
 
+Get changed depots and manifests:
+https://steamdb.info/patchnotes/?appid=813780
+Select update -> See changed files -> Get depot numbers and manifest ids
+
 Create filelist:
-https://steamdb.info/depot/813784/history/?changeid=M:1674774852845174442
-https://steamdb.info/depot/813781/history/
+https://steamdb.info/patchnotes/?appid=813780
 List of REMOVED and MODIFIED files from target patch to current patch
-Would need to look for a way to generate lists for older patches than 1 in the past
+Would need to look for a way to generate lists for older patches than 1 in the past (Cumulative?)
 
 Downgrading process:
 Backup files (Affected directories only? Keep track of added/removed files and only back those up?)
