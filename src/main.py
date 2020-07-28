@@ -3,7 +3,6 @@ import sys
 import shutil
 import traceback
 import pathlib
-import re
 from bs4 import BeautifulSoup
 from getpass import getpass
 
@@ -40,7 +39,7 @@ class App:
     self.username = input("Username: ")
     self.password = getpass() 
 
-    self.__get_patch_changes(self.__get_patch_list()[1][1])
+    #self.__get_patch_changes(self.__get_patch_list()[1][1])
 
   def download_patch(self):  
     # Get all necessary depots
@@ -110,7 +109,7 @@ if __name__ == '__main__':
   # @TODO Improve backup mechanism
   try:
     app = App()
-    '''
+
     print("Starting download of files")
     app.download_patch()
     print("Finished downloading files!")
@@ -122,7 +121,6 @@ if __name__ == '__main__':
     print("Copying downloaded files")
     app.patch()
     print("Done!")
-    '''
 
     # Wait for user input to close
     input("Press enter to exit...")
