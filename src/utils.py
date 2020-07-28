@@ -1,6 +1,11 @@
 # Utils
 import sys
 import pathlib
+import shutil
+
+# Check if dotnet is available
+def check_dotnet():
+  return not (shutil.which("dotnet") == None)
 
 def base_path():
   # Get absolute path to resource, works for dev and for PyInstaller
