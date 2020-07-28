@@ -1,6 +1,5 @@
 # Utils
 import sys
-import os
 import pathlib
 
 def base_path():
