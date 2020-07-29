@@ -4,9 +4,22 @@ import pathlib
 import shutil
 import locale
 import re
+import os
 from datetime import datetime
 
-def extract_date(date_string):
+def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str):
+  if (source_dir / file).is_dir():
+    shutil.copytree((source_dir / file).absolute(), (target_dir / file).absolute())
+  else:
+    shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
+
+def remove_file_or_dir(dir, file):
+  if (dir / file).is_dir():
+    shutil.rmtree((dir / file).absolute())
+  else:
+    (dir / file).unlink()
+
+def extract_date(date_string: str):
   """Extract a date in the format of 'd(d) Monthname yyyy'.
 
   Returns a datetime object
