@@ -60,16 +60,6 @@ class App:
     self.game_path = pathlib.Path(input("Enter Path to AoE2DE: "))
     self.download_path = utils.base_path() / "download"
     self.backup_path = utils.base_path() / "backup"
-    
-    # Remove previous download / backup folder if it exists
-    # Create empty folders afterwards
-    if self.download_path.exists():
-      shutil.rmtree(self.download_path.absolute())
-    self.download_path.mkdir()
-    
-    if self.backup_path.exists():
-      shutil.rmtree(self.backup_path.absolute())
-    self.backup_path.mkdir()
 
     self.username = input("Username: ")
     self.password = getpass()
@@ -80,6 +70,12 @@ class App:
     depots = self.__get_depot_list()
     update_list = []
     
+    # Remove previous download folder if it exists
+    # Create empty folders afterwards
+    if self.download_path.exists():
+      shutil.rmtree(self.download_path.absolute())
+    self.download_path.mkdir()
+    
     # Loop all depots and insert necessary ones with the latest version to the list of updates
     # @TODO Only add the depots that NEED to be updated depending on which version is currently installed
     for depot in depots:
@@ -89,6 +85,7 @@ class App:
 
         manifests = self.webhook.query_manifests(depot)
 
+        # Discard empty manifest lists
         if len(manifests) > 0:
           update_list.append({ 'depot' : depot, 'manifest' : next((m for m in manifests if m['date'] <= self.selected_patch['date']), None) })      
 
@@ -105,20 +102,31 @@ class App:
   def backup(self):
     """Backup game folder and in current directory."""
 
+    # Remove previous backup folder if it exists
+    # Create empty folders afterwards
+    if self.backup_path.exists():
+      shutil.rmtree(self.backup_path.absolute())
+    self.backup_path.mkdir()
+
     changed_file_list = list(set(os.listdir(self.game_path.absolute())).intersection(set(os.listdir(self.download_path.absolute()))))
 
     # Copy all files
     for file in changed_file_list:
-      if pathlib.Path(self.game_path / file).is_dir():
-        shutil.copytree((self.game_path / file).absolute(), (self.backup_path / file).absolute())
-      else:
-        shutil.copy((self.game_path / file).absolute(), (self.backup_path / file).absolute())
+      utils.copy_file_or_dir(self.game_path, self.backup_path, file)
 
   def restore(self):
-    """Placeholder function to restore the AoE2 Directory from the current backup."""
+    """Restores the game directory using the backed up files and downloaded files."""
+    
+    backup_file_list = list(os.listdir(self.backup_path.absolute()))
+    download_file_list = list(os.listdir(self.download_path.absolute()))
 
-    # @TODO Implementation (Probably when GUI hits)
-    pass
+    # Remove added files from the path
+    for file in download_file_list:
+      utils.remove_file_or_dir(self.game_path, file)
+
+    # Copy backed up files to game path again
+    for file in backup_file_list:
+      utils.copy_file_or_dir(self.backup_path, self.game_path, file)
 
   def __download_depot(self, depot_id, manifest_id):
     """Download a specific depot using the manifest id from steam."""
@@ -154,18 +162,39 @@ if __name__ == '__main__':
   # @TODO Improve backup mechanism
   try:
     app = App()
+    action = 0
 
-    print("Starting download of files")
-    app.download_patch()
-    print("Finished downloading files!")
+    while True:
+      while not (action in [1, 2, 3]):
+        print("1: Patch game")
+        print("2: Restore game")
+        print("3: Exit")
+        action = int(input("Selection: "))
 
-    print("Starting backup of AoE2DE folder")
-    app.backup()
-    print("Finished backup!")
+      print()
 
-    print("Copying downloaded files")
-    app.patch()
-    print("Done!")
+      if action == 1:
+        print("Starting download of files")
+        #app.download_patch()
+        print("Finished downloading files!")
+
+        print("Starting backup of AoE2DE folder")
+        app.backup()
+        print("Finished backup!")
+
+        print("Copying downloaded files")
+        app.patch()
+        print("Finished copying files!")
+        action = 0
+      elif action == 2:
+        print("Restoring directory")
+        app.restore()
+        print("Finished restoring directory!")
+        action = 0
+      elif action == 3:
+        break
+
+      print()
 
     # Wait for user input to close
     input("Press enter to exit...")
