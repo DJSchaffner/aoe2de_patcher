@@ -158,8 +158,6 @@ if __name__ == '__main__':
   # @TODO Make a GUI for this whole thing
   # @TODO Generate file list to minimize download size
   # @TODO Grab Update list from steamdb automatically
-  # @TODO Add restore functionality
-  # @TODO Improve backup mechanism
   try:
     app = App()
     action = 0
