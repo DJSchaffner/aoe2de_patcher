@@ -1,6 +1,8 @@
 import sys
 import requests
 import utils
+import re
+import datetime
 from bs4 import BeautifulSoup
 
 class Webhook:
@@ -27,12 +29,12 @@ class Webhook:
     tbody = div.find("tbody")
 
     # Prevent Error for depots without history
-    if tbody != None:    
+    if not tbody is None:    
       for tr in tbody.findAll("tr"):
         tds = tr.findAll("td")
 
-        date = utils.extract_date(tds[0].string)
-        id = tds[2].string
+        date = utils.extract_date(tds[0].text)
+        id = tds[2].text
 
         result.append({ 'date' : date, 'id' : id })
 
@@ -59,10 +61,15 @@ class Webhook:
     for tr in tbody.findAll("tr"):
       tds = tr.findAll("td")
 
-      date = utils.extract_date(tds[0].string)
-      id = tds[4].string
+      date = utils.extract_date(tds[0].text)
+      version_re = re.search(r"\d+", tds[1].text.strip('\n'))
+      id = tds[4].text
 
-      result.append({ 'date' : date, 'id' : id })
+      date_str = date.strftime("%d/%m/%Y")
+      
+      # Only store patches with official patch number and title
+      if not version_re is None:
+        result.append({ 'title' : f"{version_re.group(0)} - {date_str}", 'date' : date, 'id' : id })
 
     return result
 
@@ -87,7 +94,7 @@ class Webhook:
 
     for depot_div in inner_divs:
       # @TODO Somehow execute the javascript on the page to load the change history
-      print(depot_div.string)
+      print(depot_div.text)
 
     return result
 
