@@ -1,5 +1,5 @@
 # AOE2PatchReverter - WIP
-Reverts patches in AOE2DE (Steam version only!)
+Reverts patches in AOE2DE (Steam version only!)  
 **Requires a steam account that owns the game!**
 
 # Usage
