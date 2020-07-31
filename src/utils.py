@@ -6,6 +6,13 @@ import locale
 import re
 import os
 from datetime import datetime
+from tkinter import Text
+
+def log(text_widget: Text, text: str):
+  text_widget.configure(state="normal")
+  text_widget.insert("end", text)
+  text_widget.configure(state="disabled")
+  text_widget.see("end")
 
 def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str):
   if (source_dir / file).is_dir():
@@ -36,7 +43,7 @@ def extract_date(date_string: str):
 def check_dotnet():
   """Checks if dotnet is available."""
 
-  return not (shutil.which("dotnet") == None)
+  return not (shutil.which("dotnet") is None)
 
 def base_path():
   """Construct the base path to the exe / project."""
