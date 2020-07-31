@@ -54,11 +54,6 @@ class App():
   ]
 
   def __init__(self):
-    # dotnet is required to proceed
-    if not (utils.check_dotnet()):
-      print("DOTNET Core required but not found!")
-      sys.exit()
-
     # Set up some variables
     self.webhook = Webhook()
     self.download_dir = utils.base_path() / "download"
@@ -135,6 +130,11 @@ class App():
 
   def __download_patch(self):  
     """Download the __patch that has been set for the app."""
+
+    # dotnet is required to proceed
+    if not (utils.check_dotnet()):
+      print("DOTNET Core required but not found!")
+      return False
     
     depots = self.__get_depot_list()
     update_list = []
