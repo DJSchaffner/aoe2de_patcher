@@ -317,5 +317,6 @@ class App():
 if __name__ == '__main__':
   # @TODO Make GUI look nice
   # @TODO Generate file list to minimize download size
+  # @TODO Test this thing a bit
   app = App()
   app.start()
