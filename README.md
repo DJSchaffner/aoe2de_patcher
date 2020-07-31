@@ -1,10 +1,25 @@
 # AOE2PatchReverter - WIP
-Reverts patches in AOE2DE (Steam version)
-
+Reverts patches in AOE2DE (Steam version only!)
 **Requires a steam account that owns the game!**
 
-- Does a backup of the AoE2 DE directory
-- Then downloads the old version
-- Replaces the Files in the current AoE 2 DE directory
+# Usage
+- Select the game directory
+- Enter your steam login credentials
+- Click <Patch>
+- If prompted, enter the 2FA code (Might occur multiple times)
+- To restore your previous version hit <Restore> after patching
 
 This whole process takes a while to finish!
+
+# Notes
+This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a Ticket with the bug you encountered and a short desceription how it occured.
+
+Your login creedentials will not be stored for later use
+
+The downloaded files are from steam directly and not hosted by me
+
+**Future features**
+- Grab Update list directly from steam
+- Grab manifest ids directly from steam
+- Improve the update process (Only update the files that need updating)
+- Validate that it is indeed the AoE2 DE directory
