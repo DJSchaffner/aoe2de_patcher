@@ -24,7 +24,7 @@ def remove_file_or_dir(dir, file):
   if (dir / file).is_dir():
     shutil.rmtree((dir / file).absolute())
   else:
-    (dir / file).unlink()
+    (dir / file).unlink(missing_ok=True)
 
 def extract_date(date_string: str):
   """Extract a date in the format of 'd(d) Monthname yyyy'.
