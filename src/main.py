@@ -3,6 +3,7 @@ import pathlib
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog
+import threading
 
 import utils
 import redirector
@@ -92,19 +93,25 @@ class App():
     # Retrieve selected language
     selected_language = next((l.value for l in Languages if l.name == self.selected_language_name.get()), None)
 
-    # Call logic
-    self.logic.patch(self.ent_username.get(), self.ent_password.get(), selected_patch, selected_language)
+    def work():
+      self.logic.patch(self.ent_username.get(), self.ent_password.get(), selected_patch, selected_language)
+
+    t = threading.Thread(target=work)
+    t.start()
 
   def __restore(self):
     """Restores the game directory using the backed up files and downloaded files."""
     
-    self.logic.restore()
+    def work():
+      self.logic.restore()
+    
+    t = threading.Thread(target=work)
+    t.start()
 
 if __name__ == '__main__':
   # @TODO Make GUI look nice
   # @TODO Generate file list to minimize download size
   # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)
-  # @TODO Make app more responsive (Avoid 'Not responding' siutuation)
-  # @TODO Make info print more consistently
+
   app = App()
   app.start()
