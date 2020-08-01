@@ -94,7 +94,9 @@ class App():
     selected_language = next((l.value for l in Languages if l.name == self.selected_language_name.get()), None)
 
     def work():
+      self.__disable_input()
       self.logic.patch(self.ent_username.get(), self.ent_password.get(), selected_patch, selected_language)
+      self.__enable_input()
 
     t = threading.Thread(target=work)
     t.start()
@@ -103,15 +105,35 @@ class App():
     """Restores the game directory using the backed up files and downloaded files."""
     
     def work():
+      self.__disable_input()
       self.logic.restore()
+      self.__enable_input()
     
     t = threading.Thread(target=work)
     t.start()
 
+  def __disable_input(self):
+    """Disables User input for certain Buttons / Entries"""
+
+    self.btn_patch.config(state="disabled")
+    self.btn_restore.config(state="disabled")
+    self.btn_game_dir.config(state="disabled")
+    self.ent_username.config(state="disabled")
+    self.ent_password.config(state="disabled")
+
+  def __enable_input(self):
+    """Enables User input for certain Buttons / Entries"""
+
+    self.btn_patch.config(state="enabled")
+    self.btn_restore.config(state="enabled")
+    self.btn_game_dir.config(state="enabled")
+    self.ent_username.config(state="enabled")
+    self.ent_password.config(state="enabled")
+
 if __name__ == '__main__':
   # @TODO Make GUI look nice
   # @TODO Generate file list to minimize download size
-  # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)
+  # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)3
 
   app = App()
   app.start()
