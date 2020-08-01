@@ -59,7 +59,7 @@ class Logic:
     success = True
 
     # Check some stuff
-    if not hasattr(self, "game_dir"):
+    if not hasattr(self, "game_dir") or self.game_dir is None:
       print("Please select a game directory")
       return
 
@@ -207,12 +207,16 @@ class Logic:
       elif i == 1:
         # Open popup for 2FA Code
         code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code")
-        p.sendline(code)
-
-        if p.expect(responses, timeout=timeout) == 1:
+        if code is None:
           raise ConnectionError("Invalid authentication code")
         else:
-          success = True
+          p.sendline(code)
+
+          if p.expect(responses, timeout=timeout) == 1:
+            raise ConnectionError("Invalid authentication code")
+          else:
+            success = True
+
       # Error
       elif i == 2:
         raise ConnectionError("Error logging into account")
