@@ -6,8 +6,9 @@ import datetime
 from bs4 import BeautifulSoup
 
 class Webhook:
+  # Url to be requested
   url_base = "https://steamdb.info/"
-  session = requests.Session()
+
   # Just some user agent because steam db expects one
   headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'}
 
@@ -16,8 +17,7 @@ class Webhook:
 
     Returns a list of manifests
     """
-
-    response = self.session.get(self.__build_url(self.url_base, f"depot/{depot_id}/manifests/"), headers=self.headers)
+    response = requests.get(self.__build_url(self.url_base, f"depot/{depot_id}/manifests/"), headers=self.headers)
     result = []
 
     if self.__is_response_successful(response):
@@ -49,7 +49,7 @@ class Webhook:
     params = {'appid' : app_id}
     result = []
 
-    response = self.session.get(self.__build_url(self.url_base, "patchnotes/"), params=params, headers=self.headers)
+    response = requests.get(self.__build_url(self.url_base, "patchnotes/"), params=params, headers=self.headers)
 
     if self.__is_response_successful(response):
       self.__print_response_error(response)
@@ -79,7 +79,7 @@ class Webhook:
     Return a list of changes occured in this patch
     """
 
-    response = self.session.get(self.__build_url(self.url_base, f"patchnotes/{patch_id}"), headers=self.headers)
+    response = requests.get(self.__build_url(self.url_base, f"patchnotes/{patch_id}"), headers=self.headers)
     result = []
 
     if self.__is_response_successful(response):
@@ -106,7 +106,7 @@ class Webhook:
 
     return f"{url_base}{page}"
 
-  def __is_response_successful(self, response):
+  def __is_response_successful(self, response: requests.Response):
     """Checks if a response returned successfully.
 
     Return True/False
@@ -114,7 +114,7 @@ class Webhook:
 
     return response.status_code != 200
 
-  def __print_response_error(self, response):
+  def __print_response_error(self, response: requests.Response):
     """Print the according error for a response."""
     
     print(f"Error in HTML request: {response.status_code}")
