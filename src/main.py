@@ -227,6 +227,8 @@ class App():
     for file in changed_file_list:
       utils.copy_file_or_dir(self.game_dir, self.backup_dir, file)
 
+    return True
+
   def __restore(self):
     """Restores the game directory using the backed up files and downloaded files."""
     
@@ -265,7 +267,7 @@ class App():
 
       # Default timeout in seconds
       timeout = 15
-      i = p.expect(responses, timeout)
+      i = p.expect(responses, timeout=timeout)
       sys.stdout.flush()
 
       # Success
@@ -280,10 +282,10 @@ class App():
         code = tk.simpledialog.askstring(title="Code", prompt="Please enter your login code (2FA / Email)")
         p.sendline(code)
 
-        if p.expect(responses, timeout=30) == 1:
-          success = False
-        else:
+        if p.expect(responses, timeout=timeout) == 1:
           raise ConnectionError("Invalid authentication code")
+        else:
+          success = True
 
       p.wait()
       p.expect(pexpect.EOF)
@@ -317,6 +319,8 @@ class App():
 if __name__ == '__main__':
   # @TODO Make GUI look nice
   # @TODO Generate file list to minimize download size
-  # @TODO Test this thing a bit
+  # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)
+  # @TODO Make app more responsive (Avoid 'Not responding' siutuation)
+  # @TODO Make info print more consistently
   app = App()
   app.start()
