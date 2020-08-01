@@ -78,8 +78,11 @@ class App():
 
   def __select_game_dir(self):
     """Open a file dialog for the user to select the game folder and send the result to logic."""
+    dir = tk.filedialog.askdirectory(mustexist=True)
 
-    self.logic.set_game_dir(pathlib.Path(tk.filedialog.askdirectory()))
+    # askdirectory returns empty string on hitting cancel
+    if dir != "":
+      self.logic.set_game_dir(pathlib.Path(dir))
 
   def __patch(self):
     """Start patching the game with the downloaded files."""
