@@ -9,18 +9,24 @@ from datetime import datetime
 from tkinter import Text
 
 def log(text_widget: Text, text: str):
+  """Logs a given string to the text widget."""
+
   text_widget.configure(state="normal")
   text_widget.insert("end", text)
   text_widget.configure(state="disabled")
   text_widget.see("end")
 
 def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str):
+  """Copies a file or a directory recursively into the target directory."""
+
   if (source_dir / file).is_dir():
     shutil.copytree((source_dir / file).absolute(), (target_dir / file).absolute())
   else:
     shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
 def remove_file_or_dir(dir, file):
+  """Removes a file or directory recursively. Does not throw an error if file does not exist."""
+  
   if (dir / file).is_dir():
     shutil.rmtree((dir / file).absolute())
   else:
