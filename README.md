@@ -5,9 +5,9 @@ Reverts patches in AOE2DE (Steam version only!)
 # Usage
 - Select the game directory
 - Enter your steam login credentials
-- Click <Patch>
+- Click \<Patch>
 - If prompted, enter the 2FA code (Might occur multiple times)
-- To restore your previous version hit <Restore> after patching
+- To restore the previous game version hit \<Restore> after patching
 
 This whole process takes a while to finish!
 
