@@ -52,6 +52,7 @@ class Logic:
     self.download_dir = utils.base_path() / "download"
     self.backup_dir = utils.base_path() / "backup"
     self.patch_list = self.webhook.query_patch_list(self.app_id)
+    self.depot_list = self.__get_depot_list()
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
     """Start patching the game with the downloaded files."""
@@ -126,7 +127,6 @@ class Logic:
       print("DOTNET Core required but not found!")
       return False
     
-    depots = self.__get_depot_list()
     update_list = []    
     
     # Remove previous download folder if it exists
@@ -137,7 +137,7 @@ class Logic:
     
     # Loop all depots and insert necessary ones with the latest version to the list of updates
     # @TODO Only add the depots that NEED to be updated depending on which version is currently installed
-    for depot in depots:
+    for depot in self.depot_list:
       # Skip depots that are being ignored
       if  ( (not (depot in self.ignored_depots)) and 
             ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):
@@ -198,7 +198,6 @@ class Logic:
       # Default timeout in seconds
       timeout = 15
       i = p.expect(responses, timeout=timeout)
-      sys.stdout.flush()
 
       # Success
       if i == 0:
