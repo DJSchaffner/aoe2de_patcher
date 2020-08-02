@@ -1,11 +1,12 @@
 # Utils
 import sys
+import os
 import pathlib
 import shutil
 import locale
 import re
-import os
 from datetime import datetime
+
 from tkinter import Text
 
 def log(text_widget: Text, text: str):

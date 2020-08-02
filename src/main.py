@@ -1,9 +1,10 @@
 import sys
 import pathlib
+import threading
+
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog
-import threading
 
 import utils
 import redirector

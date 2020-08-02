@@ -1,9 +1,11 @@
 import sys
-import requests
-import utils
-import re
 import datetime
+import re
+
+import requests
 from bs4 import BeautifulSoup
+
+import utils
 
 class Webhook:
   # Url to be requested
