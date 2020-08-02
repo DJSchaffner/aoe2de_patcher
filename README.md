@@ -5,7 +5,7 @@ Patches AoE2 DE to any officially released version (Steam version only!)
 # Requirements
 
 - Requires a steam account that owns the game
-- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/) to run
+- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run
 
 # Usage
 - Select desired game version & language
