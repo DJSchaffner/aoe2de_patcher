@@ -28,3 +28,4 @@ The downloaded files are from steam directly and not hosted by me
 - Grab manifest ids directly from steam
 - Improve the update process (Only update the files that need updating)
 - Validate that it is indeed the AoE2 DE directory
+- Cancel an active download (When you close the app while downloading right now, the download will still finish)
