@@ -1,12 +1,13 @@
+import sys
+import os
 import pathlib
 import shutil
-import os
-import sys
+from enum import IntEnum
+
 import pexpect
 import pexpect.popen_spawn
 import tkinter.simpledialog
 from steam.client import SteamClient
-from enum import IntEnum
 
 from webhook import Webhook
 import utils
