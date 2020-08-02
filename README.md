@@ -8,7 +8,7 @@ Patches AoE2 DE to any officially released version (Steam version only!)
 - Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/) to run
 
 # Usage
-- Select desired game version & Language
+- Select desired game version & language
 - Select the game directory
 - Enter your steam login credentials
 - Click \<Patch>
