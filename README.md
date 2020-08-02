@@ -1,6 +1,11 @@
 # AOE2PatchReverter - WIP
+
 Reverts patches in AOE2DE (Steam version only!)  
-**Requires a steam account that owns the game!**
+
+# Requirements
+
+- Requires a steam account that owns the game
+- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/) to run
 
 # Usage
 - Select the game directory
