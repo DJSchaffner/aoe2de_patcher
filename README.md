@@ -1,6 +1,6 @@
 # AOE2PatchReverter - WIP
 
-Reverts patches in AOE2DE (Steam version only!)  
+Patches AoE2 DE to any officially released version (Steam version only!)  
 
 # Requirements
 
