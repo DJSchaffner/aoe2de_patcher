@@ -133,7 +133,7 @@ class App():
 if __name__ == '__main__':
   # @TODO Make GUI look nice
   # @TODO Generate file list to minimize download size
-  # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)3
+  # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)
 
   app = App()
   app.start()
