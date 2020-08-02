@@ -92,6 +92,14 @@ class Logic:
 
   def restore(self):
     """Restores the game directory using the backed up files and downloaded files."""
+
+    if not self.backup_dir.exists():
+      print("Backup directory doesn't exist")
+      return
+
+    if len(os.listdir(self.backup_dir.absolute())) == 0:
+      print("No backup stored")
+      return
     
     backup_file_list = list(os.listdir(self.backup_dir.absolute()))
     download_file_list = list(os.listdir(self.download_dir.absolute()))
@@ -202,12 +210,15 @@ class Logic:
       # Success
       if i == 0:
         success = True
+
       # Code required
       elif i == 1:
         # Open popup for 2FA Code
         code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code")
+        # Cancel was clicked
         if code is None:
           raise ConnectionError("Invalid authentication code")
+        # Code was entered
         else:
           p.sendline(code)
 
@@ -220,6 +231,7 @@ class Logic:
       elif i == 2:
         raise ConnectionError("Error logging into account")
 
+      # Wait for program to finish
       p.expect(pexpect.EOF)
     except pexpect.exceptions.TIMEOUT as e:
       print("Error waiting for DepotDownloader to start")
