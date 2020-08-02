@@ -118,10 +118,16 @@ class Logic:
     print("Finished restoring backup")
     print("DONE!")
 
-  def set_game_dir(self, dir):
-    """Set the game directory."""
-    # @TODO validate its actually the AoE directory (Check for aoe exe)
-    self.game_dir = dir
+  def set_game_dir(self, dir: pathlib.Path):
+    """Tries to set the game directory, if succesful return True. Otherwise return False"""
+
+    if "AoE2DE_s.exe" in os.listdir(dir):
+      self.game_dir = dir
+      print(f"Game directory set to: {dir.absolute()}")
+      return True
+
+    print("Invalid game directory")
+    return False
 
   def get_patch_list(self):
     """Returns the patch list"""
