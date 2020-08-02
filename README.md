@@ -1,13 +1,18 @@
 # AOE2PatchReverter - WIP
-Reverts patches in AOE2DE (Steam version only!)  
-**Requires a steam account that owns the game!**
+
+Patches AoE2 DE to any officially released version (Steam version only!)  
+
+# Requirements
+
+- Requires a steam account that owns the game
+- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/) to run
 
 # Usage
 - Select the game directory
 - Enter your steam login credentials
-- Click <Patch>
+- Click \<Patch>
 - If prompted, enter the 2FA code (Might occur multiple times)
-- To restore your previous version hit <Restore> after patching
+- To restore the previous game version hit \<Restore> after patching
 
 This whole process takes a while to finish!
 
