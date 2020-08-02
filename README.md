@@ -1,13 +1,14 @@
-# AOE2PatchReverter - WIP
+# AoE2PatchReverter - WIP
 
 Patches AoE2 DE to any officially released version (Steam version only!)  
 
 # Requirements
 
 - Requires a steam account that owns the game
-- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/) to run
+- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run
 
 # Usage
+- Select desired game version & language
 - Select the game directory
 - Enter your steam login credentials
 - Click \<Patch>
@@ -29,3 +30,4 @@ The downloaded files are from steam directly and not hosted by me
 - Improve the update process (Only update the files that need updating)
 - Validate that it is indeed the AoE2 DE directory
 - Cancel an active download (When you close the app while downloading right now, the download will still finish)
+- Add toggle for Enhanced graphics pack
