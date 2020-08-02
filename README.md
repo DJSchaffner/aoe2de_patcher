@@ -1,4 +1,4 @@
-# AOE2PatchReverter - WIP
+# AoE2PatchReverter - WIP
 
 Patches AoE2 DE to any officially released version (Steam version only!)  
 
