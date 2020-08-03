@@ -6,8 +6,15 @@ import shutil
 import locale
 import re
 from datetime import datetime
+import win32api
 
 from tkinter import Text
+
+def get_version_number (path: pathlib.Path):
+  info = win32api.GetFileVersionInfo(str(path), "\\")
+  ms = info['FileVersionMS']
+  ls = info['FileVersionLS']
+  return win32api.HIWORD (ms), win32api.LOWORD (ms), win32api.HIWORD (ls), win32api.LOWORD (ls)
 
 def log(text_widget: Text, text: str):
   """Logs a given string to the text widget."""
