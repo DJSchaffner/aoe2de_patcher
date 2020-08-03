@@ -1,6 +1,7 @@
 # AoE2PatchReverter - WIP
 
 Patches AoE2 DE to any officially released version (Steam version only!)  
+Currently downloads the whole update instead of just patching the necessary files, an improved mechanism is planned though!
 
 # Requirements
 
@@ -28,6 +29,6 @@ The downloaded files are from steam directly and not hosted by me
 - Grab Update list directly from steam
 - Grab manifest ids directly from steam
 - Improve the update process (Only update the files that need updating)
-- Validate that it is indeed the AoE2 DE directory
+- ~~Validate that it is indeed the AoE2 DE directory~~ In next update
 - Cancel an active download (When you close the app while downloading right now, the download will still finish)
-- Add toggle for Enhanced graphics pack
+- Add toggle for Enhanced graphics pack (Warn people because thats a lot of data)
