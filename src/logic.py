@@ -121,9 +121,12 @@ class Logic:
   def set_game_dir(self, dir: pathlib.Path):
     """Tries to set the game directory, if succesful return True. Otherwise return False"""
 
-    if "AoE2DE_s.exe" in os.listdir(dir):
+    aoe_binary = dir / "AoE2DE_s.exe"
+
+    if aoe_binary.exists():
       self.game_dir = dir
       print(f"Game directory set to: {dir.absolute()}")
+      print(f"Installed version detected: {utils.get_version_number(aoe_binary)[2]}")
       return True
 
     print("Invalid game directory")
