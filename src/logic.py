@@ -2,7 +2,9 @@ import sys
 import os
 import pathlib
 import shutil
+import signal
 from enum import IntEnum
+from queue import Queue
 
 import pexpect
 import pexpect.popen_spawn
@@ -55,6 +57,7 @@ class Logic:
     self.backup_dir = utils.base_path() / "backup"
     self.patch_list = self.webhook.query_patch_list(self.app_id)
     self.depot_list = self.__get_depot_list()
+    self.process_queue = Queue()
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
     """Start patching the game with the downloaded files."""
@@ -138,6 +141,13 @@ class Logic:
 
     return self.patch_list
 
+  def on_closing(self):
+    """Performs cleanup for logic object."""
+
+    # Terminate all child processes
+    for process in self.process_queue.queue:
+      process.kill(signal.SIGTERM)
+
   def __download_patch(self, username: str, password: str, patch: dict, language: Languages):  
     """Download the given patch in a language using the steam account credentials."""
 
@@ -177,7 +187,7 @@ class Logic:
   def __move_patch(self):
     """Move downloaded patch files to game directory"""
 
-    shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok = True)
+    shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
     return True
 
   def __backup(self):
@@ -202,12 +212,20 @@ class Logic:
 
     success = False
     depot_downloader = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
-    args = ["dotnet", depot_downloader, "-app", str(self.app_id), "-depot", str(depot_id), "-manifest", str(manifest_id), "-username", username, "-password", password, "-dir download"]
+    args = ["dotnet", depot_downloader, 
+            "-app", str(self.app_id), 
+            "-depot", str(depot_id), 
+            "-manifest", str(manifest_id), 
+            "-username", username, 
+            "-password", password, 
+            "-dir download"]
+
+    # Spawn process and store in queue
+    p = pexpect.popen_spawn.PopenSpawn(" ".join(args), encoding="utf-8")
+    self.process_queue.put(p)
+    p.logfile_read = sys.stdout
 
     try:
-      p = pexpect.popen_spawn.PopenSpawn(" ".join(args), encoding="utf-8")
-      p.logfile_read = sys.stdout
-
       responses = [
         "result: OK",
         "Please enter .*: ",
@@ -223,8 +241,7 @@ class Logic:
         success = True
 
       # Code required
-      elif i == 1:
-        
+      elif i == 1:        
         # Open popup for 2FA Code
         # Create temporary parent window to prevent error with visibility
         temp = tkinter.Tk()
@@ -254,6 +271,9 @@ class Logic:
       print("Error waiting for DepotDownloader to start")
     except ConnectionError as e:
       print(e)
+    finally:
+      # Remove process from queue after working with it
+      self.process_queue.get()
 
     return success
 

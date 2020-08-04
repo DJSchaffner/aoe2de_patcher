@@ -20,6 +20,12 @@ class App():
     self.window.title("AoE2DE Patch Reverter")
     self.window.minsize(width=700, height=500)
     self.window.resizable(0, 0)
+
+    def on_closing():
+      self.logic.on_closing()
+      self.window.destroy()
+
+    self.window.protocol("WM_DELETE_WINDOW", on_closing)
     
     self.upper_frame = tk.Frame(master=self.window)
     self.upper_frame.pack(side="top", expand=True, fill="both", padx=10, pady=(10, 5))
@@ -37,9 +43,11 @@ class App():
     self.lower_frame.pack(side="bottom", expand=True, fill="both", padx=10, pady=(5, 10))
 
     self.selected_patch_title = tk.StringVar()  
+    patch_titles = [f"{p['version']} - {p['date'].strftime('%d/%m/%Y')}" for p in self.patch_list]
+    
     self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Version")
     self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
-    self.opt_select_patch = ttk.OptionMenu(self.upper_frame, self.selected_patch_title, self.patch_list[0]['title'], *[p['title'] for p in self.patch_list])
+    self.opt_select_patch = ttk.OptionMenu(self.upper_frame, self.selected_patch_title, patch_titles[0], *[p for p in patch_titles])
     self.opt_select_patch.grid(row=0, column=1, sticky="w")
 
     self.selected_language_name = tk.StringVar()
@@ -90,7 +98,7 @@ class App():
     """Start patching the game with the downloaded files."""
 
     # Retrieve selected patch
-    selected_patch = next((p for p in self.patch_list if p['title'] == self.selected_patch_title.get()), None)
+    selected_patch = next((p for p in self.patch_list if p['version'] == self.selected_patch_title.get()), None)
     # Retrieve selected language
     selected_language = next((l.value for l in Languages if l.name == self.selected_language_name.get()), None)
 
