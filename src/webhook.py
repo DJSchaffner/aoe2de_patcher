@@ -66,12 +66,10 @@ class Webhook:
       date = utils.extract_date(tds[0].text)
       version_re = re.search(r"\d+", tds[1].text.strip('\n'))
       id = tds[4].text
-
-      date_str = date.strftime("%d/%m/%Y")
       
       # Only store patches with official patch number and title
       if not version_re is None:
-        result.append({ 'title' : f"{version_re.group(0)} - {date_str}", 'date' : date, 'id' : id })
+        result.append({ 'version' : f"{version_re.group(0)}", 'date' : date, 'id' : id })
 
     return result
 
