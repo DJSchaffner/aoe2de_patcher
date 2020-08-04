@@ -44,7 +44,7 @@ class App():
 
     self.selected_patch_title = tk.StringVar()  
     patch_titles = [f"{p['version']} - {p['date'].strftime('%d/%m/%Y')}" for p in self.patch_list]
-    
+
     self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Version")
     self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
     self.opt_select_patch = ttk.OptionMenu(self.upper_frame, self.selected_patch_title, patch_titles[0], *[p for p in patch_titles])
@@ -98,7 +98,7 @@ class App():
     """Start patching the game with the downloaded files."""
 
     # Retrieve selected patch
-    selected_patch = next((p for p in self.patch_list if p['version'] == self.selected_patch_title.get()), None)
+    selected_patch = next((p for p in self.patch_list if p['version'] in self.selected_patch_title.get()), None)
     # Retrieve selected language
     selected_language = next((l.value for l in Languages if l.name == self.selected_language_name.get()), None)
 
