@@ -11,6 +11,8 @@ import win32api
 from tkinter import Text
 
 def get_version_number (path: pathlib.Path):
+  """Retrieve the version number of a binary file."""
+  
   info = win32api.GetFileVersionInfo(str(path), "\\")
   ms = info['FileVersionMS']
   ls = info['FileVersionLS']
