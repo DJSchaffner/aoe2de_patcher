@@ -30,3 +30,4 @@ The downloaded files are from steam directly and not hosted by me
 - Grab manifest ids directly from steam
 - Improve the update process (Only update the files that need updating)
 - Add toggle for Enhanced graphics pack (Warn people because thats a lot of data)
+- Maybe add a \<cancel> button
