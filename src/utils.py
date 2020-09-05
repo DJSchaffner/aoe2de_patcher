@@ -5,7 +5,7 @@ import pathlib
 import shutil
 import locale
 import re
-from datetime import datetime
+import time
 import win32api
 
 from tkinter import Text
@@ -51,7 +51,7 @@ def extract_date(date_string: str):
   date_stripped = re.search(r"\d+ \w* \d+", date_string).group(0)
   
   locale.setlocale(locale.LC_TIME, "en_US")
-  date = datetime.strptime(date_stripped, "%d %B %Y") 
+  date = time.strptime(date_stripped, "%d %B %Y") 
   locale.setlocale(locale.LC_TIME, "de_DE")
 
   return date
