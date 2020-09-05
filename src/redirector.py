@@ -8,3 +8,6 @@ class IORedirector(object):
 class StdoutRedirector(IORedirector):
   def write(self, text):
     utils.log(self.text_widget, text)
+
+  def flush(self):
+    pass 
