@@ -54,10 +54,15 @@ class Webhook:
     # @TODO Add check for valid response
 
     for article in response['appnews']['newsitems']['newsitem']:
+      # Search for patches in newsitems (At time of writing patch news have a 5+ digit patch version in the title)
       version_re = re.search(r"^.* (\d{5,})$", article['title'])
 
+      # Only add actual patches from news feed to list
       if not version_re is None:        
-        result.append({ 'version': f"{version_re.group(1)}", 'date': time.localtime(article['date'])})
+        version = version_re.group(1)
+        date = time.localtime(article['date'])
+
+        result.append({ 'version': f"{version}", 'date': date})
 
     return result
 
