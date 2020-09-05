@@ -1,6 +1,7 @@
 import sys
 import pathlib
 import threading
+import time
 
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -43,7 +44,8 @@ class App():
     self.lower_frame.pack(side="bottom", expand=True, fill="both", padx=10, pady=(5, 10))
 
     self.selected_patch_title = tk.StringVar()  
-    patch_titles = [f"{p['version']} - {p['date'].strftime('%d/%m/%Y')}" for p in self.patch_list]
+    
+    patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', p['date'])}" for p in self.patch_list]
 
     self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Version")
     self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
