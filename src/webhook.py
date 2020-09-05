@@ -1,16 +1,14 @@
 import sys
-import datetime
+import time
 import re
 
 import requests
 from bs4 import BeautifulSoup
+import steam.webapi
 
 import utils
 
 class Webhook:
-  # Url to be requested
-  url_base = "https://steamdb.info/"
-
   # Just some user agent because steam db expects one
   headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'}
 
@@ -19,7 +17,8 @@ class Webhook:
 
     Returns a list of manifests
     """
-    response = requests.get(self.__build_url(self.url_base, f"depot/{depot_id}/manifests/"), headers=self.headers)
+    url_base = "https://steamdb.info/"
+    response = requests.get(self.__build_url(url_base, f"depot/{depot_id}/manifests/"), headers=self.headers)
     result = []
 
     if self.__is_response_successful(response):
@@ -47,29 +46,18 @@ class Webhook:
 
     Returns a list of patches
     """
-
-    params = {'appid' : app_id}
+    params = {'appid' : app_id, 'count': 999999}
     result = []
 
-    response = requests.get(self.__build_url(self.url_base, "patchnotes/"), params=params, headers=self.headers)
+    response = steam.webapi.webapi_request("https://api.steampowered.com/ISteamNews/GetNewsForApp/v1", "GET", None, None, params)
 
-    if self.__is_response_successful(response):
-      self.__print_response_error(response)
-      sys.exit()
+    # @TODO Add check for valid response
 
-    soup = BeautifulSoup(response.content, "html.parser")
-    tbody = soup.find("tbody")
-    
-    for tr in tbody.findAll("tr"):
-      tds = tr.findAll("td")
+    for article in response['appnews']['newsitems']['newsitem']:
+      version_re = re.search(r"^.* (\d{5,})$", article['title'])
 
-      date = utils.extract_date(tds[0].text)
-      version_re = re.search(r"\d+", tds[1].text.strip('\n'))
-      id = tds[4].text
-      
-      # Only store patches with official patch number and title
-      if not version_re is None:
-        result.append({ 'version' : f"{version_re.group(0)}", 'date' : date, 'id' : id })
+      if not version_re is None:        
+        result.append({ 'version': f"{version_re.group(1)}", 'date': time.localtime(article['date'])})
 
     return result
 
@@ -78,8 +66,9 @@ class Webhook:
 
     Return a list of changes occured in this patch
     """
+    url_base = "https://steamdb.info/"
 
-    response = requests.get(self.__build_url(self.url_base, f"patchnotes/{patch_id}"), headers=self.headers)
+    response = requests.get(self.__build_url(url_base, f"patchnotes/{patch_id}"), headers=self.headers)
     result = []
 
     if self.__is_response_successful(response):
