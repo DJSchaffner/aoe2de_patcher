@@ -19,7 +19,7 @@ class App():
     # Set up GUI
     self.window = tk.Tk()
     self.window.title("AoE2DE Patch Reverter")
-    self.window.minsize(width=700, height=500)
+    self.window.minsize(width=750, height=500)
     self.window.resizable(0, 0)
 
     def on_closing():
@@ -85,7 +85,6 @@ class App():
 
   def start(self):
     """Start the application."""
-
     self.window.mainloop()
 
   def __select_game_dir(self):
@@ -98,7 +97,6 @@ class App():
 
   def __patch(self):
     """Start patching the game with the downloaded files."""
-
     # Retrieve selected patch
     selected_patch = next((p for p in self.patch_list if p['version'] in self.selected_patch_title.get()), None)
     # Retrieve selected language
@@ -113,8 +111,7 @@ class App():
     t.start()
 
   def __restore(self):
-    """Restores the game directory using the backed up files and downloaded files."""
-    
+    """Restores the game directory using the backed up files and downloaded files."""    
     def work():
       self.__disable_input()
       self.logic.restore()
@@ -125,7 +122,8 @@ class App():
 
   def __disable_input(self):
     """Disables User input for certain Buttons / Entries"""
-
+    self.opt_select_patch.config(state="disabled")
+    self.opt_select_language.config(state="disabled")
     self.btn_patch.config(state="disabled")
     self.btn_restore.config(state="disabled")
     self.btn_game_dir.config(state="disabled")
@@ -134,7 +132,8 @@ class App():
 
   def __enable_input(self):
     """Enables User input for certain Buttons / Entries"""
-
+    self.opt_select_patch.config(state="enabled")
+    self.opt_select_language.config(state="enabled")
     self.btn_patch.config(state="enabled")
     self.btn_restore.config(state="enabled")
     self.btn_game_dir.config(state="enabled")
