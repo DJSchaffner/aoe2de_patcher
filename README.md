@@ -12,7 +12,7 @@ As long as no major bugs arise i will probably come back in a few days to this.
 - Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run
 
 # Usage
-- Select desired game version & language (Language setting only effects cutscenes / capaign voice overs for that language)
+- Select desired game version & language (Language setting only affects cutscenes / campaign voice overs for that language)
 - Select the game directory
 - Enter your steam login credentials
 - Click \<Patch>
