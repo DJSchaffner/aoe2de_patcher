@@ -23,7 +23,7 @@ class App():
     self.window.resizable(0, 0)
 
     def on_closing():
-      self.logic.on_closing()
+      self.logic.cancel_downloads()
       self.window.destroy()
 
     self.window.protocol("WM_DELETE_WINDOW", on_closing)
@@ -141,9 +141,7 @@ class App():
     self.ent_password.config(state="enabled")
 
 if __name__ == '__main__':
-  # @TODO Make GUI look nice
   # @TODO Generate file list to minimize download size
-  # @TODO Test this thing a bit (Made a test run with 2FA and restoring and it worked)
 
   app = App()
   app.start()
