@@ -143,7 +143,7 @@ class Logic:
 
     return self.patch_list
 
-  def on_closing(self):
+  def cancel_downloads(self):
     """Performs cleanup for logic object."""
     # Terminate all child processes
     for process in self.process_queue.queue:
@@ -208,7 +208,6 @@ class Logic:
 
   def __download_depot(self, username: str, password: str, depot_id, manifest_id):
     """Download a specific depot using the manifest id from steam using the given credentials."""
-
     success = False
     depot_downloader = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
     args = ["dotnet", depot_downloader, 
@@ -256,8 +255,10 @@ class Logic:
           # Send 2fa code to child process and check the result
           p.sendline(code)
 
+          # Invalid code
           if p.expect(responses, timeout=timeout) == 1:
             raise ConnectionError("Invalid authentication code")
+          # Success
           else:
             success = True
 
