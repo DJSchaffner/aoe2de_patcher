@@ -61,7 +61,6 @@ class Logic:
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
     """Start patching the game with the downloaded files."""
-
     success = True
 
     # Check some stuff
@@ -97,6 +96,10 @@ class Logic:
 
   def restore(self):
     """Restores the game directory using the backed up files and downloaded files."""
+    # Check some stuff
+    if not hasattr(self, "game_dir") or self.game_dir is None:
+      print("Please select a game directory")
+      return
 
     if not self.backup_dir.exists():
       print("Backup directory doesn't exist")
@@ -124,7 +127,6 @@ class Logic:
 
   def set_game_dir(self, dir: pathlib.Path):
     """Tries to set the game directory, if succesful return True. Otherwise return False"""
-
     aoe_binary = dir / "AoE2DE_s.exe"
 
     if aoe_binary.exists():
@@ -143,14 +145,12 @@ class Logic:
 
   def on_closing(self):
     """Performs cleanup for logic object."""
-
     # Terminate all child processes
     for process in self.process_queue.queue:
       process.kill(signal.SIGTERM)
 
   def __download_patch(self, username: str, password: str, patch: dict, language: Languages):  
     """Download the given patch in a language using the steam account credentials."""
-
     # dotnet is required to proceed
     if not (utils.check_dotnet()):
       print("DOTNET Core required but not found!")
@@ -192,7 +192,6 @@ class Logic:
 
   def __backup(self):
     """Backup game folder and in current directory."""
-
     # Remove previous backup folder if it exists
     # Create empty folders afterwards
     if self.backup_dir.exists():
@@ -234,14 +233,14 @@ class Logic:
 
       # Default timeout in seconds
       timeout = 15
-      i = p.expect(responses, timeout=timeout)
+      response = p.expect(responses, timeout=timeout)
 
       # Success
-      if i == 0:
+      if response == 0:
         success = True
 
       # Code required
-      elif i == 1:        
+      elif response == 1:        
         # Open popup for 2FA Code
         # Create temporary parent window to prevent error with visibility
         temp = tkinter.Tk()
@@ -254,6 +253,7 @@ class Logic:
           raise ConnectionError("Invalid authentication code")
         # Code was entered
         else:
+          # Send 2fa code to child process and check the result
           p.sendline(code)
 
           if p.expect(responses, timeout=timeout) == 1:
@@ -262,11 +262,11 @@ class Logic:
             success = True
 
       # Error
-      elif i == 2:
+      elif response == 2:
         raise ConnectionError("Error logging into account")
 
       # Wait for program to finish
-      p.expect(pexpect.EOF)
+      p.expect(pexpect.EOF, timeout=None)
     except pexpect.exceptions.TIMEOUT as e:
       print("Error waiting for DepotDownloader to start")
     except ConnectionError as e:
