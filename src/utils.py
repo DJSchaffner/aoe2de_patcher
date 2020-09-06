@@ -47,7 +47,6 @@ def extract_date(date_string: str):
 
   Returns a datetime object
   """
-
   date_stripped = re.search(r"\d+ \w* \d+", date_string).group(0)
   
   locale.setlocale(locale.LC_TIME, "en_US")
@@ -58,12 +57,10 @@ def extract_date(date_string: str):
 
 def check_dotnet():
   """Checks if dotnet is available."""
-
   return not (shutil.which("dotnet") is None)
 
 def base_path():
   """Construct the base path to the exe / project."""
-
   # Get absolute path to resource, works for dev and for PyInstaller
   if getattr(sys, 'frozen', False):
     # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -73,7 +70,6 @@ def base_path():
 
 def resource_path(relative_path):
   """Construct the resource patch for a resource."""
-
   # Get absolute path to resource, works for dev and for PyInstaller
   if getattr(sys, 'frozen', False):
     # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -84,6 +80,5 @@ def resource_path(relative_path):
   return base_path / "res" / relative_path
 
 def clear():   
-  """Clear the screen of the console."""
-  
+  """Clear the screen of the console."""  
   _ = os.system('cls')
