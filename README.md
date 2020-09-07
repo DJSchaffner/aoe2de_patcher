@@ -3,9 +3,6 @@
 Patches AoE2 DE to any officially released version (Steam version only!)  
 Currently downloads the whole update instead of just patching the necessary files, an improved mechanism is planned though!
 
-As soon as I finished my other work i will continue to improve the update process!  
-As long as no major bugs arise i will probably come back in a few days to this.
-
 # Requirements
 
 - Requires a steam account that owns the game
