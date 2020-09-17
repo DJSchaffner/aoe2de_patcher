@@ -38,6 +38,32 @@ def remove_file_or_dir(dir, file):
   else:
     (dir / file).unlink(missing_ok=True)
 
+def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path):
+  """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched."""
+  changed_file_list = list(set(os.listdir(original_dir.absolute())).intersection(set(os.listdir(override_dir.absolute()))))
+
+  for file in changed_file_list:
+    if (original_dir / file).is_dir():
+      (backup_dir / file).mkdir()
+      backup_files(original_dir / file, override_dir / file, backup_dir / file)
+    else:
+      copy_file_or_dir(original_dir, backup_dir, file)
+
+def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path):
+  """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir."""
+  changed_file_list = os.listdir(override_dir.absolute())
+
+  # Remove all overridden files
+  for file in changed_file_list:
+    if (original_dir / file).is_dir():
+      remove_patched_files(original_dir / file, override_dir / file)
+
+      # Remove directory if its now empty
+      if len(os.listdir((original_dir / file).absolute())) == 0:
+        remove_file_or_dir(original_dir, file)
+    else:
+      remove_file_or_dir(original_dir, file)
+
 def extract_date(date_string: str):
   """Extract a date in the format of 'd(d) Monthname yyyy'.
 
