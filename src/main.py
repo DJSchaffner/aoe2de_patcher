@@ -19,7 +19,7 @@ class App():
     # Set up GUI
     self.window = tk.Tk()
     self.window.title("AoE2DE Patch Reverter")
-    self.window.minsize(width=750, height=500)
+    self.window.minsize(width=780, height=500)
     self.window.resizable(0, 0)
 
     def on_closing():
@@ -98,7 +98,7 @@ class App():
   def __patch(self):
     """Start patching the game with the downloaded files."""
     # Retrieve selected patch
-    selected_patch = next((p for p in self.patch_list if p['version'] in self.selected_patch_title.get()), None)
+    selected_patch = next((p for p in self.patch_list if str(p['version']) in self.selected_patch_title.get()), None)
     # Retrieve selected language
     selected_language = next((l.value for l in Languages if l.name == self.selected_language_name.get()), None)
 
@@ -142,6 +142,5 @@ class App():
 
 if __name__ == '__main__':
   # @TODO Generate file list to minimize download size
-
   app = App()
   app.start()

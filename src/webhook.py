@@ -59,10 +59,10 @@ class Webhook:
 
       # Only add actual patches from news feed to list
       if not version_re is None:        
-        version = version_re.group(1)
+        version = int(version_re.group(1))
         date = time.localtime(article['date'])
 
-        result.append({ 'version': f"{version}", 'date': date})
+        result.append({ 'version': version, 'date': date})
 
     return result
 
