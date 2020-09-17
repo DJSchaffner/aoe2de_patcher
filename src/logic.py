@@ -76,6 +76,10 @@ class Logic:
       print("Please enter a password")
       return
 
+    if self.installed_version == patch['version']:
+      print("The selected version is already installed")
+      return
+
     # Always true
     if success:
       print("Downloading patch")
@@ -131,8 +135,10 @@ class Logic:
 
     if aoe_binary.exists():
       self.game_dir = dir
+      self.installed_version = f"{utils.get_version_number(aoe_binary)[2]}"
+
       print(f"Game directory set to: {dir.absolute()}")
-      print(f"Installed version detected: {utils.get_version_number(aoe_binary)[2]}")
+      print(f"Installed version detected: {self.installed_version}")
       return True
 
     print("Invalid game directory")
@@ -140,7 +146,6 @@ class Logic:
 
   def get_patch_list(self):
     """Returns the patch list"""
-
     return self.patch_list
 
   def cancel_downloads(self):
@@ -186,7 +191,6 @@ class Logic:
 
   def __move_patch(self):
     """Move downloaded patch files to game directory"""
-
     shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
     return True
 
@@ -282,8 +286,7 @@ class Logic:
     """Get a list of depots for the app.
 
     Returns the list of depots
-    """
-    
+    """    
     result = []
 
     client = SteamClient()
