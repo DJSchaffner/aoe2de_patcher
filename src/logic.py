@@ -225,6 +225,7 @@ class Logic:
             "-manifest", str(manifest_id), 
             "-username", username, 
             "-password", password, 
+            "-remember-password",
             "-dir download"]
 
     # Spawn process and store in queue
@@ -311,7 +312,7 @@ class Logic:
     If the current patch is not documented with changes all depots will be assumed to have changed.
     
     Returns a list of depots"""
-    result = set()
+    result = []
 
     # Is version documented? If not, just assume all deptos changed
     if next((p for p in self.patch_list_local if p['version'] == selected_version), None) is None:
@@ -324,6 +325,7 @@ class Logic:
       if patch['version'] > selected_version and patch['version'] <= self.installed_version:
         # Add all changed depots to result list
         for depot in patch["changed_depots"]:
-          result.add(depot)
+          if not depot in result:
+            result.append(depot)
 
-    return list(result)
+    return result
