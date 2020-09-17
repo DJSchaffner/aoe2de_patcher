@@ -81,7 +81,9 @@ class Logic:
       print("Please enter a password")
       return
 
-    if utils.get_version_number(self.game_dir / "AoE2DE_s.exe")[2] == patch['version']:
+    self.installed_version = utils.get_version_number(self.game_dir / "AoE2DE_s.exe")[2]
+
+    if self.installed_version == patch['version']:
       print("The selected version is already installed")
       return
 
@@ -309,7 +311,7 @@ class Logic:
     If the current patch is not documented with changes all depots will be assumed to have changed.
     
     Returns a list of depots"""
-    result = []
+    result = set()
 
     # Is version documented? If not, just assume all deptos changed
     if next((p for p in self.patch_list_local if p['version'] == selected_version), None) is None:
@@ -317,14 +319,13 @@ class Logic:
       return self.depot_list
 
     # Version is documented, accumulate all changed depots
-    for patch in reversed(self.patch_list_local):
+    for patch in self.patch_list_local:
       # Stop if patch is older than selected version
-      if patch['version'] <= selected_version:
-        break
+      if patch['version'] > selected_version and patch['version'] <= self.installed_version:
+        # Add all changed depots to result list
+        for depot in patch["changed_depots"]:
+          result.add(depot)
 
-      # Add all changed depots to result list
-      for depot in patch["changed_depots"]:
-        if not depot in result:
-          result.append(depot)
+    print(list(result))
 
-    return result
+    return list(result)
