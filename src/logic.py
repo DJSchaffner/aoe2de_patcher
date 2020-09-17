@@ -3,6 +3,7 @@ import os
 import pathlib
 import shutil
 import signal
+import json
 from enum import IntEnum
 from queue import Queue
 
@@ -57,6 +58,10 @@ class Logic:
     self.backup_dir = utils.base_path() / "backup"
     self.patch_list = self.webhook.query_patch_list(self.app_id)
     self.depot_list = self.__get_depot_list()
+
+    with open(utils.resource_path("patches.json")) as json_file:
+      self.patch_list_local = json.load(json_file)["patches"]
+
     self.process_queue = Queue()
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
@@ -76,7 +81,7 @@ class Logic:
       print("Please enter a password")
       return
 
-    if self.installed_version == patch['version']:
+    if utils.get_version_number(self.game_dir / "AoE2DE_s.exe")[2] == patch['version']:
       print("The selected version is already installed")
       return
 
@@ -135,10 +140,9 @@ class Logic:
 
     if aoe_binary.exists():
       self.game_dir = dir
-      self.installed_version = f"{utils.get_version_number(aoe_binary)[2]}"
 
       print(f"Game directory set to: {dir.absolute()}")
-      print(f"Installed version detected: {self.installed_version}")
+      print(f"Installed version detected: {utils.get_version_number(aoe_binary)[2]}")
       return True
 
     print("Invalid game directory")
@@ -170,8 +174,7 @@ class Logic:
     self.download_dir.mkdir()
     
     # Loop all depots and insert necessary ones with the latest version to the list of updates
-    # @TODO Only add the depots that NEED to be updated depending on which version is currently installed
-    for depot in self.depot_list:
+    for depot in self.__get_changed_depot_list(patch['version']):
       # Skip depots that are being ignored
       if  ( (not (depot in self.ignored_depots)) and 
             ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):
@@ -300,3 +303,28 @@ class Logic:
         result.append(int(depot))
 
     return result    
+
+  def __get_changed_depot_list(self, selected_version):
+    """Get a list of all changed depots between the current version and the selected one.
+    If the current patch is not documented with changes all depots will be assumed to have changed.
+    
+    Returns a list of depots"""
+    result = []
+
+    # Is version documented? If not, just assume all deptos changed
+    if next((p for p in self.patch_list_local if p['version'] == selected_version), None) is None:
+      print("No optimized depot list available")
+      return self.depot_list
+
+    # Version is documented, accumulate all changed depots
+    for patch in reversed(self.patch_list_local):
+      # Stop if patch is older than selected version
+      if patch['version'] <= selected_version:
+        break
+
+      # Add all changed depots to result list
+      for depot in patch["changed_depots"]:
+        if not depot in result:
+          result.append(depot)
+
+    return result
