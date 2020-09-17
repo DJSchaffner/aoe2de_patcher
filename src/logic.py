@@ -119,20 +119,15 @@ class Logic:
     if len(os.listdir(self.backup_dir.absolute())) == 0:
       print("No backup stored")
       return
-    
-    backup_file_list = list(os.listdir(self.backup_dir.absolute()))
-    download_file_list = list(os.listdir(self.download_dir.absolute()))
 
     # Remove added files from the path
     print("Removing patched files")
-    for file in download_file_list:
-      utils.remove_file_or_dir(self.game_dir, file)
+    utils.remove_patched_files(self.game_dir, self.download_dir)
     print("Finished removing patched files")
 
     # Copy backed up files to game path again
     print("Restoring backup")
-    for file in backup_file_list:
-      utils.copy_file_or_dir(self.backup_dir, self.game_dir, file)
+    shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
     print("Finished restoring backup")
     print("DONE!")
 
@@ -207,11 +202,7 @@ class Logic:
       shutil.rmtree(self.backup_dir.absolute())
     self.backup_dir.mkdir()
 
-    changed_file_list = list(set(os.listdir(self.game_dir.absolute())).intersection(set(os.listdir(self.download_dir.absolute()))))
-
-    # Copy all files
-    for file in changed_file_list:
-      utils.copy_file_or_dir(self.game_dir, self.backup_dir, file)
+    utils.backup_files(self.game_dir, self.download_dir, self.backup_dir)
 
     return True
 
