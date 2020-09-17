@@ -34,7 +34,7 @@ def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: s
 def remove_file_or_dir(dir, file):
   """Removes a file or directory recursively. Does not throw an error if file does not exist."""  
   if (dir / file).is_dir():
-    shutil.rmtree((dir / file).absolute())
+    shutil.rmtree((dir / file).absolute(), ignore_errors=True)
   else:
     (dir / file).unlink(missing_ok=True)
 
