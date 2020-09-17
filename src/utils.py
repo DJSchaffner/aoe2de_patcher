@@ -11,8 +11,7 @@ import win32api
 from tkinter import Text
 
 def get_version_number (path: pathlib.Path):
-  """Retrieve the version number of a binary file."""
-  
+  """Retrieve the version number of a binary file."""  
   info = win32api.GetFileVersionInfo(str(path), "\\")
   ms = info['FileVersionMS']
   ls = info['FileVersionLS']
@@ -20,7 +19,6 @@ def get_version_number (path: pathlib.Path):
 
 def log(text_widget: Text, text: str):
   """Logs a given string to the text widget."""
-
   text_widget.configure(state="normal")
   text_widget.insert("end", text)
   text_widget.configure(state="disabled")
@@ -28,15 +26,13 @@ def log(text_widget: Text, text: str):
 
 def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str):
   """Copies a file or a directory recursively into the target directory."""
-
   if (source_dir / file).is_dir():
     shutil.copytree((source_dir / file).absolute(), (target_dir / file).absolute())
   else:
     shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
 def remove_file_or_dir(dir, file):
-  """Removes a file or directory recursively. Does not throw an error if file does not exist."""
-  
+  """Removes a file or directory recursively. Does not throw an error if file does not exist."""  
   if (dir / file).is_dir():
     shutil.rmtree((dir / file).absolute())
   else:
