@@ -326,6 +326,4 @@ class Logic:
         for depot in patch["changed_depots"]:
           result.add(depot)
 
-    print(list(result))
-
     return list(result)
