@@ -60,9 +60,15 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path)
 
       # Remove directory if its now empty
       if len(os.listdir((original_dir / file).absolute())) == 0:
-        remove_file_or_dir(original_dir, file)
+        try:
+          remove_file_or_dir(original_dir, file)
+        except BaseException as e:
+          raise e
     else:
-      remove_file_or_dir(original_dir, file)
+      try:
+        remove_file_or_dir(original_dir, file)
+      except BaseException as e:
+        raise e
 
 def extract_date(date_string: str):
   """Extract a date in the format of 'd(d) Monthname yyyy'.
