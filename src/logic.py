@@ -92,13 +92,22 @@ class Logic:
       print("Downloading patch")
       success = success and self.__download_patch(username, password, patch, language)
 
+      if not success:
+        print("Error during download!")
+
     if success:
       print("Starting backup")
       success = success and self.__backup()
 
+      if not success:
+        print("Error during backup!")
+
     if success:
       print("Patching files")
       success = success and self.__move_patch()
+
+      if not success:
+        print("Error during patch!")
 
     if success:
       print("DONE!")
@@ -121,15 +130,21 @@ class Logic:
       return
 
     # Remove added files from the path
-    print("Removing patched files")
-    utils.remove_patched_files(self.game_dir, self.download_dir)
-    print("Finished removing patched files")
+    try:
+      print("Removing patched files")
+      utils.remove_patched_files(self.game_dir, self.download_dir)
+      print("Finished removing patched files")
 
-    # Copy backed up files to game path again
-    print("Restoring backup")
-    shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
-    print("Finished restoring backup")
-    print("DONE!")
+      # Copy backed up files to game path again
+      try:
+        print("Restoring backup")
+        shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
+        print("Finished restoring backup")
+        print("DONE!")
+      except BaseException:
+        print("Error restoring files!")
+    except BaseException:
+      print("Error removing files!")
 
   def set_game_dir(self, dir: pathlib.Path):
     """Tries to set the game directory, if succesful return True. Otherwise return False"""
@@ -190,21 +205,34 @@ class Logic:
     return True
 
   def __move_patch(self):
-    """Move downloaded patch files to game directory"""
-    shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
-    return True
+    """Move downloaded patch files to game directory."""
+    try:
+      shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
+
+      return True
+    except BaseException:
+      pass
+
+    return False
 
   def __backup(self):
-    """Backup game folder and in current directory."""
-    # Remove previous backup folder if it exists
-    # Create empty folders afterwards
-    if self.backup_dir.exists():
-      shutil.rmtree(self.backup_dir.absolute())
-    self.backup_dir.mkdir()
+    """Backup game folder and in current directory.
+    
+    Returns True if everything worked, otherwise False"""
+    try:
+      # Remove previous backup folder if it exists
+      # Create empty folders afterwards
+      if self.backup_dir.exists():
+        shutil.rmtree(self.backup_dir.absolute())
+      self.backup_dir.mkdir()
 
-    utils.backup_files(self.game_dir, self.download_dir, self.backup_dir)
+      utils.backup_files(self.game_dir, self.download_dir, self.backup_dir)
 
-    return True
+      return True
+    except BaseException:
+      pass
+
+    return False
 
   def __download_depot(self, username: str, password: str, depot_id, manifest_id):
     """Download a specific depot using the manifest id from steam using the given credentials."""
