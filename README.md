@@ -13,7 +13,7 @@ Currently downloads more files than necessary, an improved mechanism is planned!
 - Select the game directory
 - Enter your steam login credentials
 - Click \<Patch>
-- If prompted, enter the 2FA code (Might occur multiple times)
+- If prompted, enter the 2FA code
 - To restore the previous game version hit \<Restore> after patching
 
 This whole process takes a while to finish!
