@@ -19,16 +19,18 @@ Currently downloads more files than necessary, an improved mechanism is planned!
 This whole process takes a while to finish!
 
 # Notes
-This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a Ticket with the bug you encountered and a short desceription how it occured.  
-
 While it is possible to patch from an old version to the most recent one I do suggest to just use the steam "Verify integrity of game cache" functionality just to be extra safe.
 
-Your login creedentials will not be stored for later use.
+Your login creedentials will not be stored for later use.  
 
-The downloaded files are from steam directly and not hosted by me.
+For now, try to avoid closing the program via task manager while it is downloading. Currently I have not found a way to guarantee that downloads will be stopped after doing so!
 
-**Future features**
+# Future features
 - Further improve the update process (Only update the files that need updating)
 - Add toggle for Enhanced graphics pack (Warn people because thats a lot of data)
 - Maybe add a \<cancel> button
-- Make backups optional
+- Make backups optional  
+
+*The downloaded files are from steam directly and not hosted by me.*  
+
+*This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a Ticket with the bug you encountered and a short desceription how it occured.*  
