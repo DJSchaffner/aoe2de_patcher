@@ -17,7 +17,7 @@ class Webhook:
     """Query a list of changed depots for all patches.
     
     Returns a list of patches and their changed depots"""
-    url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/res/patches.json"
+    url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/patches.json"
     response = self.__query_website(url)
     result = json.loads(response.content)["patches"]
 
