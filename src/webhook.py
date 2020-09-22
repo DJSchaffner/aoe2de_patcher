@@ -1,6 +1,7 @@
 import sys
 import time
 import re
+import json
 
 import requests
 from bs4 import BeautifulSoup
@@ -12,15 +13,13 @@ class Webhook:
   # Just some user agent because steam db expects one
   headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'}
 
-  def query_patch_depot_list(self):
+  def query_patch_change_list(self):
     """Query a list of changed depots for all patches.
     
     Returns a list of patches and their changed depots"""
     url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/res/patches.json"
     response = self.__query_website(url)
-    result = []
-
-    print(response)
+    result = json.loads(response.content)["patches"]
 
     return result
 
