@@ -12,18 +12,26 @@ class Webhook:
   # Just some user agent because steam db expects one
   headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'}
 
+  def query_patch_depot_list(self):
+    """Query a list of changed depots for all patches.
+    
+    Returns a list of patches and their changed depots"""
+    url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/res/patches.json"
+    response = self.__query_website(url)
+    result = []
+
+    print(response)
+
+    return result
+
   def query_manifests(self, depot_id):
     """Query steamdb.info for a list of manifests for a specific depot and return that list.
 
     Returns a list of manifests
     """
-    url_base = "https://steamdb.info/"
-    response = requests.get(self.__build_url(url_base, f"depot/{depot_id}/manifests/"), headers=self.headers)
+    url = f"https://steamdb.info/depot/{depot_id}/manifests/"
+    response = self.__query_website(url, headers=self.headers)
     result = []
-
-    if self.__is_response_successful(response):
-      self.__print_response_error(response)
-      sys.exit()
 
     soup = BeautifulSoup(response.content, "html.parser")
     div = soup.find("div", {'id' : 'manifests'})
@@ -48,7 +56,6 @@ class Webhook:
     """
     params = {'appid' : app_id, 'count': 999999}
     result = []
-
     response = steam.webapi.webapi_request("https://api.steampowered.com/ISteamNews/GetNewsForApp/v1", "GET", None, None, params)
 
     # @TODO Add check for valid response
@@ -71,14 +78,9 @@ class Webhook:
 
     Return a list of changes occured in this patch
     """
-    url_base = "https://steamdb.info/"
-
-    response = requests.get(self.__build_url(url_base, f"patchnotes/{patch_id}"), headers=self.headers)
+    url = f"https://steamdb.info/patchnotes/{patch_id}"
+    response = self.__query_website(url, headers=self.headers)
     result = []
-
-    if self.__is_response_successful(response):
-      self.__print_response_error(response)
-      sys.exit()
 
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -92,13 +94,14 @@ class Webhook:
 
     return result
 
-  def __build_url(self, url_base, page):
-    """Construct a url from a base page and the rest.
+  def __query_website(self, url: str, headers=None):
+    response = requests.get(url, headers=headers)
 
-    Return the constructed url
-    """
+    if not self.__is_response_successful(response):
+      self.__print_response_error(response)
+      sys.exit()
 
-    return f"{url_base}{page}"
+    return response
 
   def __is_response_successful(self, response: requests.Response):
     """Checks if a response returned successfully.
@@ -106,7 +109,7 @@ class Webhook:
     Return True/False
     """
 
-    return response.status_code != 200
+    return response.status_code == 200
 
   def __print_response_error(self, response: requests.Response):
     """Print the according error for a response."""
