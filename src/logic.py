@@ -3,7 +3,6 @@ import os
 import pathlib
 import shutil
 import signal
-import json
 from enum import IntEnum
 from queue import Queue
 
@@ -58,9 +57,7 @@ class Logic:
     self.backup_dir = utils.base_path() / "backup"
     self.patch_list = self.webhook.query_patch_list(self.app_id)
     self.depot_list = self.__get_depot_list()
-
-    with open(utils.resource_path("patches.json")) as json_file:
-      self.patch_list_local = json.load(json_file)["patches"]
+    self.patch_change_list = self.webhook.query_patch_change_list()
 
     self.process_queue = Queue()
 
@@ -334,12 +331,12 @@ class Logic:
     result = []
 
     # Is version documented? If not, just assume all deptos changed
-    if next((p for p in self.patch_list_local if p['version'] == selected_version), None) is None:
+    if next((p for p in self.patch_change_list if p['version'] == selected_version), None) is None:
       print("No optimized depot list available")
       return self.depot_list
 
     # Version is documented, accumulate all changed depots
-    for patch in self.patch_list_local:
+    for patch in self.patch_change_list:
       # Stop if patch is older than selected version
       if patch['version'] > selected_version and patch['version'] <= self.installed_version:
         # Add all changed depots to result list
