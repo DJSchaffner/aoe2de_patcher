@@ -38,40 +38,54 @@ def remove_file_or_dir(dir, file):
   else:
     (dir / file).unlink(missing_ok=True)
 
-def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path):
+def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool):
   """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched."""
   changed_file_list = list(set(os.listdir(original_dir.absolute())).intersection(set(os.listdir(override_dir.absolute()))))
 
   for file in changed_file_list:
+    # Its a folder, backup its contents
     if (original_dir / file).is_dir():
       (backup_dir / file).mkdir()
-      backup_files(original_dir / file, override_dir / file, backup_dir / file)
+      backup_files(original_dir / file, override_dir / file, backup_dir / file, debug_info)
+    # Its a file, copy it
     else:
+      if debug_info:
+        print(f"Copying {(original_dir / file).absolute()}")
+      
       copy_file_or_dir(original_dir, backup_dir, file)
 
-def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path):
+def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path, debug_info: bool):
   """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir."""
   changed_file_list = os.listdir(override_dir.absolute())
 
   # Remove all overridden files
   for file in changed_file_list:
+    # Its a folder, remove its contents 
     if (original_dir / file).is_dir():
-      remove_patched_files(original_dir / file, override_dir / file)
+      remove_patched_files(original_dir / file, override_dir / file, debug_info)
 
       # Remove directory if its now empty
       if len(os.listdir((original_dir / file).absolute())) == 0:
         try:
+          if debug_info:
+            print(f"Removing {(original_dir / file).absolute()}")
+
           remove_file_or_dir(original_dir, file)
         except BaseException as e:
           raise e
+    # Its a file, remove it
     else:
       try:
+        if debug_info:
+          print(f"Removing {(original_dir / file).absolute()}")
+        
         remove_file_or_dir(original_dir, file)
       except BaseException as e:
         raise e
 
 def extract_date(date_string: str):
   """Extract a date in the format of 'd(d) Monthname yyyy'.
+  
   Returns a datetime object
   """
   date_stripped = re.search(r"\d+ \w* \d+", date_string).group(0)
