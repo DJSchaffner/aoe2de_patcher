@@ -72,31 +72,23 @@ class Webhook:
 
     return result
 
-  def query_patch(self, patch_id):
-    """Query steamdb.info for a specific patch.
+  def query_filelist(self, version: int, depot_id: int):
+    """Query a file list for a certain version and depot it.
 
-    Return a list of changes occured in this patch
-    """
-    url = f"https://steamdb.info/patchnotes/{patch_id}"
-    response = self.__query_website(url, headers=self.headers)
-    result = []
+    Returns the content of the found file or None if the file could not be found"""
+    url = f"https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/{version}/{depot_id}.txt"
+    response = self.__query_website(url, ignore_success=True)
+    result = None
 
-    soup = BeautifulSoup(response.content, "html.parser")
-
-    div = soup.find("div", {"class" : "depot-history"})
-
-    inner_divs = div.findAll("div")[1:]
-
-    for depot_div in inner_divs:
-      # @TODO Somehow execute the javascript on the page to load the change history
-      print(depot_div.text)
+    if self.__is_response_successful(response):
+      result = response.content.decode("utf-8")
 
     return result
 
-  def __query_website(self, url: str, headers=None):
+  def __query_website(self, url: str, headers=None, ignore_success=False):
     response = requests.get(url, headers=headers)
 
-    if not self.__is_response_successful(response):
+    if (not ignore_success) and (not self.__is_response_successful(response)):
       self.__print_response_error(response)
       sys.exit()
 
