@@ -50,7 +50,7 @@ def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_
     # Its a file, copy it
     else:
       if debug_info:
-        print(f"Copying {(original_dir / file).absolute()}")
+        print(f"Copy {(original_dir / file).absolute()}")
       
       copy_file_or_dir(original_dir, backup_dir, file)
 
@@ -68,7 +68,7 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
       if len(os.listdir((original_dir / file).absolute())) == 0:
         try:
           if debug_info:
-            print(f"Removing {(original_dir / file).absolute()}")
+            print(f"Remove {(original_dir / file).absolute()}")
 
           remove_file_or_dir(original_dir, file)
         except BaseException as e:
@@ -77,7 +77,7 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
     else:
       try:
         if debug_info:
-          print(f"Removing {(original_dir / file).absolute()}")
+          print(f"Remove {(original_dir / file).absolute()}")
         
         remove_file_or_dir(original_dir, file)
       except BaseException as e:
