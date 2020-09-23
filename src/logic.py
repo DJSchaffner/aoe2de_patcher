@@ -58,7 +58,6 @@ class Logic:
     self.patch_list = self.webhook.query_patch_list(self.app_id)
     self.depot_list = self.__get_depot_list()
     self.patch_change_list = self.webhook.query_patch_change_list()
-
     self.process_queue = Queue()
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
@@ -129,7 +128,7 @@ class Logic:
     # Remove added files from the path
     try:
       print("Removing patched files")
-      utils.remove_patched_files(self.game_dir, self.download_dir)
+      utils.remove_patched_files(self.game_dir, self.download_dir, True)
       print("Finished removing patched files")
 
       # Copy backed up files to game path again
@@ -223,7 +222,7 @@ class Logic:
         shutil.rmtree(self.backup_dir.absolute())
       self.backup_dir.mkdir()
 
-      utils.backup_files(self.game_dir, self.download_dir, self.backup_dir)
+      utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
 
       return True
     except BaseException:
