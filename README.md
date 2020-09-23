@@ -34,3 +34,5 @@ For now, try to avoid closing the program via task manager while it is downloadi
 *The downloaded files are from steam directly and not hosted by me.*  
 
 *This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a Ticket with the bug you encountered and a short desceription how it occured.*  
+
+<a href="https://www.buymeacoffee.com/djschaffner" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Drink" style="height: 41px !important;width: 174px !important;" ></a>
