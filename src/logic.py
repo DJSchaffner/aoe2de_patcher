@@ -5,6 +5,7 @@ import shutil
 import signal
 from enum import IntEnum
 from queue import Queue
+import tempfile
 
 import pexpect
 import pexpect.popen_spawn
@@ -173,30 +174,58 @@ class Logic:
       print("DOTNET Core required but not found!")
       return False
     
-    update_list = []    
+    update_list = []   
+    filelists_result = None 
     
     # Remove previous download folder if it exists
     # Create empty folders afterwards
     if self.download_dir.exists():
       shutil.rmtree(self.download_dir.absolute())
     self.download_dir.mkdir()
-    
-    # Loop all depots and insert necessary ones with the latest version to the list of updates
-    for depot in self.__get_changed_depot_list(patch['version']):
-      # Skip depots that are being ignored
-      if  ( (not (depot in self.ignored_depots)) and 
-            ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):
 
-        manifests = self.webhook.query_manifests(depot)
+    # Only support patching via filelists to an older version atm
+    if self.installed_version > patch['version']:
+      # Try to get a list of all filelists down to wanted version
+      filelists_result = self.__get_filelists(patch['version'])
 
-        # Discard empty manifest lists
-        if len(manifests) > 0:
-          update_list.append({ 'depot' : depot, 'manifest' : next((m for m in manifests if m['date'] <= patch['date']), None) })      
+    # Filelist exists, use it
+    if not filelists_result is None:
+      tmp_files = []
+
+      # Create a temp file for every file list
+      for entry in filelists_result:
+        # Skip depots that are being ignored
+        if  ( (not (entry['depot'] in self.ignored_depots)) and 
+              ((not (entry['depot'] in self.language_depots)) or (self.language_depots[language] == entry['depot'])) ):   
+          # Create temp file list
+          tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+
+          # Store file name for deletion later on
+          tmp_files.append(tmp.name)
+
+          # Write content to file
+          tmp.write(entry['filelist'])
+          tmp.close()
+
+          # Add update element to list
+          update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
+    else:
+      # Loop all depots and insert necessary ones with the latest version to the list of updates
+      for depot in self.__get_changed_depot_list(patch['version']):
+        # Skip depots that are being ignored
+        if  ( (not (depot in self.ignored_depots)) and 
+              ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):   
+
+          update_list.append({ 'depot' : depot, 'manifest' : self.__get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
 
     # Loop all necessary updates
     for element in update_list:
-      if not self.__download_depot(username, password, element['depot'], element['manifest']['id']):
+      if not self.__download_depot(username, password, patch['version'], element['depot'], element['manifest'], element['filelist']):
         return False
+
+    # Remove created temp files
+    for tmp in tmp_files:
+      os.unlink(tmp)
 
     return True
 
@@ -230,11 +259,11 @@ class Logic:
 
     return False
 
-  def __download_depot(self, username: str, password: str, depot_id, manifest_id):
+  def __download_depot(self, username: str, password: str, version: int, depot_id: int, manifest_id: int, filelist: str):
     """Download a specific depot using the manifest id from steam using the given credentials."""
     success = False
-    depot_downloader = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
-    args = ["dotnet", depot_downloader, 
+    depot_downloader_path = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
+    args = ["dotnet", depot_downloader_path, 
             "-app", str(self.app_id), 
             "-depot", str(depot_id), 
             "-manifest", str(manifest_id), 
@@ -242,6 +271,9 @@ class Logic:
             "-password", password, 
             "-remember-password",
             "-dir download"]
+
+    if not filelist is None:
+      args.append(f"-filelist {filelist}")
 
     # Spawn process and store in queue
     p = pexpect.popen_spawn.PopenSpawn(" ".join(args), encoding="utf-8")
@@ -322,6 +354,30 @@ class Logic:
 
     return result    
 
+  def __get_filelists(self, selected_version):
+    """Get a list of all filelists between the current version and the selected one.
+    If any patch in between does not have a filelist stored, None will be returned.
+
+    Returns a list of tuples (depot id, filelist, manifest id) or None"""
+    result = []
+
+    for i in range(len(self.patch_change_list) - 1, 1, -1):
+      patch_from = self.patch_change_list[i]
+      patch_to = self.patch_change_list[i - 1]
+      
+      if patch_to['version'] >= selected_version and patch_to['version'] <= self.installed_version:
+        for depot in patch_from['changed_depots']:
+          # Get filelist for current depot and version
+          filelist = self.webhook.query_filelist(patch_from['version'], depot)
+
+          # If one filelist is not documented,return None
+          if filelist is None:
+            return None
+
+          result.append({ 'depot': depot, 'filelist': filelist, 'manifest': self.__get_manifest_for_patch(patch_to['version'], depot) })
+
+    return result
+
   def __get_changed_depot_list(self, selected_version):
     """Get a list of all changed depots between the current version and the selected one.
     If the current patch is not documented with changes all depots will be assumed to have changed.
@@ -344,3 +400,15 @@ class Logic:
             result.append(depot)
 
     return result
+
+  def __get_manifest_for_patch(self, version, depot_id):
+    """Retrieve the manifest id for a certain patch version and a depot.
+
+    Returns the manifest id or None if no manifest id was found"""
+    manifests = self.webhook.query_manifests(depot_id)
+    patch = next((p for p in self.patch_list if p['version'] == version), None)
+
+    if not patch is None:
+      return next((m['id'] for m in manifests if m['date'] <= patch['date']), None)
+
+    return None
