@@ -107,10 +107,8 @@ class Webhook:
 
     Return True/False
     """
-
     return response.status_code == 200
 
   def __print_response_error(self, response: requests.Response):
-    """Print the according error for a response."""
-    
+    """Print the according error for a response."""    
     print(f"Error in HTML request: {response.status_code}")
