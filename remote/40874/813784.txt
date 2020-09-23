@@ -1,0 +1,7 @@
+resources/_common/drs/gamedata_x2/Arabia.rms
+resources/_common/drs/gamedata_x2/Bog_Islands.rms
+resources/_common/drs/gamedata_x2/Fortress.rms
+resources/_common/drs/gamedata_x2/GeneratingObjects.inc
+resources/_common/drs/gamedata_x2/Megarandom.rms2
+resources/_common/drs/gamedata_x2/Scandanavia.rms
+resources/_common/drs/gamedata_x2/Socotra.rms

@@ -1,0 +1,99 @@
+resources/_common/dat/tr_spred_x2.txt
+resources/_common/dat/tr_spred.txt
+resources/_common/ai/Military/Infantry Upgrades.per
+resources/_common/ai/Military/General Military.per
+resources/_common/ai/Military/Cavalry Upgrades.per
+resources/_common/ai/Military/Automatic Infantry Upgrades.per
+resources/_common/ai/Military/Automatic Cavalry Upgrades.per
+resources/_common/ai/Military/Automatic Archer Upgrades.per
+resources/_common/ai/Military/Archer Upgrades.per
+resources/_common/ai/Generics/dodging.per
+resources/_common/ai/Economy/Low-pop Villager Distribution.per
+resources/_common/ai/Economy/Imperial Age.per
+resources/_common/ai/Economy/General Rules.per
+resources/_common/ai/Economy/Feudal Age.per
+resources/_common/ai/Economy/Farming.per
+resources/_common/ai/Economy/Economy.per
+resources/_common/ai/Economy/Dark Age.per
+resources/_common/ai/Economy/Castle Age.per
+resources/_common/ai/Economy/Boar Hunting.per
+resources/_common/ai/Economy/Balance.per
+resources/_common/ai/Dr3/shared.per
+resources/_common/ai/Dr3/personality p7.per
+resources/_common/ai/Dr3/personality p6 and 8.per
+resources/_common/ai/Dr3/personality p4 and 5.per
+resources/_common/ai/Debug/Print Townsize.per
+resources/_common/ai/Debug/Print Pop.per
+resources/_common/ai/Debug/Debug Print Timer.per
+resources/_common/ai/Constants/Military Constants.per
+resources/_common/ai/Constants/Economy Constants.per
+resources/_common/ai/Constants/Constants.per
+resources/_common/ai/Constants/Constants for AoFE.per
+AoE2DE_s.exe
+resources/_common/ai/Promisory/boarhunting.per
+resources/_common/ai/Promisory/buildings.per
+resources/_common/ai/Promisory/const.per
+resources/_common/ai/Promisory/gatherers.per
+resources/_common/ai/Promisory/general.per
+resources/_common/ai/Promisory/init.per
+resources/_common/ai/Promisory/interaction.per
+resources/_common/ai/Promisory/orb.per
+resources/_common/ai/Promisory/researches.per
+resources/_common/ai/Promisory/threats.per
+resources/_common/ai/Promisory/tsa.per
+resources/_common/ai/Promisory/units.per
+resources/_common/campaign/acam2.aoe2campaign
+resources/_common/campaign/acam3.aoe2campaign
+resources/_common/campaign/acam4.aoe2campaign
+resources/_common/campaign/cam0.aoe2campaign
+resources/_common/campaign/cam0.json
+resources/_common/campaign/cam4.aoe2campaign
+resources/_common/campaign/fcam1.aoe2campaign
+resources/_common/campaign/fcam3.aoe2campaign
+resources/_common/campaign/fcam4.json
+resources/_common/campaign/fcam5.aoe2campaign
+resources/_common/campaign/fcam7.aoe2campaign
+resources/_common/campaign/kcam1.json
+resources/_common/campaign/kcam2.aoe2campaign
+resources/_common/campaign/kcam3.aoe2campaign
+resources/_common/campaign/rcam1.aoe2campaign
+resources/_common/campaign/rcam4.aoe2campaign
+resources/_common/dat/airesourcetypes.json
+resources/_common/dat/empires2_x2_p1.dat
+resources/_common/particles/muzzle_bombardcannon.json
+resources/_common/particles/muzzle_handcannon.json
+resources/_common/particles/muzzle_organgun.json
+resources/_common/shaders/d3d11/Sprites_ps_main.pso
+resources/_common/strings/key-value/non-localized-key-value-strings-utf8.txt
+resources/_common/wpfg/app.xaml
+resources/_common/wpfg/dialog/dialogdiplomacy.xaml
+resources/_common/wpfg/dialog/dialogingamemenu.xaml
+resources/_common/wpfg/dialog/dialognews.xaml
+resources/_common/wpfg/dialog/dialogPopupMessage.xaml
+resources/_common/wpfg/dialog/dialogprofilename.xaml
+resources/_common/wpfg/dialog/dialogyesnoboxgeneral.xaml
+resources/_common/wpfg/screen/screenhistory.xaml
+resources/_common/wpfg/screen/screenmainmenu.xaml
+resources/_common/wpfg/systemresources.xaml
+resources/_common/wpfg/systemresourcesbuttonlarge.xaml
+resources/_common/wpfg/systemresourcesimages.xaml
+resources/_common/wpfg/systemresourceslistbox.xaml
+resources/_common/wpfg/SystemResourcesObjectiveItem.xaml
+resources/_common/wpfg/SystemResourcesTextBlock.xaml
+resources/br/strings/key-value/key-value-strings-utf8.txt
+resources/de/strings/key-value/key-value-strings-utf8.txt
+resources/en/strings/key-value/key-value-strings-utf8.txt
+resources/es/strings/key-value/key-value-strings-utf8.txt
+resources/fr/strings/key-value/key-value-strings-utf8.txt
+resources/hi/strings/key-value/key-value-strings-utf8.txt
+resources/it/strings/key-value/key-value-strings-utf8.txt
+resources/jp/strings/key-value/key-value-strings-utf8.txt
+resources/ko/strings/key-value/key-value-strings-utf8.txt
+resources/ms/strings/key-value/key-value-strings-utf8.txt
+resources/mx/strings/key-value/key-value-strings-utf8.txt
+resources/ru/strings/key-value/key-value-strings-utf8.txt
+resources/tr/strings/key-value/key-value-strings-utf8.txt
+resources/tw/strings/key-value/key-value-strings-utf8.txt
+resources/vi/strings/key-value/key-value-strings-utf8.txt
+resources/zh/strings/key-value/key-value-strings-utf8.txt
+Schema/eCellCategory_services.bond

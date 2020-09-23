@@ -1,0 +1,4 @@
+AoE2DE_s.exe
+resources/_common/ai/Promisory/boarhunting.per
+resources/_common/campaign/cam3.aoe2campaign
+resources/_common/dat/empires2_x2_p1.dat

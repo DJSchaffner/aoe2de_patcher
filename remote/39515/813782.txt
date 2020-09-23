@@ -1,0 +1,5 @@
+widgetui/materials.json
+widgetui/textures/atlas/HD/mapicons.dds
+widgetui/textures/atlas/HD/menutabs.dds
+widgetui/textures/atlas/SD/mapicons.dds
+widgetui/textures/atlas/UHD/mapicons.dds

@@ -1,0 +1,8 @@
+resources/_common/drs/gamedata_x2/Baltic.rms
+resources/_common/drs/gamedata_x2/GeneratingObjects.inc
+resources/_common/drs/gamedata_x2/Islands.rms
+resources/_common/drs/gamedata_x2/Kilimanjaro.rms
+resources/_common/drs/gamedata_x2/Mountain_Ridge.rms
+resources/_common/drs/gamedata_x2/Nile Delta.rms
+resources/_common/drs/gamedata_x2/Ravines.rms
+resources/_common/drs/gamedata_x2/Wolf_Hill.rms
