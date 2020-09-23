@@ -1,0 +1,5 @@
+resources/_common/drs/graphics/u_sie_bombard_cannon_attackA_x2.smx
+resources/_common/drs/graphics/u_sie_bombard_cannon_deathA_x2.smx
+resources/_common/drs/graphics/u_sie_bombard_cannon_decayA_x2.smx
+resources/_common/drs/graphics/u_sie_bombard_cannon_idleA_x2.smx
+resources/_common/drs/graphics/u_sie_bombard_cannon_walkA_x2.smx

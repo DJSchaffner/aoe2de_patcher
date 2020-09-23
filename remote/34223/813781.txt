@@ -1,0 +1,2 @@
+AoE2DE_s.exe
+resources/_common/shaders/d3d11/Sprites_ps_main.pso

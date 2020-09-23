@@ -1,0 +1,12 @@
+resources/_common/drs/graphics/b_west_wall_fortified_constr_x2.smx
+resources/_common/drs/graphics/b_west_wall_fortified_destr_25_x2.smx
+resources/_common/drs/graphics/b_west_wall_fortified_destr_50_x2.smx
+resources/_common/drs/graphics/b_west_wall_fortified_destr_75_x2.smx
+resources/_common/drs/graphics/b_west_wall_fortified_x2.smx
+resources/_common/drs/graphics/b_west_wall_stone_constr_x2.smx
+resources/_common/drs/graphics/b_west_wall_stone_destr_25_x2.smx
+resources/_common/drs/graphics/b_west_wall_stone_destr_50_x2.smx
+resources/_common/drs/graphics/b_west_wall_stone_destr_75_x2.smx
+resources/_common/drs/graphics/b_west_wall_stone_x2.smx
+resources/_common/drs/graphics/u_shp_sail_west_ship_5_x2.smx
+resources/_common/drs/graphics/u_sie_bombard_cannon_walkA_x2.smx
