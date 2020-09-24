@@ -1,7 +1,7 @@
 # AoE2 DE Patcher - WIP
 
 Patches AoE2 DE to any officially released version (Steam version only!)  
-Currently downloads more files than necessary, an improved mechanism is planned!
+Currently best suited for downgrading. Upgrading (If not via backup) takes significantly longer
 
 # Requirements
 
@@ -16,7 +16,7 @@ Currently downloads more files than necessary, an improved mechanism is planned!
 - If prompted, enter the 2FA code
 - To restore the previous game version hit \<Restore> after patching
 
-This whole process takes a while to finish!
+This whole process might take a while to finish!
 
 # Notes
 While it is possible to patch from an old version to the most recent one I do suggest to just use the steam "Verify integrity of game cache" functionality just to be extra safe.
@@ -26,7 +26,7 @@ Your login creedentials will not be stored for later use.
 For now, try to avoid closing the program via task manager while it is downloading. Currently I have not found a way to guarantee that downloads will be stopped after doing so!
 
 # Future features
-- Further improve the update process (Only update the files that need updating)
+- Further improve update process for upgrading patches (And maybe see if its possible to optimize downgrading)
 - Add toggle for Enhanced graphics pack (Warn people because thats a lot of data)
 - Maybe add a \<cancel> button
 - Make backups optional  
