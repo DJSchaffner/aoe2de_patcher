@@ -3,9 +3,10 @@ import os
 import pathlib
 import shutil
 import signal
+import tempfile
 from enum import IntEnum
 from queue import Queue
-import tempfile
+from collections import defaultdict
 
 import pexpect
 import pexpect.popen_spawn
@@ -86,7 +87,7 @@ class Logic:
 
     # Always true
     if success:
-      print("Downloading patch")
+      print("Starting download phase")
       success = success and self.__download_patch(username, password, patch, language)
 
       if not success:
@@ -176,6 +177,8 @@ class Logic:
     
     update_list = []   
     filelists_result = None 
+
+    print("Preparing download")
     
     # Remove previous download folder if it exists
     # Create empty folders afterwards
@@ -218,6 +221,7 @@ class Logic:
 
           update_list.append({ 'depot' : depot, 'manifest' : self.__get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
 
+    print("Downloading files")
     # Loop all necessary updates
     for element in update_list:
       if not self.__download_depot(username, password, patch['version'], element['depot'], element['manifest'], element['filelist']):
@@ -360,6 +364,7 @@ class Logic:
 
     Returns a list of tuples (depot id, filelist, manifest id) or None"""
     result = []
+    combiner = defaultdict(list)
 
     for i in range(len(self.patch_change_list) - 1, 1, -1):
       patch_from = self.patch_change_list[i]
@@ -374,7 +379,20 @@ class Logic:
           if filelist is None:
             return None
 
-          result.append({ 'depot': depot, 'filelist': filelist, 'manifest': self.__get_manifest_for_patch(patch_to['version'], depot) })
+          combiner[depot].append({ 'filelist': filelist, 'manifest': self.__get_manifest_for_patch(patch_to['version'], depot) })
+
+    # Iterate each depot
+    for depot in combiner.keys():
+      merged = set()
+      manifest = None
+
+      # Merge all filelists for this depot into one
+      for entry in combiner[depot]:
+        merged.update(entry['filelist'].split("\n"))
+        # Store latest manifest for this depot
+        manifest = entry['manifest']
+
+      result.append({ 'depot': depot, 'filelist': "\n".join(merged), 'manifest': manifest })
 
     return result
 
