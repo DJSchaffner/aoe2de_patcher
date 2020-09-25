@@ -18,7 +18,7 @@ class Webhook:
     
     Returns a list of patches and their changed depots"""
     url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/patches.json"
-    response = self.__query_website(url)
+    response = self._query_website(url)
     result = json.loads(response.content)["patches"]
 
     return result
@@ -29,7 +29,7 @@ class Webhook:
     Returns a list of manifests
     """
     url = f"https://steamdb.info/depot/{depot_id}/manifests/"
-    response = self.__query_website(url, headers=self.headers)
+    response = self._query_website(url, headers=self.headers)
     result = []
 
     soup = BeautifulSoup(response.content, "html.parser")
@@ -77,30 +77,30 @@ class Webhook:
 
     Returns the content of the found file or None if the file could not be found"""
     url = f"https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/{version}/{depot_id}.txt"
-    response = self.__query_website(url, ignore_success=True)
+    response = self._query_website(url, ignore_success=True)
     result = None
 
-    if self.__is_response_successful(response):
+    if self._is_response_successful(response):
       result = response.content.decode("utf-8")
 
     return result
 
-  def __query_website(self, url: str, headers=None, ignore_success=False):
+  def _query_website(self, url: str, headers=None, ignore_success=False):
     response = requests.get(url, headers=headers)
 
-    if (not ignore_success) and (not self.__is_response_successful(response)):
-      self.__print_response_error(response)
+    if (not ignore_success) and (not self._is_response_successful(response)):
+      self._print_response_error(response)
       sys.exit()
 
     return response
 
-  def __is_response_successful(self, response: requests.Response):
+  def _is_response_successful(self, response: requests.Response):
     """Checks if a response returned successfully.
 
     Return True/False
     """
     return response.status_code == 200
 
-  def __print_response_error(self, response: requests.Response):
+  def _print_response_error(self, response: requests.Response):
     """Print the according error for a response."""    
     print(f"Error in HTML request: {response.status_code}")
