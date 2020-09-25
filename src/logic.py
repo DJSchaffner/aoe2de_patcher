@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import signal
 import tempfile
+import time
 from enum import IntEnum
 from queue import Queue
 from collections import defaultdict
@@ -55,9 +56,12 @@ class Logic:
 
   def __init__(self):
     self.webhook = Webhook()
+    # The earliest patch that works was released after directx update
+    # @TODO Try to figure out a way to patch to earlier patches than this
+    self.directx_update_date = time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
     self.download_dir = utils.base_path() / "download"
     self.backup_dir = utils.base_path() / "backup"
-    self.patch_list = self.webhook.query_patch_list(self.app_id)
+    self.patch_list = self.webhook.query_patch_list(self.app_id, self.directx_update_date)
     self.depot_list = self._get_depot_list()
     self.patch_change_list = self.webhook.query_patch_change_list()
     self.process_queue = Queue()
@@ -175,51 +179,49 @@ class Logic:
       print("DOTNET Core required but not found!")
       return False
     
+    relevant_depots = []
     update_list = []   
+    tmp_files = []
     filelists_result = None 
 
-    print("Preparing download")
-    
     # Remove previous download folder if it exists
     # Create empty folders afterwards
     if self.download_dir.exists():
       shutil.rmtree(self.download_dir.absolute())
     self.download_dir.mkdir()
 
+    print("Preparing download")
+
+    # Generate list of relevant depots for patch
+    for depot in self.depot_list:
+      if  ( (not (depot in self.ignored_depots)) and 
+            ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):
+        relevant_depots.append(depot)
+
     # Only support patching via filelists to an older version atm
     if self.installed_version > patch['version']:
       # Try to get a list of all filelists down to wanted version
-      filelists_result = self._get_filelists(patch['version'])
+      filelists_result = self._get_filelists(patch['version'], relevant_depots)
 
     # Filelist exists, use it
     if not filelists_result is None:
-      tmp_files = []
-
       # Create a temp file for every file list
-      for entry in filelists_result:
-        # Skip depots that are being ignored
-        if  ( (not (entry['depot'] in self.ignored_depots)) and 
-              ((not (entry['depot'] in self.language_depots)) or (self.language_depots[language] == entry['depot'])) ):   
-          # Create temp file list
-          tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+      for entry in filelists_result: 
+        # Create temp file list
+        tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
-          # Store file name for deletion later on
-          tmp_files.append(tmp.name)
+        # Store file name for deletion later on
+        tmp_files.append(tmp.name)
 
-          # Write content to file
-          tmp.write(entry['filelist'])
-          tmp.close()
+        # Write content to file
+        tmp.write(entry['filelist'])
+        tmp.close()
 
-          # Add update element to list
-          update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
+        # Add update element to list
+        update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
     else:
-      # Loop all depots and insert necessary ones with the latest version to the list of updates
-      for depot in self._get_changed_depot_list(patch['version']):
-        # Skip depots that are being ignored
-        if  ( (not (depot in self.ignored_depots)) and 
-              ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):   
-
-          update_list.append({ 'depot' : depot, 'manifest' : self._get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
+      for depot in self._get_changed_depot_list(patch['version'], relevant_depots):
+        update_list.append({ 'depot' : depot, 'manifest' : self._get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
 
     print("Downloading files")
     # Loop all necessary updates
@@ -358,8 +360,8 @@ class Logic:
 
     return result    
 
-  def _get_filelists(self, selected_version):
-    """Get a list of all filelists between the current version and the selected one.
+  def _get_filelists(self, selected_version, relevant_depots):
+    """Get a list of all filelists between the current version and the selected one for all the relevant depots.
     If any patch in between does not have a filelist stored, None will be returned.
 
     Returns a list of tuples (depot id, filelist, manifest id) or None"""
@@ -371,15 +373,18 @@ class Logic:
       patch_to = self.patch_change_list[i - 1]
       
       if patch_to['version'] >= selected_version and patch_to['version'] <= self.installed_version:
+        # Check all changed depots for filelists
         for depot in patch_from['changed_depots']:
-          # Get filelist for current depot and version
-          filelist = self.webhook.query_filelist(patch_from['version'], depot)
+          # Only care about relevant depots
+          if depot in relevant_depots:
+            # Get filelist for current depot and version
+            filelist = self.webhook.query_filelist(patch_from['version'], depot)
 
-          # If one filelist is not documented,return None
-          if filelist is None:
-            return None
+            # If one filelist is not documented,return None
+            if filelist is None:
+              return None
 
-          combiner[depot].append({ 'filelist': filelist, 'manifest': self._get_manifest_for_patch(patch_to['version'], depot) })
+            combiner[depot].append({ 'filelist': filelist, 'manifest': self._get_manifest_for_patch(patch_to['version'], depot) })
 
     # Iterate each depot
     for depot in combiner.keys():
@@ -392,11 +397,12 @@ class Logic:
         # Store latest manifest for this depot
         manifest = entry['manifest']
 
+      # Sort filelist before appending?
       result.append({ 'depot': depot, 'filelist': "\n".join(merged), 'manifest': manifest })
 
     return result
 
-  def _get_changed_depot_list(self, selected_version):
+  def _get_changed_depot_list(self, selected_version, relevant_depots):
     """Get a list of all changed depots between the current version and the selected one.
     If the current patch is not documented with changes all depots will be assumed to have changed.
     
@@ -414,7 +420,7 @@ class Logic:
       if patch['version'] > selected_version and patch['version'] <= self.installed_version:
         # Add all changed depots to result list
         for depot in patch["changed_depots"]:
-          if not depot in result:
+          if (depot in relevant_depots) and (not depot in result):
             result.append(depot)
 
     return result
