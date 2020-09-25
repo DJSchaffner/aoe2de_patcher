@@ -48,7 +48,7 @@ class Webhook:
 
     return result
 
-  def query_patch_list(self, app_id):
+  def query_patch_list(self, app_id: int, from_date: time.localtime):
     """Query steamdb.info for a list of patches for a specific app id.
 
     Returns a list of patches
@@ -68,7 +68,8 @@ class Webhook:
         version = int(version_re.group(1))
         date = time.localtime(article['date'])
 
-        result.append({ 'version': version, 'date': date})
+        if date > from_date:
+          result.append({ 'version': version, 'date': date})
 
     return result
 
