@@ -58,7 +58,7 @@ class Logic:
     self.download_dir = utils.base_path() / "download"
     self.backup_dir = utils.base_path() / "backup"
     self.patch_list = self.webhook.query_patch_list(self.app_id)
-    self.depot_list = self.__get_depot_list()
+    self.depot_list = self._get_depot_list()
     self.patch_change_list = self.webhook.query_patch_change_list()
     self.process_queue = Queue()
 
@@ -88,21 +88,21 @@ class Logic:
     # Always true
     if success:
       print("Starting download phase")
-      success = success and self.__download_patch(username, password, patch, language)
+      success = success and self._download_patch(username, password, patch, language)
 
       if not success:
         print("Error during download!")
 
     if success:
       print("Starting backup")
-      success = success and self.__backup()
+      success = success and self._backup()
 
       if not success:
         print("Error during backup!")
 
     if success:
       print("Patching files")
-      success = success and self.__move_patch()
+      success = success and self._move_patch()
 
       if not success:
         print("Error during patch!")
@@ -168,7 +168,7 @@ class Logic:
     for process in self.process_queue.queue:
       process.kill(signal.SIGTERM)
 
-  def __download_patch(self, username: str, password: str, patch: dict, language: Languages):  
+  def _download_patch(self, username: str, password: str, patch: dict, language: Languages):  
     """Download the given patch in a language using the steam account credentials."""
     # dotnet is required to proceed
     if not (utils.check_dotnet()):
@@ -189,7 +189,7 @@ class Logic:
     # Only support patching via filelists to an older version atm
     if self.installed_version > patch['version']:
       # Try to get a list of all filelists down to wanted version
-      filelists_result = self.__get_filelists(patch['version'])
+      filelists_result = self._get_filelists(patch['version'])
 
     # Filelist exists, use it
     if not filelists_result is None:
@@ -214,17 +214,17 @@ class Logic:
           update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
     else:
       # Loop all depots and insert necessary ones with the latest version to the list of updates
-      for depot in self.__get_changed_depot_list(patch['version']):
+      for depot in self._get_changed_depot_list(patch['version']):
         # Skip depots that are being ignored
         if  ( (not (depot in self.ignored_depots)) and 
               ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):   
 
-          update_list.append({ 'depot' : depot, 'manifest' : self.__get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
+          update_list.append({ 'depot' : depot, 'manifest' : self._get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
 
     print("Downloading files")
     # Loop all necessary updates
     for element in update_list:
-      if not self.__download_depot(username, password, patch['version'], element['depot'], element['manifest'], element['filelist']):
+      if not self._download_depot(username, password, patch['version'], element['depot'], element['manifest'], element['filelist']):
         return False
 
     # Remove created temp files
@@ -233,7 +233,7 @@ class Logic:
 
     return True
 
-  def __move_patch(self):
+  def _move_patch(self):
     """Move downloaded patch files to game directory."""
     try:
       shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
@@ -244,7 +244,7 @@ class Logic:
 
     return False
 
-  def __backup(self):
+  def _backup(self):
     """Backup game folder and in current directory.
     
     Returns True if everything worked, otherwise False"""
@@ -263,7 +263,7 @@ class Logic:
 
     return False
 
-  def __download_depot(self, username: str, password: str, version: int, depot_id: int, manifest_id: int, filelist: str):
+  def _download_depot(self, username: str, password: str, version: int, depot_id: int, manifest_id: int, filelist: str):
     """Download a specific depot using the manifest id from steam using the given credentials."""
     success = False
     depot_downloader_path = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
@@ -339,7 +339,7 @@ class Logic:
 
     return success
 
-  def __get_depot_list(self):
+  def _get_depot_list(self):
     """Get a list of depots for the app.
 
     Returns the list of depots
@@ -358,7 +358,7 @@ class Logic:
 
     return result    
 
-  def __get_filelists(self, selected_version):
+  def _get_filelists(self, selected_version):
     """Get a list of all filelists between the current version and the selected one.
     If any patch in between does not have a filelist stored, None will be returned.
 
@@ -379,7 +379,7 @@ class Logic:
           if filelist is None:
             return None
 
-          combiner[depot].append({ 'filelist': filelist, 'manifest': self.__get_manifest_for_patch(patch_to['version'], depot) })
+          combiner[depot].append({ 'filelist': filelist, 'manifest': self._get_manifest_for_patch(patch_to['version'], depot) })
 
     # Iterate each depot
     for depot in combiner.keys():
@@ -396,7 +396,7 @@ class Logic:
 
     return result
 
-  def __get_changed_depot_list(self, selected_version):
+  def _get_changed_depot_list(self, selected_version):
     """Get a list of all changed depots between the current version and the selected one.
     If the current patch is not documented with changes all depots will be assumed to have changed.
     
@@ -419,7 +419,7 @@ class Logic:
 
     return result
 
-  def __get_manifest_for_patch(self, version, depot_id):
+  def _get_manifest_for_patch(self, version, depot_id):
     """Retrieve the manifest id for a certain patch version and a depot.
 
     Returns the manifest id or None if no manifest id was found"""
