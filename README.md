@@ -26,7 +26,8 @@ While it is possible to patch from an old version to the most recent one I do su
 For now, try to avoid closing the program via task manager while it is downloading. Currently I have not found a way to guarantee that downloads will be stopped after doing so!
 
 # Future features
-- Further improve update process for upgrading patches (And maybe see if its possible to optimize downgrading)
+- Investigate options to improve upgrading mechanism
+- Get pre 35584 versions to work
 - Add toggle for Enhanced graphics pack (Warn people because thats a lot of data)
 - Maybe add a \<cancel> button
 - Make backups optional  
