@@ -141,6 +141,5 @@ class App():
     self.ent_password.config(state="enabled")
 
 if __name__ == '__main__':
-  # @TODO Generate file list to minimize download size
   app = App()
   app.start()
