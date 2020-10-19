@@ -10,9 +10,9 @@ import steam.webapi
 import utils
 
 class Webhook:
-  # Just some user agent because steamdb rejects requests without one
-  # @TODO prevent this from breaking when the brower gets outdated because steamdb will start to send 503 response then
-  headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0'}
+  # For some reason steamdb allows twitterbot to read all sites (https://steamdb.info/robots.txt)
+  # @TODO prevent this from breaking in case steamdb decides to block twitterbot user-agent... avoid detection / rotate user agents / use selenium
+  headers = {'User-Agent' : 'Twitterbot/1.0'}
 
   def query_patch_change_list(self):
     """Query a list of changed depots for all patches.
