@@ -10,8 +10,9 @@ import steam.webapi
 import utils
 
 class Webhook:
-  # Just some user agent because steam db expects one
-  headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'}
+  # Just some user agent because steamdb rejects requests without one
+  # @TODO prevent this from breaking when the brower gets outdated because steamdb will start to send 503 response then
+  headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:81.0) Gecko/20100101 Firefox/81.0'}
 
   def query_patch_change_list(self):
     """Query a list of changed depots for all patches.
@@ -103,5 +104,5 @@ class Webhook:
     return response.status_code == 200
 
   def _print_response_error(self, response: requests.Response):
-    """Print the according error for a response."""    
-    print(f"Error in HTML request: {response.status_code}")
+    """Print the according error for a response."""
+    print(f"Error in HTML request: {response.status_code} ({response.url})")
