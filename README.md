@@ -9,6 +9,7 @@ Currently best suited for downgrading. Upgrading (If not via backup) takes signi
 - Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run
 
 # Usage
+- Start aoe2de_patcher.exe
 - Select desired game version & language (Language setting only affects cutscenes / campaign voice overs for that language)
 - Select the game directory
 - Enter your steam login credentials
