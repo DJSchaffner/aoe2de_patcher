@@ -187,7 +187,11 @@ class Logic:
     # Remove previous download folder if it exists
     # Create empty folders afterwards
     if self.download_dir.exists():
-      shutil.rmtree(self.download_dir.absolute())
+      try:
+        shutil.rmtree(self.download_dir.absolute())
+      except BaseException:
+        print("Error removing previous download directory")
+        return False
     self.download_dir.mkdir()
 
     print("Preparing download")
@@ -254,7 +258,11 @@ class Logic:
       # Remove previous backup folder if it exists
       # Create empty folders afterwards
       if self.backup_dir.exists():
-        shutil.rmtree(self.backup_dir.absolute())
+        try:
+          shutil.rmtree(self.backup_dir.absolute())
+        except BaseException:
+          print("Error removing previous backup directory")
+          return False
       self.backup_dir.mkdir()
 
       utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
