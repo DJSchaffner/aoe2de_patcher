@@ -277,7 +277,7 @@ class Logic:
     """Download a specific depot using the manifest id from steam using the given credentials."""
     success = False
     depot_downloader_path = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
-    args = ["dotnet", depot_downloader_path, 
+    args = ["dotnet", f'"{depot_downloader_path}"', 
             "-app", str(self.app_id), 
             "-depot", str(depot_id), 
             "-manifest", str(manifest_id), 
