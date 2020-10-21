@@ -18,7 +18,7 @@ class App():
 
     # Set up GUI
     self.window = tk.Tk()
-    self.window.title("AoE2DE Patch Reverter")
+    self.window.title("AoE2DE Patcher")
     self.window.minsize(width=900, height=500)
     self.window.resizable(0, 0)
 
