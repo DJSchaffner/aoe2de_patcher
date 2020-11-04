@@ -209,9 +209,8 @@ class Logic:
 
     # Filelist exists, use it
     if not filelists_result is None:
-      # Create a temp file for every file list
       for entry in filelists_result: 
-        # Create temp file list
+        # Create temp file
         tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
         # Store file name for deletion later on
@@ -223,13 +222,16 @@ class Logic:
 
         # Add update element to list
         update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
+    # Filelist doesnt exist, prepare all changed depots
     else:
       for depot in self._get_changed_depot_list(patch['version'], relevant_depots):
         update_list.append({ 'depot' : depot, 'manifest' : self._get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
 
     print("Downloading files")
+
     # Loop all necessary updates
     for element in update_list:
+      # Stop if a download didn't succeed
       if not self._download_depot(username, password, patch['version'], element['depot'], element['manifest'], element['filelist']):
         return False
 
@@ -424,12 +426,14 @@ class Logic:
 
     # Version is documented, accumulate all changed depots
     for patch in self.patch_change_list:
-      # Stop if patch is older than selected version
-      if patch['version'] > selected_version and patch['version'] <= self.installed_version:
-        # Add all changed depots to result list
-        for depot in patch["changed_depots"]:
-          if (depot in relevant_depots) and (not depot in result):
-            result.append(depot)
+      if selected_version > self.installed_version:
+        # Add to result if patch is between selected and installed version
+        if  (selected_version > self.installed_version and patch['version'] <= selected_version and patch['version'] > self.installed_version) or \
+            (selected_version < self.installed_version and patch['version'] > selected_version and patch['version'] <= self.installed_version):
+          # Add all changed depots to result list
+          for depot in patch["changed_depots"]:
+            if (depot in relevant_depots) and (not depot in result):
+              result.append(depot)
 
     return result
 
