@@ -15,7 +15,7 @@ Currently best suited for downgrading. Upgrading (If not via backup) takes signi
 - Enter your steam login credentials
 - Click \<Patch>
 - If prompted, enter the 2FA code
-- To restore the previous game version hit \<Restore> after patching
+- To restore the previous game version hit \<Restore> after patching (Make sure the game is not open in steam anymore since it will show an error then)
 
 This whole process might take a while to finish!
 
