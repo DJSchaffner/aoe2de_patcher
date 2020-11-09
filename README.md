@@ -10,7 +10,7 @@ Currently best suited for downgrading. Upgrading (If not via backup) takes signi
 
 # Usage
 - Start aoe2de_patcher.exe
-- Select desired game version & language (Language setting only affects cutscenes / campaign voice overs for that language)
+- Select desired game version & language (Language setting only affects cutscenes / campaign voice overs)
 - Select the game directory
 - Enter your steam login credentials
 - Click \<Patch>
