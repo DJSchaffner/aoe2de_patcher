@@ -26,6 +26,9 @@ While it is possible to patch from an old version to the most recent one I do su
 
 For now, try to avoid closing the program via task manager while it is downloading. Currently I have not found a way to guarantee that downloads will be stopped after doing so!
 
+# FAQ
+*I will add questions and answers here when they arise*
+
 # Future features
 - Investigate options to improve upgrading mechanism
 - Get pre 35584 versions to work
