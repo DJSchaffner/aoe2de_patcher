@@ -422,8 +422,8 @@ class Logic:
     # Is version documented? If not, just assume all deptos changed
     if next((p for p in self.patch_change_list if p['version'] == selected_version), None) is None:
       print("No optimized depot list available")
-      return self.depot_list
-
+      return relevant_depots
+      
     # Version is documented, accumulate all changed depots
     for patch in self.patch_change_list:
       if selected_version > self.installed_version:
