@@ -1,0 +1,1 @@
+resources/_common/drs/graphics/n_plant_grass_green_patch_x2.smx
