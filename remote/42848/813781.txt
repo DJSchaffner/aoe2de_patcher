@@ -1,12 +1,6 @@
-resources/_common/wpfg/resources/campaign/campaign_tag_right_normal.png
-resources/_common/wpfg/resources/campaign/campaign_tag_right_active.png
-resources/_common/wpfg/resources/campaign/campaign_tag_left_normal.png
-resources/_common/wpfg/resources/campaign/campaign_tag_left_active.png
-resources/_common/wpfg/resources/campaign/campaign_tag_centre_normal.png
-resources/_common/wpfg/resources/campaign/campaign_tag_centre_active.png
 813780_install.vdf
 AoE2DE_s.exe
-resources/_common/ai/AI
+resources/_common/ai/AI (HD version).per
 resources/_common/ai/Promisory/boarhunting.per
 resources/_common/ai/Promisory/buildings.per
 resources/_common/ai/Promisory/const.per
@@ -245,3 +239,9 @@ resources/vi/strings/key-value/key-value-strings-utf8.txt
 resources/zh/strings/key-value/key-value-strings-utf8.txt
 Schema/eCellCategory_services.bond
 Tools_Builds/AOEURLHelper.exe
+resources/_common/wpfg/resources/campaign/campaign_tag_right_normal.png
+resources/_common/wpfg/resources/campaign/campaign_tag_right_active.png
+resources/_common/wpfg/resources/campaign/campaign_tag_left_normal.png
+resources/_common/wpfg/resources/campaign/campaign_tag_left_active.png
+resources/_common/wpfg/resources/campaign/campaign_tag_centre_normal.png
+resources/_common/wpfg/resources/campaign/campaign_tag_centre_active.png

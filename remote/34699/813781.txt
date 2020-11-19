@@ -1,34 +1,3 @@
-resources/_common/dat/tr_spred_x2.txt
-resources/_common/dat/tr_spred.txt
-resources/_common/ai/Military/Infantry Upgrades.per
-resources/_common/ai/Military/General Military.per
-resources/_common/ai/Military/Cavalry Upgrades.per
-resources/_common/ai/Military/Automatic Infantry Upgrades.per
-resources/_common/ai/Military/Automatic Cavalry Upgrades.per
-resources/_common/ai/Military/Automatic Archer Upgrades.per
-resources/_common/ai/Military/Archer Upgrades.per
-resources/_common/ai/Generics/dodging.per
-resources/_common/ai/Economy/Low-pop Villager Distribution.per
-resources/_common/ai/Economy/Imperial Age.per
-resources/_common/ai/Economy/General Rules.per
-resources/_common/ai/Economy/Feudal Age.per
-resources/_common/ai/Economy/Farming.per
-resources/_common/ai/Economy/Economy.per
-resources/_common/ai/Economy/Dark Age.per
-resources/_common/ai/Economy/Castle Age.per
-resources/_common/ai/Economy/Boar Hunting.per
-resources/_common/ai/Economy/Balance.per
-resources/_common/ai/Dr3/shared.per
-resources/_common/ai/Dr3/personality p7.per
-resources/_common/ai/Dr3/personality p6 and 8.per
-resources/_common/ai/Dr3/personality p4 and 5.per
-resources/_common/ai/Debug/Print Townsize.per
-resources/_common/ai/Debug/Print Pop.per
-resources/_common/ai/Debug/Debug Print Timer.per
-resources/_common/ai/Constants/Military Constants.per
-resources/_common/ai/Constants/Economy Constants.per
-resources/_common/ai/Constants/Constants.per
-resources/_common/ai/Constants/Constants for AoFE.per
 AoE2DE_s.exe
 resources/_common/ai/Promisory/boarhunting.per
 resources/_common/ai/Promisory/buildings.per
@@ -97,3 +66,34 @@ resources/tw/strings/key-value/key-value-strings-utf8.txt
 resources/vi/strings/key-value/key-value-strings-utf8.txt
 resources/zh/strings/key-value/key-value-strings-utf8.txt
 Schema/eCellCategory_services.bond
+resources/_common/dat/tr_spred_x2.txt
+resources/_common/dat/tr_spred.txt
+resources/_common/ai/Military/Infantry Upgrades.per
+resources/_common/ai/Military/General Military.per
+resources/_common/ai/Military/Cavalry Upgrades.per
+resources/_common/ai/Military/Automatic Infantry Upgrades.per
+resources/_common/ai/Military/Automatic Cavalry Upgrades.per
+resources/_common/ai/Military/Automatic Archer Upgrades.per
+resources/_common/ai/Military/Archer Upgrades.per
+resources/_common/ai/Generics/dodging.per
+resources/_common/ai/Economy/Low-pop Villager Distribution.per
+resources/_common/ai/Economy/Imperial Age.per
+resources/_common/ai/Economy/General Rules.per
+resources/_common/ai/Economy/Feudal Age.per
+resources/_common/ai/Economy/Farming.per
+resources/_common/ai/Economy/Economy.per
+resources/_common/ai/Economy/Dark Age.per
+resources/_common/ai/Economy/Castle Age.per
+resources/_common/ai/Economy/Boar Hunting.per
+resources/_common/ai/Economy/Balance.per
+resources/_common/ai/Dr3/shared.per
+resources/_common/ai/Dr3/personality p7.per
+resources/_common/ai/Dr3/personality p6 and 8.per
+resources/_common/ai/Dr3/personality p4 and 5.per
+resources/_common/ai/Debug/Print Townsize.per
+resources/_common/ai/Debug/Print Pop.per
+resources/_common/ai/Debug/Debug Print Timer.per
+resources/_common/ai/Constants/Military Constants.per
+resources/_common/ai/Constants/Economy Constants.per
+resources/_common/ai/Constants/Constants.per
+resources/_common/ai/Constants/Constants for AoFE.per

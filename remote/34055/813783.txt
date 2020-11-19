@@ -1,3 +1,6 @@
+wwise/Init.bnk
+wwise/Music.bnk
+wwise/SFX.bnk
 wwise/zh/Taunts.bnk
 wwise/zh/Scenario_VO.bnk
 wwise/zh/Campaign_VO.bnk
@@ -18702,6 +18705,3 @@ wwise/br/1000599797.wem
 wwise/br/100050690.wem
 wwise/br/1000469731.wem
 wwise/br
-wwise/Init.bnk
-wwise/Music.bnk
-wwise/SFX.bnk

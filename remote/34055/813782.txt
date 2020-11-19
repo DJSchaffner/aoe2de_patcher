@@ -1,4 +1,3 @@
-widgetui/dialoginvites.json
 widgetui/BrowseModsScreen.json
 widgetui/campaigneditor.json
 widgetui/campaignhistoricalbattleselection.json
@@ -55,3 +54,4 @@ widgetui/textures/menu/icons/difficulty_hard.png
 widgetui/textures/menu/icons/difficulty_medium.png
 widgetui/textures/menu/mapicons/frame_disabled.DDS
 widgetui/wonderpanel.json
+widgetui/dialoginvites.json

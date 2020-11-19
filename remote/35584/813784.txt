@@ -1,4 +1,3 @@
-resources/_common/drs/graphics/u_cav_hero_savar_idleB_x1.smx
 resources/_common/drs/gamedata_x2/Bogland.rms
 resources/_common/drs/gamedata_x2/Fortress.rms
 resources/_common/drs/gamedata_x2/GeneratingObjects.inc
@@ -39,3 +38,4 @@ resources/_common/drs/graphics/u_vil_male_lumberjack_walkA_x1.smx
 resources/_common/drs/graphics/u_vil_male_miner_gold_walkA_x1.smx
 resources/_common/drs/graphics/u_vil_male_shepherd_walkA_x1.smx
 resources/_common/drs/graphics/u_vil_male_villager_walkA_x1.smx
+resources/_common/drs/graphics/u_cav_hero_savar_idleB_x1.smx

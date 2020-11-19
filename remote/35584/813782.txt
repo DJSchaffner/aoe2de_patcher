@@ -1,7 +1,3 @@
-widgetui/textures/menu/usericons/key.txt
-widgetui/textures/campaign/cam4/scenario1/outro
-widgetui/textures/campaign/cam4/scenario1/intro
-widgetui/textures/campaign/cam4/scenario1
 widgetui/CustomMapIcons.json
 widgetui/dialogcreatemultiplayergame.json
 widgetui/dialogmultiplayerchat.json
@@ -18,3 +14,7 @@ widgetui/screenmultiplayermatchmaking.json
 widgetui/screenplayerprofileinspector.json
 widgetui/ScreenPublishMod.json
 widgetui/stringreference.json
+widgetui/textures/menu/usericons/key.txt
+widgetui/textures/campaign/cam4/scenario1/outro
+widgetui/textures/campaign/cam4/scenario1/intro
+widgetui/textures/campaign/cam4/scenario1

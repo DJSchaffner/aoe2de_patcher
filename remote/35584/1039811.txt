@@ -1,4 +1,3 @@
-resources/_common/drs/graphics/u_cav_hero_savar_idleB_x2.smx
 resources/_common/drs/graphics/n_decal_crack_x2.smx
 resources/_common/drs/graphics/n_decal_crater_x2.smx
 resources/_common/drs/graphics/n_decal_ice_x2.smx
@@ -25,3 +24,4 @@ resources/_common/drs/graphics/u_vil_male_lumberjack_walkA_x2.smx
 resources/_common/drs/graphics/u_vil_male_miner_gold_walkA_x2.smx
 resources/_common/drs/graphics/u_vil_male_shepherd_walkA_x2.smx
 resources/_common/drs/graphics/u_vil_male_villager_walkA_x2.smx
+resources/_common/drs/graphics/u_cav_hero_savar_idleB_x2.smx
