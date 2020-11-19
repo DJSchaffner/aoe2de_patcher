@@ -1,4 +1,3 @@
-Tools_Builds/aoe2de_url_protocol_steam.cmd
 813780_install.vdf
 AoE2DE_s.exe
 BattleServer/BattleServer.exe
@@ -49,3 +48,4 @@ resources/tw/strings/key-value/key-value-strings-utf8.txt
 resources/vi/strings/key-value/key-value-strings-utf8.txt
 resources/zh/strings/key-value/key-value-strings-utf8.txt
 Schema/eCellCategory_services.bond
+Tools_Builds/aoe2de_url_protocol_steam.cmd

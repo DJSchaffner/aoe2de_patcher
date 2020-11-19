@@ -1,4 +1,3 @@
-resources/_common/drs/graphics/u_sie_contraption_x1.smx
 resources/_common/drs/gamedata_x2/Alpine_Lakes.rms
 resources/_common/drs/gamedata_x2/Bog_Islands.rms
 resources/_common/drs/gamedata_x2/Bogland.rms
@@ -759,3 +758,4 @@ resources/_common/drs/graphics/u_vil_male_villager_deathA_x1.smx
 resources/_common/drs/graphics/u_vil_male_villager_decayA_x1.smx
 resources/_common/drs/graphics/u_vil_male_villager_idleA_x1.smx
 resources/_common/drs/graphics/u_vil_male_villager_walkA_x1.smx
+resources/_common/drs/graphics/u_sie_contraption_x1.smx

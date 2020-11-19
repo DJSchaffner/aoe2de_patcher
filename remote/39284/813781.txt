@@ -1,8 +1,3 @@
-resources/_common/wpfg/resources/checkbox/Tick_grey_large.png
-resources/_common/wpfg/resources/button_small/Sound_Normal.png
-resources/_common/wpfg/resources/button_small/Sound_Hover.png
-resources/_common/wpfg/resources/button_small/Sound_Disabled.png
-resources/_common/wpfg/resources/button_small/Sound_Active.png
 813780_install.vdf
 AoE2DE_s.exe
 resources/_common/achievements/achievement_def.json
@@ -124,3 +119,8 @@ resources/zh/strings/key-value/key-value-strings-utf8.txt
 Schema/eCellCategory_services.bond
 Tools_Builds/AOEURLHelper.exe
 Tools_Builds/AoEURLInstaller_Steam.exe
+resources/_common/wpfg/resources/checkbox/Tick_grey_large.png
+resources/_common/wpfg/resources/button_small/Sound_Normal.png
+resources/_common/wpfg/resources/button_small/Sound_Hover.png
+resources/_common/wpfg/resources/button_small/Sound_Disabled.png
+resources/_common/wpfg/resources/button_small/Sound_Active.png

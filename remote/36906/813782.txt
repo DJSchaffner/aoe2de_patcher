@@ -1,4 +1,3 @@
-widgetui/textures/menu/mapicons/rm_golden-lakes.DDS
 widgetui/BrowseModsScreen.json
 widgetui/campaignselection.json
 widgetui/commandpanel.json
@@ -554,3 +553,4 @@ widgetui/textures/menu/usericons/PR7-012.png
 widgetui/textures/menu/usericons/PR7-013.png
 widgetui/textures/menu/usericons/PR7-014.png
 widgetui/textures/menu/usericons/PR7-015.png
+widgetui/textures/menu/mapicons/rm_golden-lakes.DDS
