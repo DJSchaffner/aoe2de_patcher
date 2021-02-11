@@ -1,0 +1,1 @@
+resources/_common/drs/gamedata_x2/BR_conditions.inc
