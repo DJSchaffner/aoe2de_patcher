@@ -1,0 +1,1 @@
+resources/_common/campaign/wecam2.json
