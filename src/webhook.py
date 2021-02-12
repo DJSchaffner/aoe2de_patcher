@@ -42,6 +42,7 @@ class Webhook:
       for tr in tbody.findAll("tr"):
         tds = tr.findAll("td")
 
+        # Convert the text of the element into a date
         date = utils.extract_date(tds[0].text)
         id = tds[2].text
 
@@ -67,7 +68,7 @@ class Webhook:
       # Only add actual patches from news feed to list (matches regex)
       if not version_re is None:        
         version = int(version_re.group(1))
-        date = time.localtime(article['date'])
+        date = time.gmtime(article['date'])
 
         if date > from_date:
           result.append({ 'version': version, 'date': date})
