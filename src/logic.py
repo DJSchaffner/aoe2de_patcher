@@ -39,6 +39,10 @@ class Logic:
     1022220, # Enhanced Graphics (Very large)
     1022226, # Soundtrack Depot
     1039810  # Soundtrack Depot
+  ]
+
+  dlc_depots = [
+    1389240  # Palermo
   ] 
 
   language_depots = [
@@ -199,6 +203,7 @@ class Logic:
     # Generate list of relevant depots for patch
     for depot in self.depot_list:
       if  ( (not (depot in self.ignored_depots)) and 
+            (not (depot in self.dlc_depots)) and 
             ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):
         relevant_depots.append(depot)
 
