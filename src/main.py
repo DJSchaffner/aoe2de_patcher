@@ -16,7 +16,7 @@ class App():
     self.logic = Logic()
     self.patch_list = self.logic.get_patch_list()
 
-    self.version = 1.04
+    self.version = 1.10
 
     # Set up GUI
     self.window = tk.Tk()
