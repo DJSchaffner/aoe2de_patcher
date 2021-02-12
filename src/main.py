@@ -16,6 +16,8 @@ class App():
     self.logic = Logic()
     self.patch_list = self.logic.get_patch_list()
 
+    self.version = 1.04
+
     # Set up GUI
     self.window = tk.Tk()
     self.window.title("AoE2DE Patcher")
@@ -85,6 +87,7 @@ class App():
 
   def start(self):
     """Start the application."""
+    self._check_version()
     self.window.mainloop()
 
   def _select_game_dir(self):
@@ -94,6 +97,11 @@ class App():
     # askdirectory returns empty string on hitting cancel
     if dir != "":
       self.logic.set_game_dir(pathlib.Path(dir))
+
+  def _check_version(self):
+    """Check if there is a newer version of the tool available. Notify the user with a box if that is the case"""
+    if self.version < self.logic.webhook.query_latest_version():
+      print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
 
   def _patch(self):
     """Start patching the game with the downloaded files."""

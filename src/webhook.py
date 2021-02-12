@@ -14,6 +14,16 @@ class Webhook:
   # @TODO prevent this from breaking in case steamdb decides to block twitterbot user-agent... avoid detection / rotate user agents / use selenium
   headers = {'User-Agent' : 'Twitterbot/1.0'}
 
+  def query_latest_version(self):
+    """Query the latest version number of the tool
+    
+    Return the latest version number"""
+    url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/version.txt"
+    response = self._query_website(url)
+    result = float(response.content)
+
+    return result
+
   def query_patch_change_list(self):
     """Query a list of changed depots for all patches.
     
