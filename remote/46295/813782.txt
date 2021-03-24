@@ -1,0 +1,4 @@
+widgetui/materials.json
+widgetui/screenachievements.json
+widgetui/textures/atlas/HD/usericons.dds
+widgetui/textures/atlas/UHD/usericons.dds
