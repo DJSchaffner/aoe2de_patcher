@@ -5,7 +5,6 @@ import json
 import requests
 from bs4 import BeautifulSoup
 import steam.webapi
-import cloudscraper
 
 import utils
 
@@ -42,11 +41,7 @@ class Webhook:
 
   def _query_website(self, url: str, headers=None, ignore_success=False):
     # Doesn't work with cloudflare blocking access
-    #response = requests.get(url, headers=headers)
-
-    # Workaround for the cloudflare protection
-    scraper = cloudscraper.create_scraper()
-    response = scraper.get(url, headers=headers)
+    response = requests.get(url, headers=headers)
 
     if (not ignore_success) and (not self._is_response_successful(response)):
       self._print_response_error(response)
