@@ -7,14 +7,13 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.filedialog
 
-import utils
 import redirector
 from logic import Logic, Languages
 
 class App():
   def __init__(self):
     self.logic = Logic()
-    self.patch_list = self.logic.get_patch_list()
+    self.patch_list = list(reversed(self.logic.get_patch_list()))
 
     self.version = 1.10
 
@@ -47,7 +46,7 @@ class App():
 
     self.selected_patch_title = tk.StringVar()  
     
-    patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', p['date'])}" for p in self.patch_list]
+    patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', time.gmtime(p['date']))}" for p in self.patch_list]
 
     self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Version")
     self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
