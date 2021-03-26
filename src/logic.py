@@ -4,7 +4,6 @@ import pathlib
 import shutil
 import signal
 import tempfile
-import time
 from enum import IntEnum
 from queue import Queue
 from collections import defaultdict
