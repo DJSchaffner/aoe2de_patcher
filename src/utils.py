@@ -2,9 +2,6 @@ import sys
 import os
 import pathlib
 import shutil
-import locale
-import re
-import time
 import win32api
 
 from tkinter import Text
@@ -81,19 +78,6 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
         remove_file_or_dir(original_dir, file)
       except BaseException as e:
         raise e
-
-def extract_date(date_string: str):
-  """Extract a date in the format of 'd(d) Monthname yyyy'.
-  
-  Returns a datetime object
-  """
-  date_stripped = re.search(r"\d+ \w* \d+", date_string).group(0)
-
-  locale.setlocale(locale.LC_TIME, "en_US")
-  date = time.strptime(date_stripped, "%d %B %Y") 
-  locale.setlocale(locale.LC_TIME, "de_DE")
-
-  return date
 
 def check_dotnet():
   """Checks if dotnet is available."""
