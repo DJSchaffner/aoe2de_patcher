@@ -62,12 +62,11 @@ class Logic:
     self.webhook = Webhook()
     # The earliest patch that works was released after directx update
     # @TODO Try to figure out a way to patch to earlier patches than this
-    self.directx_update_date = time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
+    #self.directx_update_date = time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
     self.download_dir = utils.base_path() / "download"
     self.backup_dir = utils.base_path() / "backup"
-    self.patch_list = self.webhook.query_patch_list(self.app_id, self.directx_update_date)
+    self.patch_list = self.webhook.query_patches()
     self.depot_list = self._get_depot_list()
-    self.patch_change_list = self.webhook.query_patch_change_list()
     self.process_queue = Queue()
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
@@ -208,30 +207,27 @@ class Logic:
         relevant_depots.append(depot)
 
     # Only support patching via filelists to an older version atm
-    if self.installed_version > patch['version']:
-      # Try to get a list of all filelists down to wanted version
-      filelists_result = self._get_filelists(patch['version'], relevant_depots)
+    if self.installed_version < patch['version']:
+      print("Patching forward is currently unavailable. Please use Steam to get to the latest version and then patch backwards")
+      return False
 
-    # Filelist exists, use it
-    if not filelists_result is None:
-      for entry in filelists_result: 
-        # Create temp file
-        tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+    # Get a list of all filelists down to wanted version
+    filelists_result = self._get_filelists(patch['version'], relevant_depots)
 
-        # Store file name for deletion later on
-        tmp_files.append(tmp.name)
+    for entry in filelists_result: 
+      # Create temp file
+      tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
-        # Write content to file
-        tmp.write(entry['filelist'])
-        tmp.close()
+      # Store file name for deletion later on
+      tmp_files.append(tmp.name)
 
-        # Add update element to list
-        update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
-    # Filelist doesnt exist, prepare all changed depots
-    else:
-      for depot in self._get_changed_depot_list(patch['version'], relevant_depots):
-        update_list.append({ 'depot' : depot, 'manifest' : self._get_manifest_for_patch(patch['version'], depot), 'filelist': None })      
+      # Write content to file
+      tmp.write(entry['filelist'])
+      tmp.close()
 
+      # Add update element to list
+      update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
+   
     print("Downloading files")
 
     # Loop all necessary updates
@@ -383,23 +379,23 @@ class Logic:
     result = []
     combiner = defaultdict(list)
 
-    for i in range(len(self.patch_change_list) - 1, 1, -1):
-      patch_from = self.patch_change_list[i]
-      patch_to = self.patch_change_list[i - 1]
+    for i in range(len(self.patch_list) - 1, 1, -1):
+      patch_from = self.patch_list[i]
+      patch_to = self.patch_list[i - 1]
       
       if patch_to['version'] >= selected_version and patch_to['version'] <= self.installed_version:
         # Check all changed depots for filelists
-        for depot in patch_from['changed_depots']:
+        for depot in patch_from["changed_depots"]:
           # Only care about relevant depots
-          if depot in relevant_depots:
+          if depot['depot_id'] in relevant_depots:
             # Get filelist for current depot and version
-            filelist = self.webhook.query_filelist(patch_from['version'], depot)
+            filelist = self.webhook.query_filelist(patch_from['version'], depot['depot_id'])
 
             # If one filelist is not documented,return None
             if filelist is None:
               return None
 
-            combiner[depot].append({ 'filelist': filelist, 'manifest': self._get_manifest_for_patch(patch_to['version'], depot) })
+            combiner[depot['depot_id']].append({ 'filelist': filelist, 'manifest': depot['manifest_id'] })
 
     # Iterate each depot
     for depot in combiner.keys():
@@ -416,40 +412,3 @@ class Logic:
       result.append({ 'depot': depot, 'filelist': "\n".join(merged), 'manifest': manifest })
 
     return result
-
-  def _get_changed_depot_list(self, selected_version, relevant_depots):
-    """Get a list of all changed depots between the current version and the selected one.
-    If the current patch is not documented with changes all depots will be assumed to have changed.
-    
-    Returns a list of depots"""
-    result = []
-
-    # Is version documented? If not, just assume all deptos changed
-    if next((p for p in self.patch_change_list if p['version'] == selected_version), None) is None:
-      print("No optimized depot list available")
-      return relevant_depots
-      
-    # Version is documented, accumulate all changed depots
-    for patch in self.patch_change_list:
-      if selected_version > self.installed_version:
-        # Add to result if patch is between selected and installed version
-        if  (selected_version > self.installed_version and patch['version'] <= selected_version and patch['version'] > self.installed_version) or \
-            (selected_version < self.installed_version and patch['version'] > selected_version and patch['version'] <= self.installed_version):
-          # Add all changed depots to result list
-          for depot in patch["changed_depots"]:
-            if (depot in relevant_depots) and (not depot in result):
-              result.append(depot)
-
-    return result
-
-  def _get_manifest_for_patch(self, version, depot_id):
-    """Retrieve the manifest id for a certain patch version and a depot.
-
-    Returns the manifest id or None if no manifest id was found"""
-    manifests = self.webhook.query_manifests(depot_id)
-    patch = next((p for p in self.patch_list if p['version'] == version), None)
-
-    if not patch is None:
-      return next((m['id'] for m in manifests if m['date'] <= patch['date']), None)
-
-    return None
