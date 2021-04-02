@@ -69,7 +69,14 @@ class Logic:
     self.process_queue = Queue()
 
   def patch(self, username: str, password: str, patch: dict, language: Languages):
-    """Start patching the game with the downloaded files."""
+    """Start patching the game with the downloaded files.
+
+    Args:
+        username (str): The username
+        password (str): The password
+        patch (dict): The dict containing patch info
+        language (Languages): The selected language
+    """
     success = True
 
     # Check some stuff
@@ -119,7 +126,8 @@ class Logic:
       print("Could not patch!")
 
   def restore(self):
-    """Restores the game directory using the backed up files and downloaded files."""
+    """Restores the game directory using the backed up files and downloaded files.
+    """
     # Check some stuff
     if not hasattr(self, "game_dir") or self.game_dir is None:
       print("Please select a game directory")
@@ -151,7 +159,14 @@ class Logic:
       print("Error removing files!")
 
   def set_game_dir(self, dir: pathlib.Path):
-    """Tries to set the game directory, if succesful return True. Otherwise return False"""
+    """Tries to set the game directory, if succesful return True. Otherwise return False.
+
+    Args:
+        dir (pathlib.Path): The directory to be set
+
+    Returns:
+        bool: True if successful
+    """
     aoe_binary = dir / "AoE2DE_s.exe"
 
     if aoe_binary.exists():
@@ -165,17 +180,32 @@ class Logic:
     return False
 
   def get_patch_list(self):
-    """Returns the patch list"""
+    """Returns the patch list.
+
+    Returns:
+        list: The list of documented patches
+    """
     return self.patch_list
 
   def cancel_downloads(self):
-    """Performs cleanup for logic object."""
+    """Performs cleanup for logic object.
+    """
     # Terminate all child processes
     for process in self.process_queue.queue:
       process.kill(signal.SIGTERM)
 
   def _download_patch(self, username: str, password: str, patch: dict, language: Languages):  
-    """Download the given patch in a language using the steam account credentials."""
+    """Download the given patch in a language using the steam account credentials.
+
+    Args:
+        username (str): The username
+        password (str): The password
+        patch (dict): The dict containing patch info
+        language (Languages): The selected language
+
+    Returns:
+        bool: True if successful
+    """
     # dotnet is required to proceed
     if not (utils.check_dotnet()):
       print("DOTNET Core required but not found!")
@@ -242,7 +272,11 @@ class Logic:
     return True
 
   def _move_patch(self):
-    """Move downloaded patch files to game directory."""
+    """Move downloaded patch files to game directory.
+
+    Returns:
+        bool: True if successful
+    """
     try:
       shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
 
@@ -254,8 +288,10 @@ class Logic:
 
   def _backup(self):
     """Backup game folder and in current directory.
-    
-    Returns True if everything worked, otherwise False"""
+
+    Returns:
+        bool: True if successful
+    """
     try:
       # Remove previous backup folder if it exists
       # Create empty folders afterwards
@@ -276,7 +312,22 @@ class Logic:
     return False
 
   def _download_depot(self, username: str, password: str, version: int, depot_id: int, manifest_id: int, filelist: str):
-    """Download a specific depot using the manifest id from steam using the given credentials."""
+    """Download a specific depot using the manifest id from steam using the given credentials.
+
+    Args:
+        username (str): The username
+        password (str): The password
+        version (int): The selected version
+        depot_id (int): The selected depot
+        manifest_id (int): The manifest id for the depot
+        filelist (str): The name of the file used as filelist
+
+    Raises:
+        ConnectionError: If there was an error during authentication
+
+    Returns:
+        bool: True if successful
+    """
     success = False
     depot_downloader_path = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
     args = ["dotnet", f'"{depot_downloader_path}"', 
@@ -354,8 +405,9 @@ class Logic:
   def _get_depot_list(self):
     """Get a list of depots for the app.
 
-    Returns the list of depots
-    """    
+    Returns:
+        list: A list of depots for the app
+    """
     result = []
 
     client = SteamClient()
@@ -370,11 +422,17 @@ class Logic:
 
     return result    
 
-  def _get_filelists(self, selected_version, relevant_depots):
+  def _get_filelists(self, selected_version: int, relevant_depots: list):
     """Get a list of all filelists between the current version and the selected one for all the relevant depots.
     If any patch in between does not have a filelist stored, None will be returned.
 
-    Returns a list of tuples (depot id, filelist, manifest id) or None"""
+    Args:
+        selected_version (int): The selected version
+        relevant_depots (list): A list of depots that should be checked
+
+    Returns:
+        list: A list of tuples (depot id, filelist, manifest id) or None
+    """
     result = []
     combiner = defaultdict(list)
 
