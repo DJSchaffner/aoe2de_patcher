@@ -62,22 +62,16 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
 
       # Remove directory if its now empty
       if len(os.listdir((original_dir / file).absolute())) == 0:
-        try:
-          if debug_info:
-            print(f"Remove {(original_dir / file).absolute()}")
-
-          remove_file_or_dir(original_dir, file)
-        except BaseException as e:
-          raise e
-    # Its a file, remove it
-    else:
-      try:
         if debug_info:
           print(f"Remove {(original_dir / file).absolute()}")
-        
+
         remove_file_or_dir(original_dir, file)
-      except BaseException as e:
-        raise e
+    # Its a file, remove it
+    else:
+      if debug_info:
+        print(f"Remove {(original_dir / file).absolute()}")
+      
+      remove_file_or_dir(original_dir, file)
 
 def check_dotnet():
   """Checks if dotnet is available."""
