@@ -85,12 +85,14 @@ class App():
     sys.stdout = redirector.StdoutRedirector(self.text_box)
 
   def start(self):
-    """Start the application."""
+    """Start the application.
+    """
     self._check_version()
     self.window.mainloop()
 
   def _select_game_dir(self):
-    """Open a file dialog for the user to select the game folder and send the result to logic."""
+    """Open a file dialog for the user to select the game folder and send the result to logic.
+    """
     dir = tk.filedialog.askdirectory(mustexist=True)
 
     # askdirectory returns empty string on hitting cancel
@@ -98,12 +100,14 @@ class App():
       self.logic.set_game_dir(pathlib.Path(dir))
 
   def _check_version(self):
-    """Check if there is a newer version of the tool available. Notify the user with a box if that is the case"""
+    """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
+    """
     if self.version < self.logic.webhook.query_latest_version():
       print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
 
   def _patch(self):
-    """Start patching the game with the downloaded files."""
+    """Start patching the game with the downloaded files.
+    """
     # Retrieve selected patch
     selected_patch = next((p for p in self.patch_list if str(p['version']) in self.selected_patch_title.get()), None)
     # Retrieve selected language
@@ -118,7 +122,8 @@ class App():
     t.start()
 
   def _restore(self):
-    """Restores the game directory using the backed up files and downloaded files."""    
+    """Restores the game directory using the backed up files and downloaded files.
+    """
     def work():
       self._disable_input()
       self.logic.restore()
@@ -128,7 +133,8 @@ class App():
     t.start()
 
   def _disable_input(self):
-    """Disables User input for certain Buttons / Entries"""
+    """Disables User input for certain Buttons / Entries.
+    """
     self.opt_select_patch.config(state="disabled")
     self.opt_select_language.config(state="disabled")
     self.btn_patch.config(state="disabled")
@@ -138,7 +144,8 @@ class App():
     self.ent_password.config(state="disabled")
 
   def _enable_input(self):
-    """Enables User input for certain Buttons / Entries"""
+    """Enables User input for certain Buttons / Entries.
+    """
     self.opt_select_patch.config(state="enabled")
     self.opt_select_language.config(state="enabled")
     self.btn_patch.config(state="enabled")
