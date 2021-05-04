@@ -1,0 +1,14 @@
+widgetui/campaignselection.json
+widgetui/civTechTrees.json
+widgetui/futuravailableunits.json
+widgetui/InstalledModsScreen.json
+widgetui/LeaderboardScreen.json
+widgetui/materials.json
+widgetui/screenmultiplayermatchmaking.json
+widgetui/screenoptions.json
+widgetui/stringreference.json
+widgetui/textures/atlas/HD/mapicons.dds
+widgetui/textures/atlas/HD/usericons.dds
+widgetui/textures/atlas/SD/mapicons.dds
+widgetui/textures/atlas/UHD/mapicons.dds
+widgetui/textures/atlas/UHD/usericons.dds
