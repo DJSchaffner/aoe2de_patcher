@@ -1,0 +1,9 @@
+resources/_common/drs/gamedata_x2/Baltic.rms
+resources/_common/drs/gamedata_x2/BR_TheMajapahitEmpire.rms
+resources/_common/drs/gamedata_x2/Fortress.rms
+resources/_common/drs/gamedata_x2/GeneratingObjects.inc
+resources/_common/drs/gamedata_x2/hideout.rms2
+resources/_common/drs/gamedata_x2/lombardia.rms2
+resources/_common/drs/gamedata_x2/Migration.rms
+resources/_common/drs/gamedata_x2/random_map.def
+resources/_common/drs/gamedata_x2/SeizeTheMountain.rms
