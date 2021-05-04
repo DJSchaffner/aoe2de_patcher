@@ -1,0 +1,1 @@
+resources/_common/campaign/wecam1.aoe2campaign.gpv
