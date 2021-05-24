@@ -22,7 +22,7 @@ This whole process might take a while to finish!
 # Notes
 **Your login creedentials will not be stored.** 
 
-While it is possible to patch from an old version to the most recent one I do suggest to just use the steam "Verify integrity of game cache" functionality just to be extra safe. 
+~~While it is possible to patch from an old version to the most recent one~~ As of now this is no longer possible - I do suggest to just use the steam "Verify integrity of game cache" functionality just to be extra safe. 
 
 For now, try to avoid closing the program via task manager while it is downloading. Currently I have not found a way to guarantee that downloads will be stopped after doing so!
 
