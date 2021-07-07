@@ -1,3 +1,5 @@
+![Github all releases downloads](https://img.shields.io/github/downloads/djschaffner/aoe2de_patcher/total)
+
 # AoE2 DE Patcher - WIP
 
 Patches AoE2 DE to any officially released version (Steam version only!)  
