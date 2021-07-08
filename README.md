@@ -5,6 +5,8 @@
 Patches AoE2 DE to any officially released version (Steam version only!)  
 Currently best suited for downgrading. Upgrading (If not via backup) takes significantly longer
 
+**I am not sure if patching with an installed DLC is working as of right now, since i do not own it myself. If you have tried, please let me know via the issue tracker.**
+
 # Requirements
 
 - Requires a steam account that owns the game
