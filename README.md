@@ -32,7 +32,15 @@ This whole process might take a while to finish!
 For now, try to avoid closing the program via task manager while it is downloading. Currently I have not found a way to guarantee that downloads will be stopped after doing so!
 
 # FAQ
-*I will add questions and answers here when they arise*
+
+Q: *Where is the aoe2_updater.exe file?*  
+A: Please check that you downloaded the zip file from the *releases* tab and not the source code.
+
+Q: *What is the 2FA Code?*  
+A: It's the code from your steam authenticator app if you have it. If you don't use that, check your emails for a code.  
+
+Q: *Where is the AoE directory?*  
+A: Most likely it is this by default: 'C:\Program Files (x86)\Steam\steamapps\common\AoE2DE' It could be different for you though.  
 
 # Future features
 - Investigate options to improve upgrading mechanism
