@@ -1,0 +1,11 @@
+resources/_common/drs/gamedata_x2/Acclivity.rms
+resources/_common/drs/gamedata_x2/Eruption.rms
+resources/_common/drs/gamedata_x2/FrigidLake.rms
+resources/_common/drs/gamedata_x2/Greenland.rms
+resources/_common/drs/gamedata_x2/Lowland.rms
+resources/_common/drs/gamedata_x2/Marketplace.rms
+resources/_common/drs/gamedata_x2/Meadow.rms
+resources/_common/drs/gamedata_x2/MountainRange.rms
+resources/_common/drs/gamedata_x2/NorthernIsles.rms
+resources/_common/drs/gamedata_x2/RingFortress.rms
+resources/_common/drs/gamedata_x2/Runestones.rms
