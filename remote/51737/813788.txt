@@ -1,0 +1,2 @@
+wwise/fr/Campaign_VO.bnk
+wwise/fr/Scenario_VO.bnk
