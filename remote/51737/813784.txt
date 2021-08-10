@@ -1,0 +1,11 @@
+resources/_common/drs/gamedata_x2/Acclivity.rms
+resources/_common/drs/gamedata_x2/AmazonTunnel.rms
+resources/_common/drs/gamedata_x2/Arabia.rms
+resources/_common/drs/gamedata_x2/Arena.rms
+resources/_common/drs/gamedata_x2/F_seasons.inc
+resources/_common/drs/gamedata_x2/FrigidLake.rms
+resources/_common/drs/gamedata_x2/Lowland.rms
+resources/_common/drs/gamedata_x2/Marketplace.rms
+resources/_common/drs/gamedata_x2/Migration.rms
+resources/_common/drs/gamedata_x2/NorthernIsles.rms
+resources/_common/drs/gamedata_x2/random_map.def
