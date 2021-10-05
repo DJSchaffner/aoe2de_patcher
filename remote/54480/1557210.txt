@@ -1,0 +1,4 @@
+resources/_common/campaign/eecam1.aoe2campaign.gpv
+resources/_common/campaign/eecam2.aoe2campaign.gpv
+resources/_common/campaign/eecam2.json
+resources/_common/campaign/eecam3.aoe2campaign.gpv
