@@ -1,12 +1,7 @@
 import sys
-import re
 import json
 
 import requests
-from bs4 import BeautifulSoup
-import steam.webapi
-
-import utils
 
 class Webhook:
   def query_latest_version(self):
