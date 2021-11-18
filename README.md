@@ -40,7 +40,10 @@ Q: *What is the 2FA Code?*
 A: It's the code from your steam authenticator app if you have it. If you don't use that, check your emails for a code.  
 
 Q: *Where is the AoE directory?*  
-A: Most likely it is this by default: 'C:\Program Files (x86)\Steam\steamapps\common\AoE2DE' It could be different for you though.  
+A: Most likely it is this by default: 'C:\Program Files (x86)\Steam\steamapps\common\AoE2DE' It could be different for you though. 
+
+Q: *Do I have to download a new version when a patch for AoE releases?*  
+A: Usually not. When a new DLC is released, there is a high chance that the tool will have to be updated though. You will be informed when you start the tool and a new version is available.
 
 # Future features
 - Investigate options to improve upgrading mechanism
