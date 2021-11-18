@@ -32,29 +32,30 @@ class Logic:
   app_id = 813780
 
   ignored_depots = [
-    228987,  # VC 2017 Redist
-    228990,  # DirectX
-    1039811, # Encrypted DLC (Unknown)
-    1022220, # Enhanced Graphics (Very large)
-    1022226, # Soundtrack Depot
-    1039810  # Soundtrack Depot
+    228987,   # VC 2017 Redist
+    228990,   # DirectX
+    1039811,  # Encrypted DLC (Unknown)
+    1022220,  # Enhanced Graphics (Very large)
+    1022226,  # Soundtrack Depot
+    1039810   # Soundtrack Depot
   ]
 
   dlc_depots = [
-    1389240  # Palermo
+    1389240,  # Palermo (Lords of the West)
+    1557210   # Prague (Dawn of the Dukes)
   ] 
 
   language_depots = [
-    813785,  # BR
-    813786,  # DE
-    813787,  # EN
-    813788,  # FR
-    813789,  # IT
-    1022221, # KO
-    1022222, # MX
-    1022223, # ZH
-    1022224, # ZH-Hant
-    1022225  # ES
+    813785,   # BR
+    813786,   # DE
+    813787,   # EN
+    813788,   # FR
+    813789,   # IT
+    1022221,  # KO
+    1022222,  # MX
+    1022223,  # ZH
+    1022224,  # ZH-Hant
+    1022225   # ES
   ]
 
   def __init__(self):
