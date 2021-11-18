@@ -1,0 +1,2 @@
+resources/_common/drs/graphics/b_afri_wall_fortified_constr_x2.smx
+resources/_common/drs/graphics/s_rugs_x2.smx
