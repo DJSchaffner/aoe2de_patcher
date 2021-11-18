@@ -5,6 +5,7 @@ import time
 
 import tkinter as tk
 import tkinter.ttk as ttk
+import tkinter.filedialog
 
 import redirector
 from logic import Logic, Languages
