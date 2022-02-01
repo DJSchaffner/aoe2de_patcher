@@ -1,0 +1,2 @@
+resources/_common/campaign/wecam1.json
+resources/_common/campaign/wecam3.json
