@@ -11,7 +11,7 @@ Currently only suited for downgrading. To upgrade, please use steam to get to th
 # Requirements
 
 - Requires a steam account that owns the game
-- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run
+- Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run (Console version should be enough)
 
 # Usage
 - Start aoe2de_patcher.exe
@@ -35,6 +35,9 @@ For now, try to avoid closing the program via task manager while it is downloadi
 
 Q: *Where is the aoe2_updater.exe file?*  
 A: Please check that you downloaded the zip file from the *releases* tab and not the source code.
+
+Q: *The patcher says "Could not patch" and "DOTNET core not found". What is wrong?*
+A: You need to install DOTNET core to use the patcher. Please check the reuqirements section above for a link.
 
 Q: *What is the 2FA Code?*  
 A: It's the code from your steam authenticator app if you have it. If you don't use that, check your emails for a code.  
