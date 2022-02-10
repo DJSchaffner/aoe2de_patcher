@@ -1,0 +1,2 @@
+BattleServer\BattleServer.exe
+AoE2DE_s.exe
