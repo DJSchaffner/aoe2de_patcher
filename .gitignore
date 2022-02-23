@@ -2,3 +2,4 @@ download/
 *.pyc
 backup/
 dist/
+manifests/
