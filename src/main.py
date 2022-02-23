@@ -8,14 +8,14 @@ import tkinter.ttk as ttk
 import tkinter.filedialog
 
 import redirector
-from logic import Logic, Languages
+from logic import Logic
 
 class App():
   def __init__(self):
     self.logic = Logic()
     self.patch_list = list(reversed(self.logic.get_patch_list()))
 
-    self.version = 1.30
+    self.version = 2.0
 
     # Set up GUI
     self.window = tk.Tk()
@@ -52,12 +52,6 @@ class App():
     self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
     self.opt_select_patch = ttk.OptionMenu(self.upper_frame, self.selected_patch_title, patch_titles[0], *[p for p in patch_titles])
     self.opt_select_patch.grid(row=0, column=1, sticky="w")
-
-    self.selected_language_name = tk.StringVar()
-    self.lbl_select_language = ttk.Label(master=self.upper_frame, text="Language")
-    self.lbl_select_language.grid(row=1, column=0, sticky="e")  
-    self.opt_select_language = ttk.OptionMenu(self.upper_frame, self.selected_language_name, Languages.EN.name, *[l.name for l in Languages])
-    self.opt_select_language.grid(row=1, column=1, sticky="w")
 
     self.btn_patch = ttk.Button(master=self.upper_frame, text="Patch", command=self._patch)
     self.btn_patch.grid(row=0, column=5, sticky="nesw")
@@ -110,12 +104,10 @@ class App():
     """
     # Retrieve selected patch
     selected_patch = next((p for p in self.patch_list if str(p['version']) in self.selected_patch_title.get()), None)
-    # Retrieve selected language
-    selected_language = next((l.value for l in Languages if l.name == self.selected_language_name.get()), None)
 
     def work():
       self._disable_input()
-      self.logic.patch(self.ent_username.get(), self.ent_password.get(), selected_patch, selected_language)
+      self.logic.patch(self.ent_username.get(), self.ent_password.get(), selected_patch["version"])
       self._enable_input()
 
     t = threading.Thread(target=work)
@@ -136,7 +128,6 @@ class App():
     """Disables User input for certain Buttons / Entries.
     """
     self.opt_select_patch.config(state="disabled")
-    self.opt_select_language.config(state="disabled")
     self.btn_patch.config(state="disabled")
     self.btn_restore.config(state="disabled")
     self.btn_game_dir.config(state="disabled")
@@ -147,7 +138,6 @@ class App():
     """Enables User input for certain Buttons / Entries.
     """
     self.opt_select_patch.config(state="enabled")
-    self.opt_select_language.config(state="enabled")
     self.btn_patch.config(state="enabled")
     self.btn_restore.config(state="enabled")
     self.btn_game_dir.config(state="enabled")
