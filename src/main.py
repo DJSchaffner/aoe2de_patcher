@@ -98,6 +98,7 @@ class App():
     """
     if self.version < self.logic.webhook.query_latest_version():
       print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
+      print("Please update because this version might no longer work!")
 
   def _patch(self):
     """Start patching the game with the downloaded files.
