@@ -45,17 +45,16 @@ def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: s
   else:
     shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
-def remove_file_or_dir(dir: pathlib.Path, file: str):
+def remove_file_or_dir(path: pathlib.Path):
   """Removes a file or directory recursively. Does not throw an error if file does not exist.
 
   Args:
-      dir (pathlib.Path): The directory
-      file (str): The file or directory name
+      path (pathlib.Path): The path to be removed
   """
-  if (dir / file).is_dir():
-    shutil.rmtree((dir / file).absolute(), ignore_errors=True)
+  if path.is_dir():
+    shutil.rmtree(path.absolute(), ignore_errors=True)
   else:
-    (dir / file).unlink(missing_ok=True)
+    path.unlink(missing_ok=True)
 
 def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool):
   """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched.
@@ -105,13 +104,13 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
           if debug_info:
             print(f"Remove {(original_dir / file).absolute()}")
 
-          remove_file_or_dir(original_dir, file)
+          remove_file_or_dir(original_dir / file)
       # Its a file, remove it
       else:
         if debug_info:
           print(f"Remove {(original_dir / file).absolute()}")
         
-        remove_file_or_dir(original_dir, file)
+        remove_file_or_dir(original_dir / file)
   except BaseException as e:
     raise e
 
