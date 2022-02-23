@@ -1,2 +1,0 @@
-resources/_common/drs/graphics/b_slav_gate_fortified_e_destruction_x2.smx
-resources/_common/drs/graphics/u_queen_west_decayA_x2.smx

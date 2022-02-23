@@ -1,3 +1,0 @@
-AoE2DE_s.exe
-resources/_common/shaders/d3d11/HUDWireframe_vs_main.vso
-resources/_common/shaders/d3d11/HUDWireframe_ps_main.pso

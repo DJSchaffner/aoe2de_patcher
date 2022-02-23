@@ -1,4 +1,0 @@
-AoE2DE_s.exe
-resources/_common/campaign/cam0.aoe2campaign
-resources/_common/wpfg/dialog/dialognews.xaml
-resources/en/strings/key-value/key-value-strings-utf8.txt
