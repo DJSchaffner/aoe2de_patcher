@@ -1,0 +1,6 @@
+This should work on all:
+^(Removed|Modified) – (((.*\.\S+)( \(.*\)))|(.*))?$ -> $4$6
+
+Otherwise do these one after another
+^(Removed|Modified) – (.*\.\S+)( \(.*\))?$ -> $2
+^(Removed|Modified) – (.*)$ -> $2
