@@ -4,59 +4,32 @@ import pathlib
 import shutil
 import signal
 import tempfile
-from enum import IntEnum
+import re
+import time
 from queue import Queue
-from collections import defaultdict
+from dataclasses import dataclass
 
 import pexpect
 import pexpect.popen_spawn
 import tkinter
 import tkinter.simpledialog
-from steam.client import SteamClient
 
 from webhook import Webhook
 import utils
 
-class Languages(IntEnum):
-  BR = 0,
-  DE = 1,
-  EN = 2,
-  FR = 3,
-  IT = 4,
-  KO = 5,
-  MX = 6,
-  ZH = 7,
-  ZHH = 8
+@dataclass
+class Manifest():
+  depot: int
+  id: int
+  date: int
+  num_files: int
+  num_chunks: int
+  size_disk: int
+  size_compressed: int
+  files: list
 
 class Logic:
   app_id = 813780
-
-  ignored_depots = [
-    228987,   # VC 2017 Redist
-    228990,   # DirectX
-    1039811,  # Encrypted DLC (Unknown)
-    1022220,  # Enhanced Graphics (Very large)
-    1022226,  # Soundtrack Depot
-    1039810   # Soundtrack Depot
-  ]
-
-  dlc_depots = [
-    1389240,  # Palermo (Lords of the West)
-    1557210   # Prague (Dawn of the Dukes)
-  ] 
-
-  language_depots = [
-    813785,   # BR
-    813786,   # DE
-    813787,   # EN
-    813788,   # FR
-    813789,   # IT
-    1022221,  # KO
-    1022222,  # MX
-    1022223,  # ZH
-    1022224,  # ZH-Hant
-    1022225   # ES
-  ]
 
   def __init__(self):
     self.webhook = Webhook()
@@ -64,19 +37,18 @@ class Logic:
     # @TODO Try to figure out a way to patch to earlier patches than this
     #self.directx_update_date = time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
     self.download_dir = utils.base_path() / "download"
+    self.manifest_dir = utils.base_path() / "manifests"
     self.backup_dir = utils.base_path() / "backup"
     self.patch_list = self.webhook.query_patches()
-    self.depot_list = self._get_depot_list()
     self.process_queue = Queue()
 
-  def patch(self, username: str, password: str, patch: dict, language: Languages):
+  def patch(self, username: str, password: str, target_version: int):
     """Start patching the game with the downloaded files.
 
     Args:
         username (str): The username
         password (str): The password
-        patch (dict): The dict containing patch info
-        language (Languages): The selected language
+        target_version (int): The version to patch to
     """
     success = True
 
@@ -95,14 +67,14 @@ class Logic:
 
     self.installed_version = utils.get_version_number(self.game_dir / "AoE2DE_s.exe")[2]
 
-    if self.installed_version == patch['version']:
+    if self.installed_version == target_version:
       print("The selected version is already installed")
       return
 
     # Always true
     if success:
       print("Starting download phase")
-      success = success and self._download_patch(username, password, patch, language)
+      success = success and self._download_patch(username, password, target_version)
 
       if not success:
         print("Error during download!")
@@ -195,8 +167,8 @@ class Logic:
     for process in self.process_queue.queue:
       process.kill(signal.SIGTERM)
 
-  def _download_patch(self, username: str, password: str, patch: dict, language: Languages):  
-    """Download the given patch in a language using the steam account credentials.
+  def _download_patch(self, username: str, password: str, target_version: int):  
+    """Download the given patch using the steam account credentials.
 
     Args:
         username (str): The username
@@ -212,10 +184,8 @@ class Logic:
       print("DOTNET Core required but not found!")
       return False
     
-    relevant_depots = []
     update_list = []   
     tmp_files = []
-    filelists_result = None 
 
     # Remove previous download folder if it exists
     # Create empty folders afterwards
@@ -227,43 +197,64 @@ class Logic:
         return False
     self.download_dir.mkdir()
 
-    print("Preparing download")
+    # Remove previous manifests folder if it exists
+    # Create empty folders afterwards
+    if self.manifest_dir.exists():
+      try:
+        shutil.rmtree(self.manifest_dir.absolute())
+      except BaseException:
+        print("Error removing previous manifest directory")
+        return False
+    self.manifest_dir.mkdir()
 
-    # Generate list of relevant depots for patch
-    for depot in self.depot_list:
-      if  ( (not (depot in self.ignored_depots)) and 
-            (not (depot in self.dlc_depots)) and 
-            ((not (depot in self.language_depots)) or (self.language_depots[language] == depot)) ):
-        relevant_depots.append(depot)
+    print("Generating list of changes")
+
+    # Filter list of patches for current and target version
+    filtered_patches = list(filter(lambda x: x["version"] == self.installed_version or x["version"] == target_version, self.patch_list))
+
+    # One of the two patches is not in the list of patches. Most likeley the installed version, cannot patch
+    if len(filtered_patches) != 2:
+      print("The installed version currently doesn't support downgrading. Please be patient or notify me on GitHub!")
+      return False
+
+    # Store current and target patch
+    current_patch = list(filter(lambda x: x["version"] == self.installed_version, self.patch_list))[0]
+    target_patch = list(filter(lambda x: x["version"] == target_version, filtered_patches))[0]
 
     # Only support patching via filelists to an older version atm
-    if self.installed_version < patch['version']:
+    if self.installed_version < target_version:
       print("Patching forward is currently unavailable. Please use Steam to get to the latest version and then patch backwards")
       return False
 
-    # Get a list of all filelists down to wanted version
-    filelists_result = self._get_filelists(patch['version'], relevant_depots)
+    # Iterate depots of current and target patch together
+    for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
+      depot_id = current_depot["depot_id"]
+      current_manifest_id = current_depot["manifest_id"]
+      target_manifest_id = target_depot["manifest_id"]
 
-    for entry in filelists_result: 
-      # Create temp file
-      tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+      changes = self._get_filelist(username, password, depot_id, current_manifest_id, target_manifest_id)
 
-      # Store file name for deletion later on
-      tmp_files.append(tmp.name)
+      # Files have changed, store changes to temp file and add to update list
+      if not changes is None:
+        # Create temp file
+        tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
-      # Write content to file
-      tmp.write(entry['filelist'])
-      tmp.close()
+        # Store file name for deletion later on
+        tmp_files.append(tmp.name)
 
-      # Add update element to list
-      update_list.append({ 'depot': entry['depot'], 'manifest': entry['manifest'], 'filelist': tmp.name })
+        # Write content to file
+        tmp.write("\n".join(changes))
+        tmp.close()
+
+        # Add update element to list
+        update_list.append({ 'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name })
    
     print("Downloading files")
-
+    
     # Loop all necessary updates
     for element in update_list:
       # Stop if a download didn't succeed
-      if not self._download_depot(username, password, patch['version'], element['depot'], element['manifest'], element['filelist']):
+      if not self._download_depot(username, password, element['depot_id'], element['manifest_id'], element['filelist']):
         return False
 
     # Remove created temp files
@@ -312,16 +303,11 @@ class Logic:
 
     return False
 
-  def _download_depot(self, username: str, password: str, version: int, depot_id: int, manifest_id: int, filelist: str):
-    """Download a specific depot using the manifest id from steam using the given credentials.
+  def _depot_downloader(self, options: list):
+    """Execute the DepotDownloader with the given options as arguments. Return True if successfull.
 
     Args:
-        username (str): The username
-        password (str): The password
-        version (int): The selected version
-        depot_id (int): The selected depot
-        manifest_id (int): The manifest id for the depot
-        filelist (str): The name of the file used as filelist
+        options (list): A list of options that will be passed to DepotDownloader directly
 
     Raises:
         ConnectionError: If there was an error during authentication
@@ -329,20 +315,10 @@ class Logic:
     Returns:
         bool: True if successful
     """
-    success = False
     depot_downloader_path = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
-    args = ["dotnet", f'"{depot_downloader_path}"', 
-            "-app", str(self.app_id), 
-            "-depot", str(depot_id), 
-            "-manifest", str(manifest_id), 
-            "-username", username, 
-            "-password", password, 
-            "-remember-password",
-            "-dir download"]
 
-    if not filelist is None:
-      args.append(f"-filelist {filelist}")
-
+    args = ["dotnet", depot_downloader_path] + options
+    
     # Spawn process and store in queue
     p = pexpect.popen_spawn.PopenSpawn(" ".join(args), encoding="utf-8")
     self.process_queue.put(p)
@@ -403,29 +379,61 @@ class Logic:
 
     return success
 
-  def _get_depot_list(self):
-    """Get a list of depots for the app.
+  def _download_manifest(self, username: str, password: str, depot_id: int, manifest_id: int):
+    """Download a specific manifest from the given depot using the given credentials.
+
+    Args:
+        username (str): The username
+        password (str): The password
+        depot_id (int): The selected depot
+        manifest_id (int): The manifest id for the depot
+
+    Raises:
+        ConnectionError: If there was an error during authentication
 
     Returns:
-        list: A list of depots for the app
+        bool: True if successful
     """
-    result = []
+    args = ["-app", str(self.app_id), 
+            "-depot", str(depot_id), 
+            "-manifest", str(manifest_id), 
+            "-username", username, 
+            "-password", password, 
+            "-remember-password",
+            "-dir", str(self.manifest_dir),
+            "-manifest-only"]
 
-    client = SteamClient()
-    client.anonymous_login()
+    return self._depot_downloader(args)
 
-    info = client.get_product_info(apps=[self.app_id])
+  def _download_depot(self, username: str, password: str, depot_id: int, manifest_id: int, filelist: str):
+    """Download a specific depot using the manifest id from steam using the given credentials.
 
-    for depot in list(info['apps'][self.app_id]['depots']):
-      # Only store depots with numeric value
-      if depot.isnumeric():
-        result.append(int(depot))
+    Args:
+        username (str): The username
+        password (str): The password
+        depot_id (int): The selected depot
+        manifest_id (int): The manifest id for the depot
+        filelist (str): The name of the file used as filelist
 
-    return result    
+    Raises:
+        ConnectionError: If there was an error during authentication
 
-  def _get_filelists(self, selected_version: int, relevant_depots: list):
-    """Get a list of all filelists between the current version and the selected one for all the relevant depots.
-    If any patch in between does not have a filelist stored, None will be returned.
+    Returns:
+        bool: True if successful
+    """
+    args = ["-app", str(self.app_id), 
+            "-depot", str(depot_id), 
+            "-manifest", str(manifest_id), 
+            "-username", username, 
+            "-password", password, 
+            "-remember-password",
+            "-dir", str(self.download_dir),
+            "-filelist", filelist]
+
+    return self._depot_downloader(args)
+
+  def _get_filelist(self, username: str, password: str, depot_id: int, current_manifest_id: int, target_manifest_id: int):
+    """Get a list of all files that have been removed or modified between the current and target version.
 
     Args:
         selected_version (int): The selected version
@@ -434,39 +442,99 @@ class Logic:
     Returns:
         list: A list of tuples (depot id, filelist, manifest id) or None
     """
-    result = []
-    combiner = defaultdict(list)
+    # Only need to check for changes if manifest changed
+    if current_manifest_id == target_manifest_id:
+      return None
 
-    for i in range(len(self.patch_list) - 1, 1, -1):
-      patch_from = self.patch_list[i]
-      patch_to = self.patch_list[i - 1]
-      
-      if patch_to['version'] >= selected_version and patch_to['version'] <= self.installed_version:
-        # Check all changed depots for filelists
-        for depot in patch_from["changed_depots"]:
-          # Only care about relevant depots
-          if depot['depot_id'] in relevant_depots:
-            # Get filelist for current depot and version
-            filelist = self.webhook.query_filelist(patch_from['version'], depot['depot_id'])
+    removed = []
+    modified = []
 
-            # If one filelist is not documented,return None
-            if filelist is None:
-              return None
+    # Download manifests
+    self._download_manifest(username, password, depot_id, current_manifest_id)
+    self._download_manifest(username, password, depot_id, target_manifest_id)
 
-            combiner[depot['depot_id']].append({ 'filelist': filelist, 'manifest': depot['manifest_id'] })
+    # Read manifest files
+    current_manifest = self._read_manifest(self.manifest_dir / f"manifest_{depot_id}_{current_manifest_id}.txt")
+    target_manifest = self._read_manifest(self.manifest_dir / f"manifest_{depot_id}_{target_manifest_id}.txt")
 
-    # Iterate each depot
-    for depot in combiner.keys():
-      merged = set()
-      manifest = None
+    # Initialize file sets
+    current_set = set(current_manifest.files)
+    target_set = set(target_manifest.files)
 
-      # Merge all filelists for this depot into one
-      for entry in combiner[depot]:
-        merged.update(entry['filelist'].split("\n"))
-        # Store latest manifest for this depot
-        manifest = entry['manifest']
+    # Find all removed files (Result contains removed files and files with different hash)
+    diff_removed = list(target_set.difference(current_set))
+    diff_removed_names = set([x[0] for x in diff_removed])
 
-      # Sort filelist before appending?
-      result.append({ 'depot': depot, 'filelist': "\n".join(merged), 'manifest': manifest })
+    # Find all added files (Result contains added files and files with different hash)
+    diff_added = list(current_set.difference(target_set))
+    diff_added_names = set([x[0] for x in diff_added])
+    
+    # Find all removed files (Remove files with same name but different hash)
+    removed = set.difference(diff_removed_names, diff_added_names)
+
+    # Find all modified files (Retain files with same name but different hash)
+    modified = set.intersection(diff_removed_names, diff_added_names)
+
+    changes = []
+
+    changes += removed
+    changes += modified
+
+    return changes
+
+  def _read_manifest(self, file: pathlib.Path):
+    result = None
+
+    with open(file, "r") as f:
+      depot = 0
+      id = 0
+      date = 0
+      num_files = 0
+      num_chunks = 0
+      size_disk = 0
+      size_compressed = 0
+      files = []
+
+      line = f.readline() # First line contains depot id
+      depot = re.match(r".* (\d+)", line).groups()[0]
+
+      # Second lines is empty
+      # Third contains manifest id and date
+      line = f.readline()
+      line = f.readline()
+      groups = re.match(r".* : (\d+) \/ (.+)", line).groups()
+      id = groups[0]
+      date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
+
+      # Fourth line contains number of files
+      line = f.readline()
+      groups = re.match(r".* : (\d+)", line).groups()
+      num_files = groups[0]
+
+      # Fifth line contains number of chunks
+      line = f.readline()
+      groups = re.match(r".* : (\d+)", line).groups()
+      num_chunks = groups[0]
+
+      # Sixth line contains size on disk
+      line = f.readline()
+      groups = re.match(r".* : (\d+)", line).groups()
+      size_disk = groups[0]
+
+      # Seventh line contains size compressed
+      line = f.readline()
+      groups = re.match(r".* : (\d+)", line).groups()
+      size_compressed = groups[0]
+
+      # Eighth line is empty
+      # Nineth line contains headers
+      # Tenth line until EOF contains one file per line
+      line = f.readline()
+      line = f.readline()
+      while line := f.readline():
+        groups = re.match(r"\s+\d+\s+\d+\s+(.{40})\s+\d+\s+(.+)", line)
+        files.append((groups[2], groups[1]))
+
+      result = Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
 
     return result
