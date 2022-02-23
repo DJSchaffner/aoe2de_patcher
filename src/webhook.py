@@ -23,27 +23,12 @@ class Webhook:
         list: A list of all documented patches
     """
     url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/patches.json"
+
     response = self._query_website(url)
     result = json.loads(response.content)["patches"]
-
+    
     return result
-
-  def query_filelist(self, version: int, depot_id: int):
-    """Query a file list for a certain version and depot it.
-
-    Args:
-        version (int): The version to be queried
-        depot_id (int): The depot id to be queried
-
-    Returns:
-        string: The content of the found file or None if the file could not be found
-    """
-    url = f"https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/{version}/{depot_id}.txt"
-    response = self._query_website(url, ignore_success=True)
-    result = response.content.decode("utf-8")
-
-    return result
-
+      
   def _query_website(self, url: str, headers: dict=None, ignore_success: bool=False):
     """Query a website with the given headers.
 
