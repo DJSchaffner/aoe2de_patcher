@@ -1,6 +1,0 @@
-resources/_common/drs/graphics/u_arc_skirmisher_attackA_x2.smx
-resources/_common/drs/graphics/u_arc_skirmisher_deathA_x2.smx
-resources/_common/drs/graphics/u_arc_skirmisher_decayA_x2.smx
-resources/_common/drs/graphics/u_arc_skirmisher_idleA_x2.smx
-resources/_common/drs/graphics/u_arc_skirmisher_walkA_x2.smx
-resources/_common/drs/graphics/u_arc_skirmisher_idleB_x2.smx

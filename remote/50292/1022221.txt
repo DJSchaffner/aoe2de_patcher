@@ -1,2 +1,0 @@
-wwise/ko/15393155.wem
-wwise/ko/Campaign_VO.bnk

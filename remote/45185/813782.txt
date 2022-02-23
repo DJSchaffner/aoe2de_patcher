@@ -1,2 +1,0 @@
-widgetui/civTechTrees.json
-widgetui/instructionspanel.json
