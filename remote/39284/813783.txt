@@ -1,2 +1,0 @@
-wwise/Init.bnk
-wwise/Music.bnk

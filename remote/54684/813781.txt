@@ -1,2 +1,0 @@
-AoE2DE_s.exe
-BattleServer/BattleServer.exe

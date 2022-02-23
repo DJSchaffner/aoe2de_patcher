@@ -1,3 +1,0 @@
-813780_install.vdf
-AoE2DE_s.exe
-resources/en/strings/key-value/key-value-strings-utf8.txt

@@ -1,3 +1,0 @@
-AoE2DE_s.exe
-BattleServer/BattleServer.exe
-resources/_common/campaign/rcam1.aoe2campaign

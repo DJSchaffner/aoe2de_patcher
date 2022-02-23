@@ -1,2 +1,0 @@
-wwise/zh/864233426.wem
-wwise/zh/Scenario_VO.bnk

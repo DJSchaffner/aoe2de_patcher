@@ -1,2 +1,0 @@
-wwise/Music.bnk
-wwise/SFX.bnk
