@@ -6,8 +6,6 @@ Patches AoE2 DE to any officially released version (Steam version only!)
 
 Currently only suited for downgrading. To upgrade, please use steam to get to the latest version and downgrade from there if necessary. If i find the time and it's requested by anyone i might add upgrading as supported function back in.
 
-**I am not sure if patching with an installed DLC is working as of right now, since i do not own it myself. If you have tried, please let me know via the issue tracker.**
-
 # Requirements
 
 - Requires a steam account that owns the game
@@ -22,7 +20,7 @@ Currently only suited for downgrading. To upgrade, please use steam to get to th
 - If prompted, enter the 2FA code
 - To restore the previous game version hit \<Restore> after patching (Make sure the game is not open in steam anymore since it will show an error then)
 
-This whole process might take a while to finish!
+This whole process might take a while to finish, please wait until it says "DONE!".
 
 # Notes
 **Your login creedentials will not be stored.** 
@@ -49,11 +47,13 @@ Q: *Do I have to download a new version when a patch for AoE releases?*
 A: Usually not. When a new DLC is released, there is a high chance that the tool will have to be updated though. You will be informed when you start the tool and a new version is available.
 
 # Future features
-- Investigate options to improve upgrading mechanism
+- Investigate options to re-add upgrading mechanism
 - Get pre 35584 versions to work
-- Add toggle for Enhanced graphics pack (Warn people because thats a lot of data)
 - Maybe add a \<cancel> button
-- Make backups optional  
+- Add a progress bar
+- Add colored text to better identify important messages in log
+- Make backups optional
+- Investigate downloading without credentials (-beta)
 - If you have any other suggestions, feel free to open a ticket and tag it with 'enhancement'
 
 <a href="https://www.buymeacoffee.com/djschaffner" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Drink" style="height: 41px !important;width: 174px !important;" ></a>
