@@ -10,7 +10,7 @@
       "request": "launch",
       "program": "src/main.py",
       "console": "integratedTerminal",
-      "gevent": true
+      //"gevent": true
     }
   ]
 }
