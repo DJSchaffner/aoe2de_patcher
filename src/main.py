@@ -15,7 +15,7 @@ class App():
     self.logic = Logic()
     self.patch_list = list(reversed(self.logic.get_patch_list()))
 
-    self.version = 2.0
+    self.version = 2.1
 
     # Set up GUI
     self.window = tk.Tk()
