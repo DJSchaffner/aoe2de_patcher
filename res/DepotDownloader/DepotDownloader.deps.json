@@ -1,14 +1,14 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v5.0",
+    "name": ".NETCoreApp,Version=v6.0",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v5.0": {
-      "DepotDownloader/2.4.5": {
+    ".NETCoreApp,Version=v6.0": {
+      "DepotDownloader/2.4.6": {
         "dependencies": {
-          "SteamKit2": "2.4.0-Alpha.3",
+          "SteamKit2": "2.4.1",
           "protobuf-net": "3.0.101"
         },
         "runtime": {
@@ -41,15 +41,15 @@
           }
         }
       },
-      "SteamKit2/2.4.0-Alpha.3": {
+      "SteamKit2/2.4.1": {
         "dependencies": {
           "Microsoft.Win32.Registry": "5.0.0",
           "protobuf-net": "3.0.101"
         },
         "runtime": {
-          "lib/netstandard2.0/SteamKit2.dll": {
-            "assemblyVersion": "2.4.0.0",
-            "fileVersion": "2.4.0.7"
+          "lib/net6.0/SteamKit2.dll": {
+            "assemblyVersion": "2.4.1.0",
+            "fileVersion": "2.4.1.10"
           }
         }
       },
@@ -63,7 +63,7 @@
     }
   },
   "libraries": {
-    "DepotDownloader/2.4.5": {
+    "DepotDownloader/2.4.6": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -96,12 +96,12 @@
       "path": "protobuf-net.core/3.0.101",
       "hashPath": "protobuf-net.core.3.0.101.nupkg.sha512"
     },
-    "SteamKit2/2.4.0-Alpha.3": {
+    "SteamKit2/2.4.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-aR9ZcUVhr6naZiVD63vsB8Z0SzC2QeFan67IU7woUKRvP4mKFgCQaaCQPlu4+1K5EUAlYADFZ7/acPwcspU+/g==",
-      "path": "steamkit2/2.4.0-alpha.3",
-      "hashPath": "steamkit2.2.4.0-alpha.3.nupkg.sha512"
+      "sha512": "sha512-t9yptysn/2YY6KZaI123vOOnumS+ZCFcC6MhFEkTiQ04mdpZ/EWhk5RVY7jU36IQHyTQUXotmn7taKFCXMKp4g==",
+      "path": "steamkit2/2.4.1",
+      "hashPath": "steamkit2.2.4.1.nupkg.sha512"
     },
     "System.Security.AccessControl/5.0.0": {
       "type": "package",
