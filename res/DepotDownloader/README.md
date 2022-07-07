@@ -1,7 +1,7 @@
 DepotDownloader
 ===============
 
-Steam depot downloader utilizing the SteamKit2 library. Supports .NET 5.0
+Steam depot downloader utilizing the SteamKit2 library. Supports .NET 6.0
 
 ### Downloading one or all depots for an app
 ```
@@ -44,7 +44,7 @@ Parameter | Description
 -pubfile \<#>			| the PublishedFileId to download. (Will automatically resolve to UGC id)
 -username \<user>		| the username of the account to login to for restricted content.
 -password \<pass>		| the password of the account to login to for restricted content.
--remember-password		| if set, remember the password for subsequent logins of this user.
+-remember-password		| if set, remember the password for subsequent logins of this user. (Use -username <username> -remember-password as login credentials)
 -dir \<installdir>		| the directory in which to place downloaded files.
 -filelist \<file.txt>	| a list of files to download (from the manifest). Prefix file path with `regex:` if you want to match with regex.
 -validate				| Include checksum verification of files already downloaded
@@ -53,3 +53,15 @@ Parameter | Description
 -max-servers \<#>		| maximum number of content servers to use. (default: 20).
 -max-downloads \<#>		| maximum number of chunks to download concurrently. (default: 8).
 -loginid \<#>			| a unique 32-bit integer Steam LogonID in decimal, required if running multiple instances of DepotDownloader concurrently.
+
+
+## Frequently Asked Questions
+
+### Why am I prompted to enter a 2-factor code every time I run the app?
+Your 2-factor code authenticates a Steam session. You need to "remember" your session with `-remember-password` which persists the login key for your Steam session.
+
+### Can I run DepotDownloader while an account is already connected to Steam?
+Any connection to Steam will be closed if they share a LoginID. You can specify a different LoginID with `-loginid`.
+
+### Why doesn't my password containing special characters work? Do I have to specify the password on the command line?
+If you pass the `-password` parameter with a password that contains special characters, you will need to escape the command appropriately for the shell you are using. You do not have to include the `-password` parameter on the command line as long as you include a `-username`. You will be prompted to enter your password interactively.
