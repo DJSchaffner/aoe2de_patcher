@@ -4,6 +4,7 @@ import threading
 import time
 
 import tkinter as tk
+import tkinter.scrolledtext as scrolledtext
 import tkinter.ttk as ttk
 import tkinter.filedialog
 
@@ -48,10 +49,11 @@ class App():
     
     patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', time.gmtime(p['date']))}" for p in self.patch_list]
 
-    self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Version")
+    self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Target version")
     self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
-    self.opt_select_patch = ttk.OptionMenu(self.upper_frame, self.selected_patch_title, patch_titles[0], *[p for p in patch_titles])
-    self.opt_select_patch.grid(row=0, column=1, sticky="w")
+    self.cmb_select_patch = ttk.Combobox(self.upper_frame, state="readonly", textvariable=self.selected_patch_title, values=[p for p in patch_titles])
+    self.cmb_select_patch.current(0) # Set default value
+    self.cmb_select_patch.grid(row=0, column=1, sticky="w")
 
     self.btn_patch = ttk.Button(master=self.upper_frame, text="Patch", command=self._patch)
     self.btn_patch.grid(row=0, column=5, sticky="nesw")
@@ -72,7 +74,7 @@ class App():
     self.ent_password = ttk.Entry(master=self.upper_frame, show="*")
     self.ent_password.grid(row=2, column=3, sticky="nesw")
 
-    self.text_box = tk.Text(master=self.lower_frame, state="disabled")
+    self.text_box = scrolledtext.ScrolledText(master=self.lower_frame, state="disabled")
     self.text_box.pack(expand=True, fill="both")
 
     # Redirect stdout to the text box
@@ -128,7 +130,7 @@ class App():
   def _disable_input(self):
     """Disables User input for certain Buttons / Entries.
     """
-    self.opt_select_patch.config(state="disabled")
+    self.cmb_select_patch.config(state="disabled")
     self.btn_patch.config(state="disabled")
     self.btn_restore.config(state="disabled")
     self.btn_game_dir.config(state="disabled")
@@ -138,7 +140,7 @@ class App():
   def _enable_input(self):
     """Enables User input for certain Buttons / Entries.
     """
-    self.opt_select_patch.config(state="enabled")
+    self.cmb_select_patch.config(state="readonly")
     self.btn_patch.config(state="enabled")
     self.btn_restore.config(state="enabled")
     self.btn_game_dir.config(state="enabled")
