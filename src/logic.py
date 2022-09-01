@@ -65,8 +65,6 @@ class Logic:
       print("Please enter a password")
       return
 
-    self.installed_version = utils.get_version_number(self.game_dir / "AoE2DE_s.exe")[2]
-
     if self.installed_version == target_version:
       print("The selected version is already installed")
       return
@@ -144,9 +142,10 @@ class Logic:
 
     if aoe_binary.exists():
       self.game_dir = dir
+      self.installed_version = self._get_game_version()
 
       print(f"Game directory set to: {dir.absolute()}")
-      print(f"Installed version detected: {utils.get_version_number(aoe_binary)[2]}")
+      print(f"Installed version detected: {self.installed_version}")
       return True
 
     print("Invalid game directory")
@@ -483,6 +482,14 @@ class Logic:
     return changes
 
   def _read_manifest(self, file: pathlib.Path):
+    """Parse a given manifest file and return a manifest object
+
+    Args:
+        file (pathlib.Path): Path to the manifest file
+
+    Returns:
+        Manifest: The parsed manifest object
+    """
     result = None
 
     with open(file, "r") as f:
@@ -538,3 +545,13 @@ class Logic:
       result = Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
 
     return result
+
+  def _get_game_version(self):
+    """Retrieve the game version from the executable file. Requires game directory to be set.
+
+    Returns:
+        int: The detected game version
+    """
+    metadata = utils.get_version_number(self.game_dir / "AoE2DE_s.exe")
+
+    return (metadata[1] - 101) * 65536 + metadata[2]
