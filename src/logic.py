@@ -120,7 +120,7 @@ class Logic:
 
       # Copy backed up files to game path again
       try:
-        print("Restoring backup")
+        print("Restoring backup...")
         shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
         print("Finished restoring backup")
         print("DONE!")
