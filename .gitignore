@@ -2,5 +2,7 @@ download/
 *.pyc
 backup/
 dist/
+main.build/
+main.dist/
 manifests/
 log.txt
