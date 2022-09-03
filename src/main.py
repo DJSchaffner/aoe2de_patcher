@@ -10,6 +10,7 @@ import tkinter.filedialog
 
 import redirector
 from logic import Logic
+from utils import base_path
 
 class App():
   def __init__(self):
@@ -26,6 +27,11 @@ class App():
 
     def on_closing():
       self.logic.cancel_downloads()
+
+      # Log text box content to file
+      with open(base_path() / "log.txt", "w+") as file:
+        file.write(self.text_box.get(1.0, "end-1c"))
+        
       self.window.destroy()
 
     self.window.protocol("WM_DELETE_WINDOW", on_closing)
