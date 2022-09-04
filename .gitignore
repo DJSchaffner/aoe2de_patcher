@@ -6,3 +6,4 @@ main.build/
 main.dist/
 manifests/
 log.txt
+*.zip
