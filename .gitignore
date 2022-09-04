@@ -2,6 +2,7 @@ download/
 *.pyc
 backup/
 dist/
+*.dist/
 main.build/
 main.dist/
 manifests/
