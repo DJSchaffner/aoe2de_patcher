@@ -511,7 +511,9 @@ class Logic:
       line = f.readline()
       groups = re.match(r".* : (\d+) \/ (.+)", line).groups()
       id = groups[0]
-      date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
+      date = groups[1] # (Temporary) workaround since date isn't used anyways. 
+      # Date format seems to be localized... @TODO find a way to universally parse datestring
+      #date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
 
       # Fourth line contains number of files
       line = f.readline()
