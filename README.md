@@ -32,7 +32,7 @@ For now, try to avoid closing the program via task manager while it is downloadi
 # FAQ
 
 Q: *Where is the aoe2_updater.exe file?*  
-A: Please check that you downloaded the compiled zip file from the *releases* tab and not the source code.
+A: Please check that you downloaded the compiled zip file from the [Releases](https://github.com/DJSchaffner/aoe2de_patcher/releases) tab and not the source code.
 
 Q: *The patcher says "Could not patch" and "DOTNET core not found". What is wrong?*  
 A: You need to install DOTNET core to use the patcher. Please check the reuqirements section above for a link.
