@@ -63,4 +63,4 @@ A: Usually not. If there is a new version available you will be informed when yo
 
 *The downloaded files are from steam directly and not hosted by me.*  
 
-*This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a Ticket with the bug you encountered and a short desceription how it occured.*  
+*This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a ticket with the bug you encountered and a short description on how it occured.*  
