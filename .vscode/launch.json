@@ -8,7 +8,7 @@
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",
-      "program": "src/main.py",
+      "program": "src/aoe2de_patcher.py",
       "console": "integratedTerminal",
       //"gevent": true
     }
