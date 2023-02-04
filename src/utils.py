@@ -2,7 +2,6 @@ import sys
 import os
 import pathlib
 import shutil
-import win32api
 
 from tkinter import Text
 
@@ -13,12 +12,22 @@ def get_version_number (path: pathlib.Path):
       path (pathlib.Path): The path to the file
 
   Returns:
-      list: Windows version number
+      tuple: Windows version number
   """
-  info = win32api.GetFileVersionInfo(str(path), "\\")
-  ms = info['FileVersionMS']
-  ls = info['FileVersionLS']
-  return win32api.HIWORD (ms), win32api.LOWORD (ms), win32api.HIWORD (ls), win32api.LOWORD (ls)
+  try:
+    # with native python
+    from utils_win32 import get_version_number_win32
+    version_number = get_version_number_win32(str(path))
+  except:
+    # with python in wine
+    import subprocess
+    proc = subprocess.Popen(
+      ["wine", "python", "/opt/aoe2de_patcher/src/utils_win32.py", str(path)],
+      stdout=subprocess.PIPE,
+      text=True
+    )
+    version_number = tuple(int(x) for x in proc.stdout.read().strip().split())
+  return version_number
 
 def log(text_widget: Text, text: str):
   """Logs a given string to the text widget.
