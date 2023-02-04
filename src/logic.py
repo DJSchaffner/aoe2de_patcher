@@ -314,6 +314,7 @@ class Logic:
     Returns:
         bool: True if successful
     """
+    success = False
     depot_downloader_path = str(utils.resource_path("DepotDownloader/DepotDownloader.dll").absolute())
 
     args = ["dotnet", depot_downloader_path] + options
