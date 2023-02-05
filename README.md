@@ -46,7 +46,7 @@ A: Most likely it is this by default: *C:\Program Files (x86)\Steam\steamapps\co
 Q: *Do I have to download a new version of the tool when a patch for AoE releases?*  
 A: Usually not. If there is a new version available you will be informed when you start the tool.
 
-Q: *Can I use it on Linux?*
+Q: *Can I use it on Linux?*  
 A: Yes, we provide a docker container. You need to build from source with `docker/build.sh`, then run the patcher with `docker/run.sh aoe2de_patcher.dist/aoe2de_patcher.bin`.
 
 # Planned features
