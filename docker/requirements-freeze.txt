@@ -1,6 +1,0 @@
-access control disabled, clients can connect from any host
-
-Usage:   
-  pip freeze [options]
-
-no such option: --find-links
