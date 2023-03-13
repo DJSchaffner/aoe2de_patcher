@@ -227,26 +227,31 @@ class Logic:
 
     # Iterate depots of current and target patch together
     for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
-      depot_id = current_depot["depot_id"]
-      current_manifest_id = current_depot["manifest_id"]
-      target_manifest_id = target_depot["manifest_id"]
+      # Check if depot id changes (VCRedist for example does change sometimes)
+      # (Temporary?) solution just skip non-matching depot since old depots are no longer available and hope it still works
+      if current_depot["depot_id"] == target_depot["depot_id"]:
+        depot_id = current_depot["depot_id"]
+        current_manifest_id = current_depot["manifest_id"]
+        target_manifest_id = target_depot["manifest_id"]
 
-      changes = self._get_filelist(username, password, depot_id, current_manifest_id, target_manifest_id)
+        changes = self._get_filelist(username, password, depot_id, current_manifest_id, target_manifest_id)
 
-      # Files have changed, store changes to temp file and add to update list
-      if not changes is None:
-        # Create temp file
-        tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+        # Files have changed, store changes to temp file and add to update list
+        if not changes is None:
+          # Create temp file
+          tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
-        # Store file name for deletion later on
-        tmp_files.append(tmp.name)
+          # Store file name for deletion later on
+          tmp_files.append(tmp.name)
 
-        # Write content to file
-        tmp.write("\n".join(changes))
-        tmp.close()
+          # Write content to file
+          tmp.write("\n".join(changes))
+          tmp.close()
 
-        # Add update element to list
-        update_list.append({ 'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name })
+          # Add update element to list
+          update_list.append({ 'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name })
+      else:
+        print(f"Depot ID not matching, discarding pair ({current_depot['depot_id']}, {target_depot['depot_id']})")
    
     print("Downloading files")
     
@@ -436,11 +441,14 @@ class Logic:
     """Get a list of all files that have been removed or modified between the current and target version.
 
     Args:
-        selected_version (int): The selected version
-        relevant_depots (list): A list of depots that should be checked
+        username (str): The username
+        password (str): The password
+        depot_id (int): The selected depot
+        current_manifest_id (int): The current manifest id for the depot
+        target_manifest_id (id): The target manifest id for the depot
 
     Returns:
-        list: A list of tuples (depot id, filelist, manifest id) or None
+        list: A list of changed filenames
     """
     # Only need to check for changes if manifest changed
     if current_manifest_id == target_manifest_id:
@@ -481,6 +489,26 @@ class Logic:
     changes += modified
 
     return changes
+
+  def _get_filelist_current(self, username: str, password: str, depot_id: int, manifest_id: int):
+    """Get a list of all files current files of a depot.
+
+    Args:
+        username (str): The username
+        password (str): The password
+        depot_id (int): The selected depot
+        manifest_id (int): The current manifest id for the depot
+
+    Returns:
+        list: A list of current filesnames for the depot
+    """
+    # Download manifests
+    self._download_manifest(username, password, depot_id, manifest_id)
+
+    # Read manifest files
+    current_manifest = self._read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
+
+    return current_manifest.files
 
   def _read_manifest(self, file: pathlib.Path):
     """Parse a given manifest file and return a manifest object
