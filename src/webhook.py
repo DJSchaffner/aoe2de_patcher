@@ -3,6 +3,7 @@ import json
 
 import requests
 
+
 class Webhook:
   def query_latest_version(self):
     """Returns the latest version of the patch tool.
@@ -26,10 +27,10 @@ class Webhook:
 
     response = self._query_website(url)
     result = json.loads(response.content)["patches"]
-    
+
     return result
-      
-  def _query_website(self, url: str, headers: dict=None, ignore_success: bool=False):
+
+  def _query_website(self, url: str, headers: dict = None, ignore_success: bool = False):
     """Query a website with the given headers.
 
     Args:
