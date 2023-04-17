@@ -5,7 +5,6 @@ import shutil
 import signal
 import tempfile
 import re
-import time
 from queue import Queue
 from dataclasses import dataclass
 
@@ -16,6 +15,7 @@ import tkinter.simpledialog
 
 from webhook import Webhook
 import utils
+
 
 @dataclass
 class Manifest():
@@ -28,14 +28,14 @@ class Manifest():
   size_compressed: int
   files: list
 
+
 class Logic:
   app_id = 813780
 
   def __init__(self):
     self.webhook = Webhook()
     # The earliest patch that works was released after directx update
-    # @TODO Try to figure out a way to patch to earlier patches than this
-    #self.directx_update_date = time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
+    # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
     self.download_dir = utils.base_path() / "download"
     self.manifest_dir = utils.base_path() / "manifests"
     self.backup_dir = utils.base_path() / "backup"
@@ -166,7 +166,7 @@ class Logic:
     for process in self.process_queue.queue:
       process.kill(signal.SIGTERM)
 
-  def _download_patch(self, username: str, password: str, target_version: int):  
+  def _download_patch(self, username: str, password: str, target_version: int):
     """Download the given patch using the steam account credentials.
 
     Args:
@@ -182,8 +182,8 @@ class Logic:
     if not (utils.check_dotnet()):
       print("DOTNET Core required but not found!")
       return False
-    
-    update_list = []   
+
+    update_list = []
     tmp_files = []
 
     # Remove previous download folder if it exists
@@ -237,7 +237,7 @@ class Logic:
         changes = self._get_filelist(username, password, depot_id, current_manifest_id, target_manifest_id)
 
         # Files have changed, store changes to temp file and add to update list
-        if not changes is None:
+        if changes is not None:
           # Create temp file
           tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
@@ -249,12 +249,12 @@ class Logic:
           tmp.close()
 
           # Add update element to list
-          update_list.append({ 'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name })
+          update_list.append({'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name})
       else:
         print(f"Depot ID not matching, discarding pair ({current_depot['depot_id']}, {target_depot['depot_id']})")
-   
+
     print("Downloading files")
-    
+
     # Loop all necessary updates
     for element in update_list:
       # Stop if a download didn't succeed
@@ -323,7 +323,7 @@ class Logic:
     depot_downloader_path = f"\"{str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())}\""
 
     args = ["dotnet", depot_downloader_path] + options
-    
+
     # Spawn process and store in queue
     p = pexpect.popen_spawn.PopenSpawn(" ".join(args), encoding="utf-8")
     self.process_queue.put(p)
@@ -345,7 +345,7 @@ class Logic:
         success = True
 
       # Code required
-      elif response == 1:        
+      elif response == 1:
         # Open popup for 2FA Code
         # Create temporary parent window to prevent error with visibility
         temp = tkinter.Tk()
@@ -374,7 +374,7 @@ class Logic:
 
       # Wait for program to finish
       p.expect(pexpect.EOF, timeout=None)
-    except pexpect.exceptions.TIMEOUT as e:
+    except pexpect.exceptions.TIMEOUT:
       print("Error waiting for DepotDownloader to start")
     except ConnectionError as e:
       print(e)
@@ -399,11 +399,11 @@ class Logic:
     Returns:
         bool: True if successful
     """
-    args = ["-app", str(self.app_id), 
-            "-depot", str(depot_id), 
-            "-manifest", str(manifest_id), 
-            "-username", username, 
-            "-password", password, 
+    args = ["-app", str(self.app_id),
+            "-depot", str(depot_id),
+            "-manifest", str(manifest_id),
+            "-username", username,
+            "-password", password,
             "-remember-password",
             "-dir", str(self.manifest_dir),
             "-manifest-only"]
@@ -426,11 +426,11 @@ class Logic:
     Returns:
         bool: True if successful
     """
-    args = ["-app", str(self.app_id), 
-            "-depot", str(depot_id), 
-            "-manifest", str(manifest_id), 
-            "-username", username, 
-            "-password", password, 
+    args = ["-app", str(self.app_id),
+            "-depot", str(depot_id),
+            "-manifest", str(manifest_id),
+            "-username", username,
+            "-password", password,
             "-remember-password",
             "-dir", str(self.download_dir),
             "-filelist", filelist]
@@ -476,7 +476,7 @@ class Logic:
     # Find all added files (Result contains added files and files with different hash)
     diff_added = list(current_set.difference(target_set))
     diff_added_names = set([x[0] for x in diff_added])
-    
+
     # Find all removed files (Remove files with same name but different hash)
     removed = set.difference(diff_removed_names, diff_added_names)
 
@@ -531,7 +531,8 @@ class Logic:
       size_compressed = 0
       files = []
 
-      line = f.readline() # First line contains depot id
+      # First line contains depot id
+      line = f.readline()
       depot = re.match(r".* (\d+)", line).groups()[0]
 
       # Second lines is empty
@@ -540,9 +541,9 @@ class Logic:
       line = f.readline()
       groups = re.match(r".* : (\d+) \/ (.+)", line).groups()
       id = groups[0]
-      date = groups[1] # (Temporary) workaround since date isn't used anyways. 
+      date = groups[1]  # (Temporary) workaround since date isn't used anyways.
       # Date format seems to be localized... @TODO find a way to universally parse datestring
-      #date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
+      # date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
 
       # Fourth line contains number of files
       line = f.readline()

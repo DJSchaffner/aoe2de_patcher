@@ -12,6 +12,7 @@ import redirector
 from logic import Logic
 from utils import base_path
 
+
 class App():
   def __init__(self):
     self.logic = Logic()
@@ -31,11 +32,11 @@ class App():
       # Log text box content to file
       with open(base_path() / "log.txt", "w+") as file:
         file.write(self.text_box.get(1.0, "end-1c"))
-        
+
       self.window.destroy()
 
     self.window.protocol("WM_DELETE_WINDOW", on_closing)
-    
+
     self.upper_frame = tk.Frame(master=self.window)
     self.upper_frame.pack(side="top", expand=True, fill="both", padx=10, pady=(10, 5))
     self.upper_frame.columnconfigure(0, weight=1)
@@ -51,14 +52,14 @@ class App():
     self.lower_frame = tk.Frame(master=self.window)
     self.lower_frame.pack(side="bottom", expand=True, fill="both", padx=10, pady=(5, 10))
 
-    self.selected_patch_title = tk.StringVar()  
-    
+    self.selected_patch_title = tk.StringVar()
+
     patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', time.gmtime(p['date']))}" for p in self.patch_list]
 
     self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Target version")
-    self.lbl_select_patch.grid(row=0, column=0, sticky="e")  
+    self.lbl_select_patch.grid(row=0, column=0, sticky="e")
     self.cmb_select_patch = ttk.Combobox(self.upper_frame, state="readonly", textvariable=self.selected_patch_title, values=[p for p in patch_titles])
-    self.cmb_select_patch.current(0) # Set default value
+    self.cmb_select_patch.current(0)  # Set default value
     self.cmb_select_patch.grid(row=0, column=1, sticky="w")
 
     self.btn_patch = ttk.Button(master=self.upper_frame, text="Patch", command=self._patch)
@@ -129,7 +130,7 @@ class App():
       self._disable_input()
       self.logic.restore()
       self._enable_input()
-    
+
     t = threading.Thread(target=work)
     t.start()
 
@@ -152,6 +153,7 @@ class App():
     self.btn_game_dir.config(state="enabled")
     self.ent_username.config(state="enabled")
     self.ent_password.config(state="enabled")
+
 
 if __name__ == '__main__':
   app = App()
