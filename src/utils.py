@@ -5,7 +5,8 @@ import shutil
 
 from tkinter import Text
 
-def get_version_number (path: pathlib.Path):
+
+def get_version_number(path: pathlib.Path):
   """Retrieve the version number of a binary file.
 
   Args:
@@ -29,6 +30,7 @@ def get_version_number (path: pathlib.Path):
     version_number = tuple(int(x) for x in proc.stdout.read().strip().split())
   return version_number
 
+
 def log(text_widget: Text, text: str):
   """Logs a given string to the text widget.
 
@@ -40,6 +42,7 @@ def log(text_widget: Text, text: str):
   text_widget.insert("end", text)
   text_widget.configure(state="disabled")
   text_widget.see("end")
+
 
 def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str):
   """Copies a file or a directory recursively into the target directory.
@@ -54,6 +57,7 @@ def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: s
   else:
     shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
+
 def remove_file_or_dir(path: pathlib.Path):
   """Removes a file or directory recursively. Does not throw an error if file does not exist.
 
@@ -64,6 +68,7 @@ def remove_file_or_dir(path: pathlib.Path):
     shutil.rmtree(path.absolute(), ignore_errors=True)
   else:
     path.unlink(missing_ok=True)
+
 
 def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool):
   """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched.
@@ -85,8 +90,9 @@ def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_
     else:
       if debug_info:
         print(f"Copy {(original_dir / file).absolute()}")
-      
+
       copy_file_or_dir(original_dir, backup_dir, file)
+
 
 def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path, debug_info: bool):
   """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir.
@@ -104,7 +110,7 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
   # Remove all overridden files
   try:
     for file in changed_file_list:
-      # Its a folder, remove its contents 
+      # Its a folder, remove its contents
       if (original_dir / file).is_dir():
         remove_patched_files(original_dir / file, override_dir / file, debug_info)
 
@@ -118,10 +124,11 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
       else:
         if debug_info:
           print(f"Remove {(original_dir / file).absolute()}")
-        
+
         remove_file_or_dir(original_dir / file)
   except BaseException as e:
     raise e
+
 
 def check_dotnet():
   """Checks if dotnet is available.
@@ -131,18 +138,20 @@ def check_dotnet():
   """
   return not (shutil.which("dotnet") is None)
 
+
 def base_path():
   """Construct the base path to the exe / project.
 
   Returns:
       pathlib.Path: The base path of the exectuable or project
-  """ 
+  """
   # Get absolute path to resource, works for dev and for PyInstaller
   if getattr(sys, 'frozen', False):
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     return pathlib.Path(pathlib.sys.executable).parent
   else:
     return pathlib.Path()
+
 
 def resource_path(relative_path: str):
   """Construct the resource patch for a resource.
@@ -162,7 +171,8 @@ def resource_path(relative_path: str):
 
   return base_path / "res" / relative_path
 
-def clear():   
+
+def clear():
   """Clear the screen of the console.
   """
   _ = os.system('cls')
