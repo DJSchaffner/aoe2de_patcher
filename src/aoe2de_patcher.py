@@ -18,11 +18,11 @@ class App():
     self.logic = Logic()
     self.patch_list = list(reversed(self.logic.get_patch_list()))
 
-    self.version = 2.5
+    self.version = 2.6
 
     # Set up GUI
     self.window = tk.Tk()
-    self.window.title("AoE2DE Patcher")
+    self.window.title(f"AoE2DE Patcher v{self.version}")
     self.window.minsize(width=900, height=500)
     self.window.resizable(0, 0)
 
