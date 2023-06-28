@@ -50,71 +50,56 @@ class Logic:
         password (str): The password
         target_version (int): The version to patch to
     """
-    success = True
+    try:
+      # Check some stuff
+      if not hasattr(self, "game_dir") or self.game_dir is None:
+        raise BaseException("Please select a game directory")
 
-    # Check some stuff
-    if not hasattr(self, "game_dir") or self.game_dir is None:
-      print("Please select a game directory")
-      return
+      if username == "":
+        raise BaseException("Please enter a username")
 
-    if username == "":
-      print("Please enter a username")
-      return
+      if password == "":
+        raise BaseException("Please enter a password")
 
-    if password == "":
-      print("Please enter a password")
-      return
+      if self.installed_version == target_version:
+        raise BaseException("The selected version is already installed")
 
-    if self.installed_version == target_version:
-      print("The selected version is already installed")
-      return
+      print("Starting download phase...")
 
-    # Always true
-    if success:
-      print("Starting download phase")
-      success = success and self._download_patch(username, password, target_version)
+      self._download_patch(username, password, target_version)
 
-      if not success:
-        print("Error during download!")
+      print("Finished downloading files")
 
-    if success:
-      print("Starting backup")
-      success = success and self._backup()
+      print("Starting backup...")
 
-      if not success:
-        print("Error during backup!")
+      self._backup()
 
-    if success:
-      print("Patching files")
-      success = success and self._move_patch()
+      print("Finished backup")
 
-      if not success:
-        print("Error during patch!")
+      print("Patching files...")
 
-    if success:
-      print("DONE!")
-    else:
-      print("Could not patch!")
+      self._move_patch()
+
+      print("Finished patching files")
+    except BaseException:
+      raise
 
   def restore(self):
     """Restores the game directory using the backed up files and downloaded files.
     """
     # Check some stuff
     if not hasattr(self, "game_dir") or self.game_dir is None:
-      print("Please select a game directory")
-      return
+      raise BaseException("Please select a game directory")
 
     if not self.backup_dir.exists():
-      print("Backup directory doesn't exist")
-      return
+      raise BaseException("Backup directory doesn't exist")
 
     if len(os.listdir(self.backup_dir.absolute())) == 0:
-      print("No backup stored")
-      return
+      raise BaseException("No backup stored")
 
     # Remove added files from the path
     try:
-      print("Removing patched files")
+      print("Removing patched files...")
       utils.remove_patched_files(self.game_dir, self.download_dir, True)
       print("Finished removing patched files")
 
@@ -123,11 +108,10 @@ class Logic:
         print("Restoring backup...")
         shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
         print("Finished restoring backup")
-        print("DONE!")
       except BaseException:
-        print("Error restoring files!")
+        raise BaseException("Error restoring files!")
     except BaseException:
-      print("Error removing files!")
+      raise BaseException("Error removing files!")
 
   def set_game_dir(self, dir: pathlib.Path):
     """Tries to set the game directory, if succesful return True. Otherwise return False.
@@ -140,16 +124,14 @@ class Logic:
     """
     aoe_binary = dir / "AoE2DE_s.exe"
 
-    if aoe_binary.exists():
-      self.game_dir = dir
-      self.installed_version = self._get_game_version()
+    if not aoe_binary.exists():
+      raise BaseException("Invalid game directory")
 
-      print(f"Game directory set to: {dir.absolute()}")
-      print(f"Installed version detected: {self.installed_version}")
-      return True
+    self.game_dir = dir
+    self.installed_version = self._get_game_version()
 
-    print("Invalid game directory")
-    return False
+    print(f"Game directory set to: {dir.absolute()}")
+    print(f"Installed version detected: {self.installed_version}")
 
   def get_patch_list(self):
     """Returns the patch list.
@@ -174,14 +156,10 @@ class Logic:
         password (str): The password
         patch (dict): The dict containing patch info
         language (Languages): The selected language
-
-    Returns:
-        bool: True if successful
     """
     # dotnet is required to proceed
     if not (utils.check_dotnet()):
-      print("DOTNET Core required but not found!")
-      return False
+      raise BaseException("DOTNET Core required but not found!")
 
     update_list = []
     tmp_files = []
@@ -192,8 +170,8 @@ class Logic:
       try:
         shutil.rmtree(self.download_dir.absolute())
       except BaseException:
-        print("Error removing previous download directory")
-        return False
+        raise BaseException("Error removing previous download directory")
+
     self.download_dir.mkdir()
 
     # Remove previous manifests folder if it exists
@@ -202,8 +180,8 @@ class Logic:
       try:
         shutil.rmtree(self.manifest_dir.absolute())
       except BaseException:
-        print("Error removing previous manifest directory")
-        return False
+        raise BaseException("Error removing previous manifest directory")
+
     self.manifest_dir.mkdir()
 
     print("Generating list of changes")
@@ -213,8 +191,7 @@ class Logic:
 
     # One of the two patches is not in the list of patches. Most likeley the installed version, cannot patch
     if len(filtered_patches) != 2:
-      print("The installed version currently doesn't support downgrading. Please be patient or notify me on GitHub!")
-      return False
+      raise BaseException("The installed version currently doesn't support downgrading. Please be patient or notify me on GitHub!")
 
     # Store current and target patch
     current_patch = list(filter(lambda x: x["version"] == self.installed_version, self.patch_list))[0]
@@ -222,8 +199,7 @@ class Logic:
 
     # Only support patching via filelists to an older version atm
     if self.installed_version < target_version:
-      print("Patching forward is currently unavailable. Please use Steam to get to the latest version and then patch backwards")
-      return False
+      raise BaseException("Patching forward is currently unavailable. Please use Steam to get to the latest version and then patch backwards")
 
     # Iterate depots of current and target patch together
     for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
@@ -258,14 +234,11 @@ class Logic:
     # Loop all necessary updates
     for element in update_list:
       # Stop if a download didn't succeed
-      if not self._download_depot(username, password, element['depot_id'], element['manifest_id'], element['filelist']):
-        return False
+      self._download_depot(username, password, element['depot_id'], element['manifest_id'], element['filelist'])
 
     # Remove created temp files
     for tmp in tmp_files:
       os.unlink(tmp)
-
-    return True
 
   def _move_patch(self):
     """Move downloaded patch files to game directory.
@@ -275,12 +248,8 @@ class Logic:
     """
     try:
       shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
-
-      return True
     except BaseException:
-      pass
-
-    return False
+      raise
 
   def _backup(self):
     """Backup game folder and in current directory.
@@ -295,17 +264,12 @@ class Logic:
         try:
           shutil.rmtree(self.backup_dir.absolute())
         except BaseException:
-          print("Error removing previous backup directory")
-          return False
+          raise BaseException("Error removing previous backup directory")
       self.backup_dir.mkdir()
 
       utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
-
-      return True
     except BaseException:
-      pass
-
-    return False
+      raise
 
   def _depot_downloader(self, options: list):
     """Execute the DepotDownloader with the given options as arguments. Return True if successfull.
@@ -315,11 +279,7 @@ class Logic:
 
     Raises:
         ConnectionError: If there was an error during authentication
-
-    Returns:
-        bool: True if successful
     """
-    success = False
     depot_downloader_path = f"\"{str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())}\""
 
     args = ["dotnet", depot_downloader_path] + options
@@ -340,9 +300,9 @@ class Logic:
       timeout = 15
       response = p.expect(responses, timeout=timeout)
 
-      # Success
-      if response == 0:
-        success = True
+      # Error
+      if response == 2:
+        raise ConnectionError("Error logging into account")
 
       # Code required
       elif response == 1:
@@ -364,25 +324,16 @@ class Logic:
           # Invalid code
           if p.expect(responses, timeout=timeout) == 1:
             raise ConnectionError("Invalid authentication code")
-          # Success
-          else:
-            success = True
-
-      # Error
-      elif response == 2:
-        raise ConnectionError("Error logging into account")
 
       # Wait for program to finish
       p.expect(pexpect.EOF, timeout=None)
     except pexpect.exceptions.TIMEOUT:
-      print("Error waiting for DepotDownloader to start")
-    except ConnectionError as e:
-      print(e)
+      raise BaseException("Error waiting for DepotDownloader to start")
+    except ConnectionError:
+      raise
     finally:
       # Remove process from queue after working with it
       self.process_queue.get()
-
-    return success
 
   def _download_manifest(self, username: str, password: str, depot_id: int, manifest_id: int):
     """Download a specific manifest from the given depot using the given credentials.
