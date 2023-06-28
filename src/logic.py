@@ -118,9 +118,6 @@ class Logic:
 
     Args:
         dir (pathlib.Path): The directory to be set
-
-    Returns:
-        bool: True if successful
     """
     aoe_binary = dir / "AoE2DE_s.exe"
 
@@ -242,9 +239,6 @@ class Logic:
 
   def _move_patch(self):
     """Move downloaded patch files to game directory.
-
-    Returns:
-        bool: True if successful
     """
     try:
       shutil.copytree(self.download_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
@@ -253,9 +247,6 @@ class Logic:
 
   def _backup(self):
     """Backup game folder and in current directory.
-
-    Returns:
-        bool: True if successful
     """
     try:
       # Remove previous backup folder if it exists
@@ -346,9 +337,6 @@ class Logic:
 
     Raises:
         ConnectionError: If there was an error during authentication
-
-    Returns:
-        bool: True if successful
     """
     args = ["-app", str(self.app_id),
             "-depot", str(depot_id),
@@ -373,9 +361,6 @@ class Logic:
 
     Raises:
         ConnectionError: If there was an error during authentication
-
-    Returns:
-        bool: True if successful
     """
     args = ["-app", str(self.app_id),
             "-depot", str(depot_id),
