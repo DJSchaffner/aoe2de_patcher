@@ -301,7 +301,7 @@ class Logic:
         # Create temporary parent window to prevent error with visibility
         temp = tkinter.Tk()
         temp.withdraw()
-        code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code", parent=temp)
+        code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code", parent=temp).upper()
         temp.destroy()
 
         # Cancel was clicked
