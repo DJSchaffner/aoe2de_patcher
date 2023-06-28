@@ -288,7 +288,7 @@ class Logic:
       ]
 
       # Default timeout in seconds
-      timeout = 15
+      timeout = 30
       response = p.expect(responses, timeout=timeout)
 
       # Error
@@ -299,6 +299,7 @@ class Logic:
       elif response == 1:
         # Open popup for 2FA Code
         # Create temporary parent window to prevent error with visibility
+        # @TODO add timer as actual timer or bar running out
         temp = tkinter.Tk()
         temp.withdraw()
         code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code", parent=temp).upper()
