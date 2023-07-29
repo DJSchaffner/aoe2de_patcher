@@ -10,7 +10,7 @@ Currently only suited for downgrading. To upgrade, please use steam to get to th
 
 # Requirements
 
-- Requires a steam account that owns the game
+- Requires a steam account that owns the game (Family-shared also works)
 - Requires [.Net Core](https://dotnet.microsoft.com/download/dotnet-core/current/runtime) to run (Console version is enough)
 
 # Usage
