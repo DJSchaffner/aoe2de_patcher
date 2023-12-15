@@ -15,15 +15,16 @@ from utils import base_path
 
 
 class App():
-  def __init__(self):
+  def __init__(self, version_major: int, version_minor: int):
     self.logic = Logic()
     self.patch_list = list(reversed(self.logic.get_patch_list()))
 
-    self.version = 2.7
+    self.version_major = version_major
+    self.version_minor = version_minor
 
     # Set up GUI
     self.window = tk.Tk()
-    self.window.title(f"AoE2DE Patcher v{self.version}")
+    self.window.title(f"AoE2DE Patcher v{self.version_major}.{self.version_minor}")
     self.window.minsize(width=900, height=500)
     self.window.resizable(0, 0)
 
@@ -109,7 +110,9 @@ class App():
   def _check_version(self):
     """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
     """
-    if self.version < self.logic.webhook.query_latest_version():
+    target_major, target_minor = self.logic.webhook.query_latest_version()
+
+    if self.version_major < target_major or self.version_minor < target_minor:
       print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
       print("Please update because this version might no longer work!")
 
