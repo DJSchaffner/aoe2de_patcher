@@ -1,5 +1,8 @@
 from app import App
 
 if __name__ == '__main__':
-  app = App()
+  version_major = 2
+  version_minor = 8
+
+  app = App(version_major, version_minor)
   app.start()
