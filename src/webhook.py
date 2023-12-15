@@ -9,13 +9,13 @@ class Webhook:
     """Returns the latest version of the patch tool.
 
     Returns:
-        float: The latest version of the patch tool
+        major, minor: The latest version of the patch tool (ex: 2, 0)
     """
     url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/version.txt"
     response = self._query_website(url)
-    result = float(response.content)
+    major, minor = list(map(int, response.text.split(".")))
 
-    return result
+    return major, minor
 
   def query_patches(self):
     """Query a list of all patches.
