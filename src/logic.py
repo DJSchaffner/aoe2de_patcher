@@ -284,6 +284,7 @@ class Logic:
       responses = [
         "result: OK",
         "Please enter .*: ",
+        "STEAM GUARD!",
         pexpect.EOF
       ]
 
@@ -292,7 +293,7 @@ class Logic:
       response = p.expect(responses, timeout=timeout)
 
       # Error
-      if response == 2:
+      if response == 3:
         raise ConnectionError("Error logging into account")
 
       # Code required
@@ -316,6 +317,10 @@ class Logic:
           # Invalid code
           if p.expect(responses, timeout=timeout) == 1:
             raise ConnectionError("Invalid authentication code")
+
+      # Steam Guard
+      elif response == 2:
+        pass
 
       # Wait for program to finish
       p.expect(pexpect.EOF, timeout=None)
