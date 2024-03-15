@@ -350,7 +350,7 @@ class Logic:
             "-username", username,
             "-password", password,
             "-remember-password",
-            "-dir", str(self.manifest_dir),
+            "-dir", f"\"{str(self.manifest_dir)}\"",
             "-manifest-only"]
 
     return self._depot_downloader(args)
