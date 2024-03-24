@@ -283,8 +283,8 @@ class Logic:
     try:
       responses = [
         "result: OK",
-        "Please enter .*: ",
-        "STEAM GUARD!",
+        "STEAM GUARD! Please enter .*: ",
+        "STEAM GUARD! Use .*\.\.\.",
         pexpect.EOF
       ]
 
