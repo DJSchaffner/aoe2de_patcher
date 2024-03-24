@@ -2,6 +2,7 @@ download/
 *.pyc
 backup/
 dist/
+aoe2de_patcher/
 *.dist/
 main.build/
 main.dist/
