@@ -262,8 +262,8 @@ class Logic:
     except BaseException:
       raise
 
-  def _depot_downloader(self, options: list):
-    """Execute the DepotDownloader with the given options as arguments. Return True if successfull.
+  def _depot_downloader(self, options: list, password: str):
+    """Execute the DepotDownloader with the given options as arguments. Return True if successful.
 
     Args:
         options (list): A list of options that will be passed to DepotDownloader directly
@@ -280,12 +280,13 @@ class Logic:
     self.process_queue.put(p)
     p.logfile_read = sys.stdout
 
-    try:
+    def handleResponse():
       responses = [
-        "result: OK",
+        pexpect.EOF,
         "STEAM GUARD! Please enter .*: ",
         "STEAM GUARD! Use .*\.\.\.",
-        pexpect.EOF
+        "Enter account password.*: ",
+        "result: OK"
       ]
 
       # Default timeout in seconds
@@ -293,7 +294,7 @@ class Logic:
       response = p.expect(responses, timeout=timeout)
 
       # Error
-      if response == 3:
+      if response == 0:
         raise ConnectionError("Error logging into account")
 
       # Code required
@@ -322,6 +323,13 @@ class Logic:
       elif response == 2:
         pass
 
+      elif response == 3:
+        p.sendline(password)
+        handleResponse()
+
+    try:
+      handleResponse()
+
       # Wait for program to finish
       p.expect(pexpect.EOF, timeout=None)
     except pexpect.exceptions.TIMEOUT:
@@ -348,12 +356,11 @@ class Logic:
             "-depot", str(depot_id),
             "-manifest", str(manifest_id),
             "-username", username,
-            "-password", password,
             "-remember-password",
             "-dir", f"\"{str(self.manifest_dir)}\"",
             "-manifest-only"]
 
-    return self._depot_downloader(args)
+    return self._depot_downloader(args, password)
 
   def _download_depot(self, username: str, password: str, depot_id: int, manifest_id: int, filelist: str):
     """Download a specific depot using the manifest id from steam using the given credentials.
@@ -372,12 +379,11 @@ class Logic:
             "-depot", str(depot_id),
             "-manifest", str(manifest_id),
             "-username", username,
-            "-password", password,
             "-remember-password",
             "-dir", str(self.download_dir),
             "-filelist", filelist]
 
-    return self._depot_downloader(args)
+    return self._depot_downloader(args, password)
 
   def _get_filelist(self, username: str, password: str, depot_id: int, current_manifest_id: int, target_manifest_id: int):
     """Get a list of all files that have been removed or modified between the current and target version.
