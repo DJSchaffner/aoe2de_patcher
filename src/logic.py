@@ -114,7 +114,7 @@ class Logic:
       raise BaseException("Error removing files!")
 
   def set_game_dir(self, dir: pathlib.Path):
-    """Tries to set the game directory, if succesful return True. Otherwise return False.
+    """Tries to set the game directory, if successful return True. Otherwise return False.
 
     Args:
         dir (pathlib.Path): The directory to be set
@@ -186,7 +186,7 @@ class Logic:
     # Filter list of patches for current and target version
     filtered_patches = list(filter(lambda x: x["version"] == self.installed_version or x["version"] == target_version, self.patch_list))
 
-    # One of the two patches is not in the list of patches. Most likeley the installed version, cannot patch
+    # One of the two patches is not in the list of patches. Most likely the installed version, cannot patch
     if len(filtered_patches) != 2:
       raise BaseException("The installed version currently doesn't support downgrading. Please be patient or notify me on GitHub!")
 
@@ -514,7 +514,7 @@ class Logic:
       size_compressed = groups[0]
 
       # Eighth line is empty
-      # Nineth line contains headers
+      # Ninth line contains headers
       # Tenth line until EOF contains one file per line
       line = f.readline()
       line = f.readline()
