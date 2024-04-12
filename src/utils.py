@@ -134,7 +134,7 @@ def check_dotnet():
   """Checks if dotnet is available.
 
   Returns:
-      bool: True if dotnext is available
+      bool: True if dotnet is available
   """
   return not (shutil.which("dotnet") is None)
 
@@ -143,7 +143,7 @@ def base_path():
   """Construct the base path to the exe / project.
 
   Returns:
-      pathlib.Path: The base path of the exectuable or project
+      pathlib.Path: The base path of the executable or project
   """
   # Check for compiled version
   if getattr(sys, 'frozen', False) or hasattr(sys, '_MEIPASS'):
