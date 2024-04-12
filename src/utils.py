@@ -145,11 +145,11 @@ def base_path():
   Returns:
       pathlib.Path: The base path of the exectuable or project
   """
-  # Get absolute path to resource, works for dev and for PyInstaller
-  if getattr(sys, 'frozen', False):
+  # Check for compiled version
+  if getattr(sys, 'frozen', False) or hasattr(sys, '_MEIPASS'):
     return pathlib.Path(pathlib.sys.executable).parent
   else:
-    return pathlib.Path(os.path.dirname(sys.argv[0]))
+    return pathlib.Path(__file__).resolve().parent.parent
 
 
 def resource_path(relative_path: str):
@@ -161,13 +161,7 @@ def resource_path(relative_path: str):
   Returns:
       pathlib.Path: The path to the given resource
   """
-  # Get absolute path to resource, works for dev and for PyInstaller
-  if getattr(sys, 'frozen', False):
-    base_path = pathlib.Path(pathlib.sys.executable)
-  else:
-    base_path = pathlib.Path(os.path.dirname(sys.argv[0]))
-
-  return base_path / "res" / relative_path
+  return base_path() / "res" / relative_path
 
 
 def clear():
