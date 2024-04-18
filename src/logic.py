@@ -271,12 +271,10 @@ class Logic:
     Raises:
         ConnectionError: If there was an error during authentication
     """
-    depot_downloader_path = f"\"{str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())}\""
-
-    args = ["dotnet", depot_downloader_path] + options
+    args = ["dotnet", str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
 
     # Spawn process and store in queue
-    p = pexpect.popen_spawn.PopenSpawn(" ".join(args), encoding="utf-8")
+    p = pexpect.popen_spawn.PopenSpawn(args, encoding="utf-8")
     self.process_queue.put(p)
     p.logfile_read = sys.stdout
 
@@ -357,7 +355,7 @@ class Logic:
             "-manifest", str(manifest_id),
             "-username", username,
             "-remember-password",
-            "-dir", f"\"{str(self.manifest_dir)}\"",
+            "-dir", str(self.manifest_dir),
             "-manifest-only"]
 
     return self._depot_downloader(args, password)
