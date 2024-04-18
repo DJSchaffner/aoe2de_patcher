@@ -145,11 +145,15 @@ def base_path():
   Returns:
       pathlib.Path: The base path of the executable or project
   """
-  # Check for compiled version
-  if getattr(sys, 'frozen', False) or hasattr(sys, '_MEIPASS'):
+  # Check for compiled version via pyinstaller or similar
+  if getattr(sys, 'frozen', False):
+    return pathlib.Path(pathlib.sys._MEIPASS)
+  # Check for nuitka
+  elif "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
     return pathlib.Path(pathlib.sys.executable).parent
+  # Running as script (expects to be inside root/src)
   else:
-    return pathlib.Path(__file__).resolve().parent.parent
+    return pathlib.Path(__file__).parent.parent
 
 
 def resource_path(relative_path: str):
