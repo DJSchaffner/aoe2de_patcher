@@ -6,7 +6,7 @@ import shutil
 from tkinter import Text
 
 
-def get_version_number(path: pathlib.Path):
+def get_version_number(path: pathlib.Path) -> tuple:
   """Retrieve the version number of a binary file.
 
   Args:
@@ -31,7 +31,7 @@ def get_version_number(path: pathlib.Path):
   return version_number
 
 
-def log(text_widget: Text, text: str):
+def log(text_widget: Text, text: str) -> None:
   """Logs a given string to the text widget.
 
   Args:
@@ -44,7 +44,7 @@ def log(text_widget: Text, text: str):
   text_widget.see("end")
 
 
-def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str):
+def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str) -> None:
   """Copies a file or a directory recursively into the target directory.
 
   Args:
@@ -58,7 +58,7 @@ def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: s
     shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
 
-def remove_file_or_dir(path: pathlib.Path):
+def remove_file_or_dir(path: pathlib.Path) -> None:
   """Removes a file or directory recursively. Does not throw an error if file does not exist.
 
   Args:
@@ -70,7 +70,7 @@ def remove_file_or_dir(path: pathlib.Path):
     path.unlink(missing_ok=True)
 
 
-def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool):
+def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool) -> None:
   """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched.
 
   Args:
@@ -94,7 +94,7 @@ def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_
       copy_file_or_dir(original_dir, backup_dir, file)
 
 
-def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path, debug_info: bool):
+def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path, debug_info: bool) -> None:
   """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir.
 
   Args:
@@ -130,7 +130,7 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
     raise e
 
 
-def check_dotnet():
+def check_dotnet() -> bool:
   """Checks if dotnet is available.
 
   Returns:
@@ -139,7 +139,7 @@ def check_dotnet():
   return not (shutil.which("dotnet") is None)
 
 
-def base_path():
+def base_path() -> pathlib.Path:
   """Construct the base path to the exe / project.
 
   Returns:
@@ -156,7 +156,7 @@ def base_path():
     return pathlib.Path(__file__).parent.parent
 
 
-def resource_path(relative_path: str):
+def resource_path(relative_path: str) -> pathlib.Path:
   """Construct the resource patch for a resource.
 
   Args:
@@ -168,7 +168,7 @@ def resource_path(relative_path: str):
   return base_path() / "res" / relative_path
 
 
-def clear():
+def clear() -> None:
   """Clear the screen of the console.
   """
   _ = os.system('cls')
