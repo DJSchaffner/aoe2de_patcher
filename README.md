@@ -1,4 +1,4 @@
-![Github download latest release](https://img.shields.io/github/v/release/djschaffner/aoe2de_patcher?style=for-the-badge&label=Download)
+[![Github download latest release](https://img.shields.io/github/v/release/djschaffner/aoe2de_patcher?style=for-the-badge&label=Download)](https://github.com/DJSchaffner/aoe2de_patcher/releases/latest/download/aoe2de_patcher.zip)
 ![Github all releases downloads](https://img.shields.io/github/downloads/djschaffner/aoe2de_patcher/total?style=for-the-badge&label=total%20downloads)
 
 # AoE2 DE Patcher - WIP
