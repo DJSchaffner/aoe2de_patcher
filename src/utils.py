@@ -19,7 +19,7 @@ def get_version_number(path: pathlib.Path) -> tuple:
     # with native python
     from utils_win32 import get_version_number_win32
     version_number = get_version_number_win32(str(path))
-  except:
+  except Exception:
     # with python in wine
     import subprocess
     proc = subprocess.Popen(
