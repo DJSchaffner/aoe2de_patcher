@@ -1,7 +1,7 @@
 pexpect==4.8.0
 pypiwin32==223
-pywin32==304
+pywin32==311
 pywin32-ctypes==0.2.0
 requests==2.27.1
-nuitka
 ordered-set
+flake8
