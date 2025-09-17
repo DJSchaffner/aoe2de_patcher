@@ -446,7 +446,7 @@ class Logic:
         manifest_id (int): The current manifest id for the depot
 
     Returns:
-        list: A list of current filesnames for the depot
+        list: A list of current file names for the depot
     """
     # Download manifests
     self._download_manifest(username, password, depot_id, manifest_id)
@@ -512,13 +512,16 @@ class Logic:
       size_compressed = groups[0]
 
       # Eighth line is empty
-      # Ninth line contains headers
-      # Tenth line until EOF contains one file per line
+      # Ninth line is empty
+      # Tenth line contains headers
+      # Eleventh line until EOF contains one file per line
+      line = f.readline()
       line = f.readline()
       line = f.readline()
       while line := f.readline():
-        groups = re.match(r"\s+\d+\s+\d+\s+(.{40})\s+\d+\s+(.+)", line)
-        files.append((groups[2], groups[1]))
+        # Extract file hash and name
+        match = re.match(r"\s+\d+\s+\d+\s+(?P<hash>.{40})\s+\d+\s+(?P<name>.+)", line)
+        files.append((match.group("name"), match.group("hash")))
 
       result = Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
 
