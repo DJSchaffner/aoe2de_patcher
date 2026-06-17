@@ -30,55 +30,8 @@ class DepotDownloaderHelper:
         self.process_queue.put(p)
         p.logfile_read = sys.stdout
 
-        def handleResponse():
-            responses = [
-                pexpect.EOF,
-                "STEAM GUARD! Please enter .*: ",
-                "STEAM GUARD! Use .*\\.\\.\\.",
-                "Enter account password.*: ",
-                "result: OK"
-            ]
-
-            # Default timeout in seconds
-            timeout = 30
-            response = p.expect(responses, timeout=timeout)
-
-            # Error
-            if response == 0:
-                raise ConnectionError("Error logging into account")
-
-            # Code required
-            elif response == 1:
-                # Open popup for 2FA Code
-                # Create temporary parent window to prevent error with visibility
-                # @TODO add timer as actual timer or bar running out
-                temp = tkinter.Tk()
-                temp.withdraw()
-                code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code", parent=temp)
-                temp.destroy()
-
-                # Cancel was clicked
-                if code is None:
-                    raise ConnectionError("Invalid authentication code")
-                # Code was entered
-                else:
-                    # Send 2fa code to child process and check the result
-                    p.sendline(code.upper())
-
-                    # Invalid code
-                    if p.expect(responses, timeout=timeout) == 1:
-                        raise ConnectionError("Invalid authentication code")
-
-            # Steam Guard
-            elif response == 2:
-                pass
-
-            elif response == 3:
-                p.sendline(password)
-                handleResponse()
-
         try:
-            handleResponse()
+            self._handle_authentication(password, p)
 
             # Wait for program to finish
             p.expect(pexpect.EOF, timeout=None)
@@ -95,3 +48,58 @@ class DepotDownloaderHelper:
         """
         for process in self.process_queue.queue:
             process.kill(signal.SIGTERM)
+
+    def _handle_authentication(self, password: str, p: pexpect.popen_spawn.PopenSpawn):
+        """Handle interactive authentication flow
+
+        Args:
+            password (str): Password
+
+        Raises:
+            ConnectionError: If there was an error during authentication
+        """
+        responses = [
+            pexpect.EOF,
+            "STEAM GUARD! Please enter .*: ",
+            "STEAM GUARD! Use .*\\.\\.\\.",
+            "Enter account password.*: ",
+            "result: OK"
+        ]
+
+        # Default timeout in seconds
+        timeout = 30
+        response = p.expect(responses, timeout=timeout)
+
+        # Error
+        if response == 0:
+            raise ConnectionError("Error logging into account")
+
+        # Code required
+        elif response == 1:
+            # Open popup for 2FA Code
+            # Create temporary parent window to prevent error with visibility
+            # @TODO add timer as actual timer or bar running out
+            temp = tkinter.Tk()
+            temp.withdraw()
+            code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code", parent=temp)
+            temp.destroy()
+
+            # Cancel was clicked
+            if code is None:
+                raise ConnectionError("Invalid authentication code")
+            # Code was entered
+            else:
+                # Send 2fa code to child process and check the result
+                p.sendline(code.upper())
+
+                # Invalid code
+                if p.expect(responses, timeout=timeout) == 1:
+                    raise ConnectionError("Invalid authentication code")
+
+        # Steam Guard
+        elif response == 2:
+            pass
+
+        elif response == 3:
+            p.sendline(password)
+            self._handle_authentication(password, p)
