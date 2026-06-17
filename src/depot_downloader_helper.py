@@ -1,9 +1,9 @@
-import signal
+import os
 import sys
+import subprocess
+import re
 from queue import Queue
 
-import pexpect
-import pexpect.popen_spawn
 import tkinter
 import tkinter.simpledialog
 
@@ -14,7 +14,7 @@ class DepotDownloaderHelper:
     def __init__(self):
         self.process_queue = Queue()
 
-    def execute(self, options: list, password: str):
+    def execute(self, options: list):
         """Execute the DepotDownloader with the given options as arguments. Return True if successful.
 
         Args:
@@ -26,80 +26,127 @@ class DepotDownloaderHelper:
         args = ["dotnet", str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
 
         # Spawn process and store in queue
-        p = pexpect.popen_spawn.PopenSpawn(args, encoding="utf-8")
-        self.process_queue.put(p)
-        p.logfile_read = sys.stdout
+        process = subprocess.Popen(
+            args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            bufsize=1)
+        self.process_queue.put(process)
+
+        # Set read mode to non-blocking for process
+        os.set_blocking(process.stdout.fileno(), False)
 
         try:
-            self._handle_authentication(password, p)
+            self._handle_authentication(process)
 
             # Wait for program to finish
-            p.expect(pexpect.EOF, timeout=None)
-        except pexpect.exceptions.TIMEOUT:
-            raise BaseException("Error waiting for DepotDownloader to start")
+            process.wait()
         except ConnectionError:
             raise
         finally:
             # Remove process from queue after working with it
             self.process_queue.get()
+            if process.poll() is None:
+                process.terminate()
 
     def cancel_downloads(self):
         """Performs cleanup for logic object.
         """
         for process in self.process_queue.queue:
-            process.kill(signal.SIGTERM)
+            process.terminate()
 
-    def _handle_authentication(self, password: str, p: pexpect.popen_spawn.PopenSpawn):
+    def _handle_authentication(self, process: subprocess.Popen):
         """Handle interactive authentication flow
 
         Args:
-            password (str): Password
+            process (subprocess.Popen): The process
 
         Raises:
             ConnectionError: If there was an error during authentication
         """
         responses = [
-            pexpect.EOF,
-            "STEAM GUARD! Please enter .*: ",
-            "STEAM GUARD! Use .*\\.\\.\\.",
-            "Enter account password.*: ",
-            "result: OK"
+            r"STEAM GUARD! Please enter .*: ",
+            r"STEAM GUARD! Use .*\.\.\.",
+            r"Enter account password.*: ",
+            r"result: OK",
+            r"Error: InitializeSteam failed"
         ]
 
-        # Default timeout in seconds
-        timeout = 30
-        response = p.expect(responses, timeout=timeout)
+        while True:
+            line = process.stdout.readline()
+            if not line:  # EOF
+                break
 
-        # Error
-        if response == 0:
-            raise ConnectionError("Error logging into account")
+            # Print output in real-time
+            sys.stdout.write(line)
+            sys.stdout.flush()
 
-        # Code required
-        elif response == 1:
-            # Open popup for 2FA Code
-            # Create temporary parent window to prevent error with visibility
-            # @TODO add timer as actual timer or bar running out
-            temp = tkinter.Tk()
-            temp.withdraw()
-            code = tkinter.simpledialog.askstring(title="Code", prompt="Please enter your 2FA login code", parent=temp)
-            temp.destroy()
+            # Check patterns
+            response = -1
+            for i, pattern in enumerate(responses):
+                if re.search(pattern, line):
+                    response = i
+                    break
 
-            # Cancel was clicked
-            if code is None:
-                raise ConnectionError("Invalid authentication code")
-            # Code was entered
-            else:
-                # Send 2fa code to child process and check the result
-                p.sendline(code.upper())
+            # Handle responses
+            if response == 0:  # Code required
+                code = self._open_temp_prompt("Code", "Please enter your 2FA login code", False)
 
-                # Invalid code
-                if p.expect(responses, timeout=timeout) == 1:
+                if code is None:
                     raise ConnectionError("Invalid authentication code")
 
-        # Steam Guard
-        elif response == 2:
-            pass
+                process.stdin.write(code.upper() + '\n')
+                process.stdin.flush()
 
-        elif response == 3:
-            p.sendline(password)
-            self._handle_authentication(password, p)
+                # Check if code was accepted
+                next_line = process.stdout.readline()
+                sys.stdout.write(next_line)
+                sys.stdout.flush()
+
+                if next_line and re.search(responses[0], next_line):
+                    raise ConnectionError("Invalid authentication code")
+
+            elif response == 1:  # Steam Guard app
+                pass  # Just continue
+
+            elif response == 2:  # Password prompt
+                password = self._open_temp_prompt("Code", "Please enter your password", True)
+
+                if password is None:
+                    raise ConnectionError("Invalid password")
+
+                process.stdin.write(password + '\n')
+                process.stdin.flush()
+                self._handle_authentication(process)
+                break
+
+            elif response == 3:  # Success
+                break
+
+            elif response == 4:  # Error
+                raise ConnectionError("Could not login to steam account")
+
+    def _open_temp_prompt(self, title: str, prompt: str, is_hidden: bool) -> str | None:
+        """Opens a prompt widget with the requested title and prompt to enter information
+
+        Args:
+            title (str): The prompt window title
+            prompt (str): The prompt window text
+            is_hidden (bool): Flag to hide user input
+
+        Returns:
+            str | None: The entered string or None if invalid or cancelled
+        """
+        temp = tkinter.Tk()
+        temp.withdraw()
+        response = tkinter.simpledialog.askstring(
+            title=title,
+            prompt=prompt,
+            parent=temp,
+            show="*" if is_hidden else None
+        )
+        temp.destroy()
+
+        return response
