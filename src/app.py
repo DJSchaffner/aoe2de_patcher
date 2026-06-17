@@ -26,7 +26,7 @@ class App():
     self.window = tk.Tk()
     self.window.title(f"AoE2DE Patcher v{self.version_major}.{self.version_minor}")
     self.window.minsize(width=900, height=500)
-    self.window.resizable(0, 0)
+    self.window.resizable(False, False)
 
     def on_closing():
       self.logic.cancel_downloads()
@@ -98,14 +98,14 @@ class App():
   def _select_game_dir(self):
     """Open a file dialog for the user to select the game folder and send the result to logic.
     """
-    dir = tk.filedialog.askdirectory(mustexist=True)
+    dir = tkinter.filedialog.askdirectory(mustexist=True)
 
     # askdirectory returns empty string on hitting cancel
     if dir != "":
       try:
         self.logic.set_game_dir(pathlib.Path(dir))
       except BaseException as e:
-        tk.messagebox.showerror(title="ERROR", message=e)
+        tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
   def _check_version(self):
     """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
@@ -127,9 +127,9 @@ class App():
 
       try:
         self.logic.patch(self.ent_username.get(), self.ent_password.get(), selected_patch["version"])
-        tk.messagebox.showinfo(message="Patching done")
+        tkinter.messagebox.showinfo(message="Patching done")
       except BaseException as e:
-        tk.messagebox.showerror(title="ERROR", message=e)
+        tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
       self._enable_input()
 
@@ -144,9 +144,9 @@ class App():
 
       try:
         self.logic.restore()
-        tk.messagebox.showinfo(message="Restore done")
+        tkinter.messagebox.showinfo(message="Restore done")
       except BaseException as e:
-        tk.messagebox.showerror(title="ERROR", message=e)
+        tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
       self._enable_input()
 
