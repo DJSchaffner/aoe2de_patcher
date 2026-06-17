@@ -1,7 +1,7 @@
 pexpect==4.9.0
 pypiwin32==223
-pywin32==311
-pywin32-ctypes==0.2.0
-requests==2.27.1
+pywin32==312
+pywin32-ctypes==0.2.3
+requests==2.34.2
 ordered-set
 flake8
