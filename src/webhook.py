@@ -30,7 +30,7 @@ class Webhook:
 
     return result
 
-  def _query_website(self, url: str, headers: dict = None, ignore_success: bool = False):
+  def _query_website(self, url: str, headers: dict | None = None, ignore_success: bool = False):
     """Query a website with the given headers.
 
     Args:
