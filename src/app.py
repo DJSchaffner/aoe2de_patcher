@@ -122,8 +122,8 @@ class App():
         # Retrieve selected patch
         selected_patch = next((p for p in self.patch_list if str(p['version']) in self.selected_patch_title.get()), None)
         if selected_patch is None:
-                tkinter.messagebox.showerror(title="ERROR", message="Could not retrieve selected patch version")
-                return
+            tkinter.messagebox.showerror(title="ERROR", message="Could not retrieve selected patch version")
+            return
 
         def work():
             self._disable_input()
