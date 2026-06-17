@@ -282,7 +282,7 @@ class Logic:
       responses = [
         pexpect.EOF,
         "STEAM GUARD! Please enter .*: ",
-        "STEAM GUARD! Use .*\.\.\.",
+        "STEAM GUARD! Use .*\\.\\.\\.",
         "Enter account password.*: ",
         "result: OK"
       ]
