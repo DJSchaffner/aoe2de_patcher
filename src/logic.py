@@ -35,12 +35,11 @@ class Logic:
         self.patch_list = self.webhook.query_patches()
         self.depot_downloader_helper = DepotDownloaderHelper()
 
-    def patch(self, username: str, password: str, target_version: int):
+    def patch(self, username: str, target_version: int):
         """Start patching the game with the downloaded files.
 
         Args:
             username (str): The username
-            password (str): The password
             target_version (int): The version to patch to
         """
         try:
@@ -51,15 +50,12 @@ class Logic:
             if username == "":
                 raise BaseException("Please enter a username")
 
-            if password == "":
-                raise BaseException("Please enter a password")
-
             if self.installed_version == target_version:
                 raise BaseException("The selected version is already installed")
 
             print("Starting download phase...")
 
-            self._download_patch(username, password, target_version)
+            self._download_patch(username, target_version)
 
             print("Finished downloading files")
 
@@ -136,12 +132,11 @@ class Logic:
         """
         self.depot_downloader_helper.cancel_downloads()
 
-    def _download_patch(self, username: str, password: str, target_version: int):
+    def _download_patch(self, username: str, target_version: int):
         """Download the given patch using the steam account credentials.
 
         Args:
             username (str): The username
-            password (str): The password
             patch (dict): The dict containing patch info
             language (Languages): The selected language
         """
@@ -198,7 +193,7 @@ class Logic:
                 current_manifest_id = current_depot["manifest_id"]
                 target_manifest_id = target_depot["manifest_id"]
 
-                changes = self._get_filelist(username, password, depot_id, current_manifest_id, target_manifest_id)
+                changes = self._get_filelist(username, depot_id, current_manifest_id, target_manifest_id)
 
                 # Files have changed, store changes to temp file and add to update list
                 if changes is not None:
@@ -222,7 +217,7 @@ class Logic:
         # Loop all necessary updates
         for element in update_list:
             # Stop if a download didn't succeed
-            self._download_depot(username, password, element['depot_id'], element['manifest_id'], element['filelist'])
+            self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
 
         # Remove created temp files
         for tmp in tmp_files:
@@ -253,12 +248,11 @@ class Logic:
         except BaseException:
             raise
 
-    def _download_manifest(self, username: str, password: str, depot_id: int, manifest_id: int):
+    def _download_manifest(self, username: str, depot_id: int, manifest_id: int):
         """Download a specific manifest from the given depot using the given credentials.
 
         Args:
             username (str): The username
-            password (str): The password
             depot_id (int): The selected depot
             manifest_id (int): The manifest id for the depot
 
@@ -273,14 +267,13 @@ class Logic:
                 "-dir", str(self.manifest_dir),
                 "-manifest-only"]
 
-        return self.depot_downloader_helper.execute(args, password)
+        return self.depot_downloader_helper.execute(args)
 
-    def _download_depot(self, username: str, password: str, depot_id: int, manifest_id: int, filelist: str):
+    def _download_depot(self, username: str, depot_id: int, manifest_id: int, filelist: str):
         """Download a specific depot using the manifest id from steam using the given credentials.
 
         Args:
             username (str): The username
-            password (str): The password
             depot_id (int): The selected depot
             manifest_id (int): The manifest id for the depot
             filelist (str): The name of the file used as filelist
@@ -296,14 +289,13 @@ class Logic:
                 "-dir", str(self.download_dir),
                 "-filelist", filelist]
 
-        return self.depot_downloader_helper.execute(args, password)
+        return self.depot_downloader_helper.execute(args)
 
-    def _get_filelist(self, username: str, password: str, depot_id: int, current_manifest_id: int, target_manifest_id: int):
+    def _get_filelist(self, username: str, depot_id: int, current_manifest_id: int, target_manifest_id: int):
         """Get a list of all files that have been removed or modified between the current and target version.
 
         Args:
             username (str): The username
-            password (str): The password
             depot_id (int): The selected depot
             current_manifest_id (int): The current manifest id for the depot
             target_manifest_id (id): The target manifest id for the depot
@@ -319,8 +311,8 @@ class Logic:
         modified = []
 
         # Download manifests
-        self._download_manifest(username, password, depot_id, current_manifest_id)
-        self._download_manifest(username, password, depot_id, target_manifest_id)
+        self._download_manifest(username, depot_id, current_manifest_id)
+        self._download_manifest(username, depot_id, target_manifest_id)
 
         # Read manifest files
         current_manifest = self._read_manifest(self.manifest_dir / f"manifest_{depot_id}_{current_manifest_id}.txt")
@@ -356,7 +348,6 @@ class Logic:
 
         Args:
             username (str): The username
-            password (str): The password
             depot_id (int): The selected depot
             manifest_id (int): The current manifest id for the depot
 
@@ -364,7 +355,7 @@ class Logic:
             list: A list of current file names for the depot
         """
         # Download manifests
-        self._download_manifest(username, password, depot_id, manifest_id)
+        self._download_manifest(username, depot_id, manifest_id)
 
         # Read manifest files
         current_manifest = self._read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
