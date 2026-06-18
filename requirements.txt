@@ -1,4 +1,3 @@
-pexpect==4.8.0
 pypiwin32==223
 pywin32==311
 pywin32-ctypes==0.2.0
