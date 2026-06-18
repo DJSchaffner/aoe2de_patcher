@@ -22,12 +22,13 @@ def get_version_number(path: pathlib.Path) -> tuple:
     except Exception:
         # with python in wine
         import subprocess
-        proc = subprocess.Popen(
+        process = subprocess.Popen(
             ["wine", "python", "/opt/aoe2de_patcher/src/utils_win32.py", str(path)],
             stdout=subprocess.PIPE,
             text=True
         )
-        version_number = tuple(int(x) for x in proc.stdout.read().strip().split())
+        assert process.stdout is not None
+        version_number = tuple(int(x) for x in process.stdout.read().strip().split())
     return version_number
 
 
