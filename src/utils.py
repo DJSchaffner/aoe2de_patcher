@@ -7,168 +7,169 @@ from tkinter import Text
 
 
 def get_version_number(path: pathlib.Path) -> tuple:
-  """Retrieve the version number of a binary file.
+    """Retrieve the version number of a binary file.
 
-  Args:
-      path (pathlib.Path): The path to the file
+    Args:
+        path (pathlib.Path): The path to the file
 
-  Returns:
-      tuple: Windows version number
-  """
-  try:
-    # with native python
-    from utils_win32 import get_version_number_win32
-    version_number = get_version_number_win32(str(path))
-  except Exception:
-    # with python in wine
-    import subprocess
-    proc = subprocess.Popen(
-      ["wine", "python", "/opt/aoe2de_patcher/src/utils_win32.py", str(path)],
-      stdout=subprocess.PIPE,
-      text=True
-    )
-    version_number = tuple(int(x) for x in proc.stdout.read().strip().split())
-  return version_number
+    Returns:
+        tuple: Windows version number
+    """
+    try:
+        # with native python
+        from utils_win32 import get_version_number_win32
+        version_number = get_version_number_win32(str(path))
+    except Exception:
+        # with python in wine
+        import subprocess
+        process = subprocess.Popen(
+            ["wine", "python", "/opt/aoe2de_patcher/src/utils_win32.py", str(path)],
+            stdout=subprocess.PIPE,
+            text=True
+        )
+        assert process.stdout is not None
+        version_number = tuple(int(x) for x in process.stdout.read().strip().split())
+    return version_number
 
 
 def log(text_widget: Text, text: str) -> None:
-  """Logs a given string to the text widget.
+    """Logs a given string to the text widget.
 
-  Args:
-      text_widget (Text): The text widget
-      text (str): The text
-  """
-  text_widget.configure(state="normal")
-  text_widget.insert("end", text)
-  text_widget.configure(state="disabled")
-  text_widget.see("end")
+    Args:
+        text_widget (Text): The text widget
+        text (str): The text
+    """
+    text_widget.configure(state="normal")
+    text_widget.insert("end", text)
+    text_widget.configure(state="disabled")
+    text_widget.see("end")
 
 
 def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str) -> None:
-  """Copies a file or a directory recursively into the target directory.
+    """Copies a file or a directory recursively into the target directory.
 
-  Args:
-      source_dir (pathlib.Path): The source directory
-      target_dir (pathlib.Path): The target directory
-      file (str): The file or directory name
-  """
-  if (source_dir / file).is_dir():
-    shutil.copytree((source_dir / file).absolute(), (target_dir / file).absolute())
-  else:
-    shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
+    Args:
+        source_dir (pathlib.Path): The source directory
+        target_dir (pathlib.Path): The target directory
+        file (str): The file or directory name
+    """
+    if (source_dir / file).is_dir():
+        shutil.copytree((source_dir / file).absolute(), (target_dir / file).absolute())
+    else:
+        shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
 
 def remove_file_or_dir(path: pathlib.Path) -> None:
-  """Removes a file or directory recursively. Does not throw an error if file does not exist.
+    """Removes a file or directory recursively. Does not throw an error if file does not exist.
 
-  Args:
-      path (pathlib.Path): The path to be removed
-  """
-  if path.is_dir():
-    shutil.rmtree(path.absolute(), ignore_errors=True)
-  else:
-    path.unlink(missing_ok=True)
+    Args:
+        path (pathlib.Path): The path to be removed
+    """
+    if path.is_dir():
+        shutil.rmtree(path.absolute(), ignore_errors=True)
+    else:
+        path.unlink(missing_ok=True)
 
 
 def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool) -> None:
-  """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched.
+    """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched.
 
-  Args:
-      original_dir (pathlib.Path): The original directory
-      override_dir (pathlib.Path): The directory containing files / directories that will be overridden
-      backup_dir (pathlib.Path): The directory where the backup will be placed
-      debug_info (bool): Flag for printing debug info
-  """
-  changed_file_list = list(set(os.listdir(original_dir.absolute())).intersection(set(os.listdir(override_dir.absolute()))))
+    Args:
+        original_dir (pathlib.Path): The original directory
+        override_dir (pathlib.Path): The directory containing files / directories that will be overridden
+        backup_dir (pathlib.Path): The directory where the backup will be placed
+        debug_info (bool): Flag for printing debug info
+    """
+    changed_file_list = list(set(os.listdir(original_dir.absolute())).intersection(set(os.listdir(override_dir.absolute()))))
 
-  for file in changed_file_list:
-    # Its a folder, backup its contents
-    if (original_dir / file).is_dir():
-      (backup_dir / file).mkdir()
-      backup_files(original_dir / file, override_dir / file, backup_dir / file, debug_info)
-    # Its a file, copy it
-    else:
-      if debug_info:
-        print(f"Copy {(original_dir / file).absolute()}")
+    for file in changed_file_list:
+        # Its a folder, backup its contents
+        if (original_dir / file).is_dir():
+            (backup_dir / file).mkdir()
+            backup_files(original_dir / file, override_dir / file, backup_dir / file, debug_info)
+        # Its a file, copy it
+        else:
+            if debug_info:
+                print(f"Copy {(original_dir / file).absolute()}")
 
-      copy_file_or_dir(original_dir, backup_dir, file)
+            copy_file_or_dir(original_dir, backup_dir, file)
 
 
 def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path, debug_info: bool) -> None:
-  """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir.
+    """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir.
 
-  Args:
-      original_dir (pathlib.Path): The original directory
-      override_dir (pathlib.Path): The directory containing the files that have been overridden
-      debug_info (bool): Flag for printing debug info
+    Args:
+        original_dir (pathlib.Path): The original directory
+        override_dir (pathlib.Path): The directory containing the files that have been overridden
+        debug_info (bool): Flag for printing debug info
 
-  Raises:
-      BaseException: If there was an error removing files
-  """
-  changed_file_list = os.listdir(override_dir.absolute())
+    Raises:
+            BaseException: If there was an error removing files
+    """
+    changed_file_list = os.listdir(override_dir.absolute())
 
-  # Remove all overridden files
-  try:
-    for file in changed_file_list:
-      # Its a folder, remove its contents
-      if (original_dir / file).is_dir():
-        remove_patched_files(original_dir / file, override_dir / file, debug_info)
+    # Remove all overridden files
+    try:
+        for file in changed_file_list:
+            # Its a folder, remove its contents
+            if (original_dir / file).is_dir():
+                remove_patched_files(original_dir / file, override_dir / file, debug_info)
 
-        # Remove directory if its now empty
-        if len(os.listdir((original_dir / file).absolute())) == 0:
-          if debug_info:
-            print(f"Remove {(original_dir / file).absolute()}")
+                # Remove directory if its now empty
+                if len(os.listdir((original_dir / file).absolute())) == 0:
+                    if debug_info:
+                        print(f"Remove {(original_dir / file).absolute()}")
 
-          remove_file_or_dir(original_dir / file)
-      # Its a file, remove it
-      else:
-        if debug_info:
-          print(f"Remove {(original_dir / file).absolute()}")
+                    remove_file_or_dir(original_dir / file)
+            # Its a file, remove it
+            else:
+                if debug_info:
+                    print(f"Remove {(original_dir / file).absolute()}")
 
-        remove_file_or_dir(original_dir / file)
-  except BaseException as e:
-    raise e
+                remove_file_or_dir(original_dir / file)
+    except BaseException as e:
+        raise e
 
 
 def check_dotnet() -> bool:
-  """Checks if dotnet is available.
+    """Checks if dotnet is available.
 
-  Returns:
-      bool: True if dotnet is available
-  """
-  return not (shutil.which("dotnet") is None)
+    Returns:
+        bool: True if dotnet is available
+    """
+    return not (shutil.which("dotnet") is None)
 
 
 def base_path() -> pathlib.Path:
-  """Construct the base path to the exe / project.
+    """Construct the base path to the exe / project.
 
-  Returns:
-      pathlib.Path: The base path of the executable or project
-  """
-  # Check for compiled version via pyinstaller or similar
-  if getattr(sys, 'frozen', False):
-    return pathlib.Path(pathlib.sys._MEIPASS)
-  # Check for nuitka
-  elif "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
-    return pathlib.Path(pathlib.sys.executable).parent
-  # Running as script (expects to be inside root/src)
-  else:
-    return pathlib.Path(__file__).parent.parent
+    Returns:
+        pathlib.Path: The base path of the executable or project
+    """
+    # Check for compiled version via pyinstaller or similar
+    if getattr(sys, 'frozen', False):
+        return pathlib.Path(pathlib.sys._MEIPASS)
+    # Check for nuitka
+    elif "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
+        return pathlib.Path(pathlib.sys.executable).parent
+    # Running as script (expects to be inside root/src)
+    else:
+        return pathlib.Path(__file__).parent.parent
 
 
 def resource_path(relative_path: str) -> pathlib.Path:
-  """Construct the resource patch for a resource.
+    """Construct the resource patch for a resource.
 
-  Args:
-      relative_path (str): The path relative to the resource path
+    Args:
+        relative_path (str): The path relative to the resource path
 
-  Returns:
-      pathlib.Path: The path to the given resource
-  """
-  return base_path() / "res" / relative_path
+    Returns:
+        pathlib.Path: The path to the given resource
+    """
+    return base_path() / "res" / relative_path
 
 
 def clear() -> None:
-  """Clear the screen of the console.
-  """
-  _ = os.system('cls')
+    """Clear the screen of the console.
+    """
+    _ = os.system('cls')
