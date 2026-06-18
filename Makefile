@@ -29,7 +29,7 @@ lint:
 	$(FLAKE8) src/
 
 clean:
-	rm -rf *.pyc __pycache__ build/ aoe2de_patcher.dist/
+	rm -rf *.pyc __pycache__ build/ aoe2de_patcher.dist/ manifests/ download/ backup/
 
 build: clean
 	$(PYTHON) -m pip install nuitka
