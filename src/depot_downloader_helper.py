@@ -4,6 +4,7 @@ import subprocess
 import re
 from queue import Queue
 
+import time
 import tkinter
 import tkinter.simpledialog
 
@@ -39,8 +40,11 @@ class DepotDownloaderHelper:
         assert process.stdout is not None
         os.set_blocking(process.stdout.fileno(), False)
 
+        # Wait a bit so the program can produce output
+        # TODO: Find a better solution for this
+        time.sleep(1)
+
         try:
-            # TODO: Sometimes the output is not getting printed?
             self._handle_authentication(process)
 
             # Wait for program to finish
@@ -85,7 +89,7 @@ class DepotDownloaderHelper:
                 break
 
             # Print output in real-time
-            sys.stdout.write(line + "\n")
+            sys.stdout.write(line)
             sys.stdout.flush()
 
             # Check patterns
