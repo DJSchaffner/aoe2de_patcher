@@ -4,7 +4,7 @@ import json
 import requests
 
 
-class Webhook:
+class WebHelper:
     def query_latest_version(self):
         """Returns the latest version of the patch tool.
 

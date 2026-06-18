@@ -4,9 +4,10 @@ import shutil
 import tempfile
 import re
 from dataclasses import dataclass
+from typing import Any
 
 from depot_downloader_helper import DepotDownloaderHelper
-from webhook import Webhook
+from web_helper import WebHelper
 import utils
 
 
@@ -14,7 +15,7 @@ import utils
 class Manifest():
     depot: int
     id: int
-    date: int
+    date: Any
     num_files: int
     num_chunks: int
     size_disk: int
@@ -26,7 +27,7 @@ class Logic:
     app_id = 813780
 
     def __init__(self):
-        self.webhook = Webhook()
+        self.webhook = WebHelper()
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
         self.download_dir = utils.base_path() / "download"
@@ -373,6 +374,14 @@ class Logic:
         """
         result = None
 
+        def expectMatch(pattern: str, line: str) -> re.Match[str]:
+            match = re.match(pattern, line)
+
+            if match is None:
+                raise ValueError(f"Could not match patter '{pattern}' against line '{line}'")
+
+            return match
+
         with open(file, "r") as f:
             depot = 0
             id = 0
@@ -383,53 +392,56 @@ class Logic:
             size_compressed = 0
             files = []
 
-            # First line contains depot id
-            line = f.readline()
-            depot = re.match(r".* (\d+)", line).groups()[0]
+            try:
+                # First line contains depot id
+                line = f.readline()
+                depot = int(expectMatch(r".* (\d+)", line).groups()[0])
 
-            # Second lines is empty
-            # Third contains manifest id and date
-            line = f.readline()
-            line = f.readline()
-            groups = re.match(r".* : (\d+) \/ (.+)", line).groups()
-            id = groups[0]
-            date = groups[1]    # (Temporary) workaround since date isn't used anyways.
-            # Date format seems to be localized... @TODO find a way to universally parse datestring
-            # date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
+                # Second lines is empty
+                # Third contains manifest id and date
+                line = f.readline()
+                line = f.readline()
+                groups = expectMatch(r".* : (\d+) \/ (.+)", line).groups()
+                id = int(groups[0])
+                date = str(groups[1])    # (Temporary) workaround since date isn't used anyways.
+                # Date format seems to be localized... @TODO find a way to universally parse datestring
+                # date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
 
-            # Fourth line contains number of files
-            line = f.readline()
-            groups = re.match(r".* : (\d+)", line).groups()
-            num_files = groups[0]
+                # Fourth line contains number of files
+                line = f.readline()
+                groups = expectMatch(r".* : (\d+)", line).groups()
+                num_files = int(groups[0])
 
-            # Fifth line contains number of chunks
-            line = f.readline()
-            groups = re.match(r".* : (\d+)", line).groups()
-            num_chunks = groups[0]
+                # Fifth line contains number of chunks
+                line = f.readline()
+                groups = expectMatch(r".* : (\d+)", line).groups()
+                num_chunks = int(groups[0])
 
-            # Sixth line contains size on disk
-            line = f.readline()
-            groups = re.match(r".* : (\d+)", line).groups()
-            size_disk = groups[0]
+                # Sixth line contains size on disk
+                line = f.readline()
+                groups = expectMatch(r".* : (\d+)", line).groups()
+                size_disk = int(groups[0])
 
-            # Seventh line contains size compressed
-            line = f.readline()
-            groups = re.match(r".* : (\d+)", line).groups()
-            size_compressed = groups[0]
+                # Seventh line contains size compressed
+                line = f.readline()
+                groups = expectMatch(r".* : (\d+)", line).groups()
+                size_compressed = int(groups[0])
 
-            # Eighth line is empty
-            # Ninth line is empty
-            # Tenth line contains headers
-            # Eleventh line until EOF contains one file per line
-            line = f.readline()
-            line = f.readline()
-            line = f.readline()
-            while line := f.readline():
-                # Extract file hash and name
-                match = re.match(r"\s+\d+\s+\d+\s+(?P<hash>.{40})\s+\d+\s+(?P<name>.+)", line)
-                files.append((match.group("name"), match.group("hash")))
+                # Eighth line is empty
+                # Ninth line is empty
+                # Tenth line contains headers
+                # Eleventh line until EOF contains one file per line
+                line = f.readline()
+                line = f.readline()
+                line = f.readline()
+                while line := f.readline():
+                    # Extract file hash and name
+                    match = expectMatch(r"\s+\d+\s+\d+\s+(?P<hash>.{40})\s+\d+\s+(?P<name>.+)", line)
+                    files.append((match.group("name"), match.group("hash")))
 
-            result = Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
+                result = Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
+            except ValueError:
+                raise
 
         return result
 

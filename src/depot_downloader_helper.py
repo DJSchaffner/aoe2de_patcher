@@ -36,9 +36,11 @@ class DepotDownloaderHelper:
         self.process_queue.put(process)
 
         # Set read mode to non-blocking for process
+        assert process.stdout is not None
         os.set_blocking(process.stdout.fileno(), False)
 
         try:
+            # TODO: Sometimes the output is not getting printed?
             self._handle_authentication(process)
 
             # Wait for program to finish
@@ -66,6 +68,9 @@ class DepotDownloaderHelper:
         Raises:
             ConnectionError: If there was an error during authentication
         """
+        assert process.stdout is not None
+        assert process.stdin is not None
+
         responses = [
             r"STEAM GUARD! Please enter .*: ",
             r"STEAM GUARD! Use .*\.\.\.",
@@ -80,7 +85,7 @@ class DepotDownloaderHelper:
                 break
 
             # Print output in real-time
-            sys.stdout.write(line)
+            sys.stdout.write(line + "\n")
             sys.stdout.flush()
 
             # Check patterns
