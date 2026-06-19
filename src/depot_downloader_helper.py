@@ -27,7 +27,7 @@ class DepotDownloaderHelper:
         self.process_queue = Queue()
 
     def execute(self, options: list) -> None:
-        """Execute the DepotDownloader with the given options as arguments. Return True if successful.
+        """Execute the DepotDownloader with the given options as arguments.
 
         Args:
             options (list): A list of options that will be passed to DepotDownloader directly
@@ -69,8 +69,8 @@ class DepotDownloaderHelper:
         for process in self.process_queue.queue:
             process.terminate()
 
-    def _handle_process(self, process: subprocess.Popen):
-        """Handle interactive authentication flow
+    def _handle_process(self, process: subprocess.Popen) -> None:
+        """Handle process flow and return when process has terminated.
 
         Args:
             process (subprocess.Popen): The process
@@ -130,7 +130,7 @@ class DepotDownloaderHelper:
                     pass
 
     def _handle_authentication(self, process: subprocess.Popen, state: ProcessState) -> None:
-        """Handle interactive authentication flow
+        """Handle interactive authentication flow.
 
         Args:
             process (subprocess.Popen): The process
@@ -165,11 +165,6 @@ class DepotDownloaderHelper:
             process.stdin.write(code.upper() + '\n')
             process.stdin.flush()
 
-            # Check if code was accepted
-            next_line = process.stdout.readline()
-            sys.stdout.write(next_line)
-            sys.stdout.flush()
-
         match state:
             case ProcessState.AUTH_PASSWORD_REQUIRED:
                 handle_password_required()
@@ -181,7 +176,7 @@ class DepotDownloaderHelper:
                 sys.stdout.write(f"Unexpected authentication state: {state}")
 
     def _open_temp_prompt(self, title: str, prompt: str, is_hidden: bool) -> str | None:
-        """Opens a prompt widget with the requested title and prompt to enter information
+        """Opens a prompt widget with the requested title and prompt to enter information.
 
         Args:
             title (str): The prompt window title
