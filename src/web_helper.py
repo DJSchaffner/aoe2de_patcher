@@ -1,4 +1,3 @@
-import sys
 import json
 from typing import Any
 
@@ -37,7 +36,7 @@ class WebHelper:
         Args:
             url (str): The url of the website to be queried
             headers (dict, optional): The headers to use. Defaults to None.
-            ignore_success (bool, optional): If set to true, check if response is 200 and exit program if it is not. Defaults to False.
+            ignore_success (bool, optional): If set to true, check if response is 200 and raises an exception if it is not. Defaults to False.
 
         Returns:
             requests.Response: The response of the request
@@ -48,7 +47,7 @@ class WebHelper:
 
         if (not ignore_success) and (not self._is_response_successful(response)):
             self._print_response_error(response)
-            sys.exit()
+            raise requests.RequestException("Received error on request when expecting valid response")
 
         return response
 

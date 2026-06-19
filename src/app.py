@@ -99,7 +99,7 @@ class App():
         if dir != "":
             try:
                 self.logic.set_game_dir(pathlib.Path(dir))
-            except BaseException as e:
+            except Exception as e:
                 tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
     def _check_version(self) -> None:
@@ -126,7 +126,7 @@ class App():
             try:
                 self.logic.patch(self.ent_username.get(), selected_patch["version"])
                 tkinter.messagebox.showinfo(message="Patching done")
-            except BaseException as e:
+            except Exception as e:
                 tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
             self._enable_input()
@@ -143,7 +143,7 @@ class App():
             try:
                 self.logic.restore()
                 tkinter.messagebox.showinfo(message="Restore done")
-            except BaseException as e:
+            except Exception as e:
                 tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
             self._enable_input()
