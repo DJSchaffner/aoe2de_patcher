@@ -84,13 +84,13 @@ class App():
         # Redirect stdout to the text box
         sys.stdout = redirector.StdoutRedirector(self.text_box)
 
-    def start(self):
+    def start(self) -> None:
         """Start the application.
         """
         self._check_version()
         self.window.mainloop()
 
-    def _select_game_dir(self):
+    def _select_game_dir(self) -> None:
         """Open a file dialog for the user to select the game folder and send the result to logic.
         """
         dir = tkinter.filedialog.askdirectory(mustexist=True)
@@ -102,7 +102,7 @@ class App():
             except BaseException as e:
                 tkinter.messagebox.showerror(title="ERROR", message=str(e))
 
-    def _check_version(self):
+    def _check_version(self) -> None:
         """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
         """
         target_major, target_minor = self.logic.webhook.query_latest_version()
@@ -111,7 +111,7 @@ class App():
             print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
             print("Please update because this version might no longer work!")
 
-    def _patch(self):
+    def _patch(self) -> None:
         """Start patching the game with the downloaded files.
         """
         # Retrieve selected patch
@@ -134,7 +134,7 @@ class App():
         t = threading.Thread(target=work)
         t.start()
 
-    def _restore(self):
+    def _restore(self) -> None:
         """Restores the game directory using the backed up files and downloaded files.
         """
         def work():
@@ -151,7 +151,7 @@ class App():
         t = threading.Thread(target=work)
         t.start()
 
-    def _disable_input(self):
+    def _disable_input(self) -> None:
         """Disables User input for certain Buttons / Entries.
         """
         self.cmb_select_patch.config(state="disabled")
@@ -160,7 +160,7 @@ class App():
         self.btn_game_dir.config(state="disabled")
         self.ent_username.config(state="disabled")
 
-    def _enable_input(self):
+    def _enable_input(self) -> None:
         """Enables User input for certain Buttons / Entries.
         """
         self.cmb_select_patch.config(state="readonly")
