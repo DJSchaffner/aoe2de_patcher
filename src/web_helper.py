@@ -1,11 +1,11 @@
-import sys
 import json
+from typing import Any
 
 import requests
 
 
 class WebHelper:
-    def query_latest_version(self):
+    def query_latest_version(self) -> tuple[int, int]:
         """Returns the latest version of the patch tool.
 
         Returns:
@@ -17,7 +17,7 @@ class WebHelper:
 
         return major, minor
 
-    def query_patches(self):
+    def query_patches(self) -> list[dict]:
         """Query a list of all patches.
 
         Returns:
@@ -30,13 +30,13 @@ class WebHelper:
 
         return result
 
-    def _query_website(self, url: str, headers: dict | None = None, ignore_success: bool = False):
+    def _query_website(self, url: str, headers: dict | None = None, ignore_success: bool = False) -> Any:
         """Query a website with the given headers.
 
         Args:
             url (str): The url of the website to be queried
             headers (dict, optional): The headers to use. Defaults to None.
-            ignore_success (bool, optional): If set to true, check if response is 200 and exit program if it is not. Defaults to False.
+            ignore_success (bool, optional): If set to true, check if response is 200 and raises an exception if it is not. Defaults to False.
 
         Returns:
             requests.Response: The response of the request
@@ -47,11 +47,11 @@ class WebHelper:
 
         if (not ignore_success) and (not self._is_response_successful(response)):
             self._print_response_error(response)
-            sys.exit()
+            raise requests.RequestException("Received error on request when expecting valid response")
 
         return response
 
-    def _is_response_successful(self, response: requests.Response):
+    def _is_response_successful(self, response: requests.Response) -> bool:
         """Checks if a response returned successfully.
 
         Args:
@@ -62,7 +62,7 @@ class WebHelper:
         """
         return response.status_code == 200
 
-    def _print_response_error(self, response: requests.Response):
+    def _print_response_error(self, response: requests.Response) -> None:
         """Print the according error for a response.
 
         Args:
