@@ -2,7 +2,7 @@ import sys
 import win32api
 
 
-def get_version_number_win32(path: str):
+def get_version_number_win32(path: str) -> tuple[int, int, int, int]:
     """Retrieve the version number of a binary file.
 
     Args:

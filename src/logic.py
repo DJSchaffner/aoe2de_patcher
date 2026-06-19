@@ -20,7 +20,7 @@ class Manifest():
     num_chunks: int
     size_disk: int
     size_compressed: int
-    files: list
+    files: list[str]
 
 
 class Logic:
@@ -36,7 +36,7 @@ class Logic:
         self.patch_list = self.webhook.query_patches()
         self.depot_downloader_helper = DepotDownloaderHelper()
 
-    def patch(self, username: str, target_version: int):
+    def patch(self, username: str, target_version: int) -> None:
         """Start patching the game with the downloaded files.
 
         Args:
@@ -74,7 +74,7 @@ class Logic:
         except BaseException:
             raise
 
-    def restore(self):
+    def restore(self) -> None:
         """Restores the game directory using the backed up files and downloaded files.
         """
         # Check some stuff
@@ -103,7 +103,7 @@ class Logic:
         except BaseException:
             raise BaseException("Error removing files!")
 
-    def set_game_dir(self, dir: pathlib.Path):
+    def set_game_dir(self, dir: pathlib.Path) -> None:
         """Tries to set the game directory, if successful return True. Otherwise return False.
 
         Args:
@@ -120,7 +120,7 @@ class Logic:
         print(f"Game directory set to: {dir.absolute()}")
         print(f"Installed version detected: {self.installed_version}")
 
-    def get_patch_list(self):
+    def get_patch_list(self) -> list[dict]:
         """Returns the patch list.
 
         Returns:
@@ -128,12 +128,12 @@ class Logic:
         """
         return self.patch_list
 
-    def cancel_downloads(self):
+    def cancel_downloads(self) -> None:
         """Performs cleanup for logic object.
         """
         self.depot_downloader_helper.cancel_downloads()
 
-    def _download_patch(self, username: str, target_version: int):
+    def _download_patch(self, username: str, target_version: int) -> None:
         """Download the given patch using the steam account credentials.
 
         Args:
@@ -224,7 +224,7 @@ class Logic:
         for tmp in tmp_files:
             os.unlink(tmp)
 
-    def _move_patch(self):
+    def _move_patch(self) -> None:
         """Move downloaded patch files to game directory.
         """
         try:
@@ -232,7 +232,7 @@ class Logic:
         except BaseException:
             raise
 
-    def _backup(self):
+    def _backup(self) -> None:
         """Backup game folder and in current directory.
         """
         try:
@@ -249,7 +249,7 @@ class Logic:
         except BaseException:
             raise
 
-    def _download_manifest(self, username: str, depot_id: int, manifest_id: int):
+    def _download_manifest(self, username: str, depot_id: int, manifest_id: int) -> None:
         """Download a specific manifest from the given depot using the given credentials.
 
         Args:
@@ -268,9 +268,9 @@ class Logic:
                 "-dir", str(self.manifest_dir),
                 "-manifest-only"]
 
-        return self.depot_downloader_helper.execute(args)
+        self.depot_downloader_helper.execute(args)
 
-    def _download_depot(self, username: str, depot_id: int, manifest_id: int, filelist: str):
+    def _download_depot(self, username: str, depot_id: int, manifest_id: int, filelist: str) -> None:
         """Download a specific depot using the manifest id from steam using the given credentials.
 
         Args:
@@ -290,9 +290,9 @@ class Logic:
                 "-dir", str(self.download_dir),
                 "-filelist", filelist]
 
-        return self.depot_downloader_helper.execute(args)
+        self.depot_downloader_helper.execute(args)
 
-    def _get_filelist(self, username: str, depot_id: int, current_manifest_id: int, target_manifest_id: int):
+    def _get_filelist(self, username: str, depot_id: int, current_manifest_id: int, target_manifest_id: int) -> list[str] | None:
         """Get a list of all files that have been removed or modified between the current and target version.
 
         Args:
@@ -344,7 +344,7 @@ class Logic:
 
         return changes
 
-    def _get_filelist_current(self, username: str, password: str, depot_id: int, manifest_id: int):
+    def _get_filelist_current(self, username: str, password: str, depot_id: int, manifest_id: int) -> list[str]:
         """Get a list of all files current files of a depot.
 
         Args:
@@ -363,8 +363,8 @@ class Logic:
 
         return current_manifest.files
 
-    def _read_manifest(self, file: pathlib.Path):
-        """Parse a given manifest file and return a manifest object
+    def _read_manifest(self, file: pathlib.Path) -> Manifest:
+        """Parse a given manifest file and return a manifest object.
 
         Args:
             file (pathlib.Path): Path to the manifest file
@@ -372,8 +372,6 @@ class Logic:
         Returns:
             Manifest: The parsed manifest object
         """
-        result = None
-
         def expectMatch(pattern: str, line: str) -> re.Match[str]:
             match = re.match(pattern, line)
 
@@ -439,13 +437,11 @@ class Logic:
                     match = expectMatch(r"\s+\d+\s+\d+\s+(?P<hash>.{40})\s+\d+\s+(?P<name>.+)", line)
                     files.append((match.group("name"), match.group("hash")))
 
-                result = Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
+                return Manifest(depot, id, date, num_files, num_chunks, size_disk, size_compressed, files)
             except ValueError:
                 raise
 
-        return result
-
-    def _get_game_version(self):
+    def _get_game_version(self) -> int:
         """Retrieve the game version from the executable file. Requires game directory to be set.
 
         Returns:
