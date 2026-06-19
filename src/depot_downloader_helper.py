@@ -33,10 +33,12 @@ class DepotDownloaderHelper:
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1)
+            bufsize=1,
+            shell=False,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0)
         self.process_queue.put(process)
 
-        # Set read mode to non-blocking for process
+        # Set read mode to non-blocking for process to handle prompts without newlines
         assert process.stdout is not None
         os.set_blocking(process.stdout.fileno(), False)
 
