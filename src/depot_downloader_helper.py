@@ -3,6 +3,7 @@ import sys
 import subprocess
 import re
 from queue import Queue
+from enum import Enum
 
 import time
 import tkinter
@@ -11,11 +12,21 @@ import tkinter.simpledialog
 import utils
 
 
+class ProcessState(Enum):
+    UNKNOWN = 0
+    FINISHED = 1
+    AUTH_SUCCESS = 2
+    AUTH_FAILED = 3
+    AUTH_PASSWORD_REQUIRED = 4
+    AUTH_STEAM_GUARD = 5
+    AUTH_TWO_FACTOR = 6
+
+
 class DepotDownloaderHelper:
     def __init__(self):
         self.process_queue = Queue()
 
-    def execute(self, options: list):
+    def execute(self, options: list) -> None:
         """Execute the DepotDownloader with the given options as arguments. Return True if successful.
 
         Args:
@@ -42,15 +53,8 @@ class DepotDownloaderHelper:
         assert process.stdout is not None
         os.set_blocking(process.stdout.fileno(), False)
 
-        # Wait a bit so the program can produce output
-        # TODO: Find a better solution for this
-        time.sleep(1)
-
         try:
-            self._handle_authentication(process)
-
-            # Wait for program to finish
-            process.wait()
+            self._handle_process(process)
         except ConnectionError:
             raise
         finally:
@@ -59,13 +63,13 @@ class DepotDownloaderHelper:
             if process.poll() is None:
                 process.terminate()
 
-    def cancel_downloads(self):
+    def cancel_downloads(self) -> None:
         """Performs cleanup for logic object.
         """
         for process in self.process_queue.queue:
             process.terminate()
 
-    def _handle_authentication(self, process: subprocess.Popen):
+    def _handle_process(self, process: subprocess.Popen):
         """Handle interactive authentication flow
 
         Args:
@@ -78,66 +82,103 @@ class DepotDownloaderHelper:
         assert process.stdin is not None
 
         responses = [
-            r"STEAM GUARD! Please enter .*: ",
-            r"STEAM GUARD! Use .*\.\.\.",
-            r"Enter account password.*: ",
-            r"result: OK",
-            r"Error: InitializeSteam failed"
+            (r"STEAM GUARD! Please enter .*: ", ProcessState.AUTH_TWO_FACTOR),
+            (r"STEAM GUARD! Use .*\.\.\.", ProcessState.AUTH_STEAM_GUARD),
+            (r"Enter account password.*: ", ProcessState.AUTH_PASSWORD_REQUIRED),
+            (r"result: OK", ProcessState.AUTH_SUCCESS),
+            (r"Error: InitializeSteam failed", ProcessState.AUTH_FAILED),
+            (r"Authentication failed", ProcessState.AUTH_FAILED)
         ]
 
         while True:
+            state = process.poll()
+            # Process finished
+            if state is not None:
+                # Without error
+                if state == 0:
+                    return
+
+                # With error
+                raise ConnectionError("Download failed")
+
             line = process.stdout.readline()
-            if not line:  # EOF
-                break
+            if not line:
+                time.sleep(0.1)
+                continue
 
             # Print output in real-time
             sys.stdout.write(line)
             sys.stdout.flush()
 
             # Check patterns
-            response = -1
-            for i, pattern in enumerate(responses):
+            response = ProcessState.UNKNOWN
+            for (pattern, state) in responses:
                 if re.search(pattern, line):
-                    response = i
+                    response = state
                     break
 
-            # Handle responses
-            if response == 0:  # Code required
-                code = self._open_temp_prompt("Code", "Please enter your 2FA login code", False)
+            match response:
+                case ProcessState.AUTH_SUCCESS:
+                    pass
+                case ProcessState.AUTH_FAILED:
+                    raise ConnectionError("Could not login to steam account")
+                case ProcessState.AUTH_PASSWORD_REQUIRED | ProcessState.AUTH_STEAM_GUARD | ProcessState.AUTH_TWO_FACTOR:
+                    self._handle_authentication(process, response)
+                case ProcessState.FINISHED:
+                    return
+                case _:
+                    pass
 
-                if code is None:
-                    raise ConnectionError("Invalid authentication code")
+    def _handle_authentication(self, process: subprocess.Popen, state: ProcessState) -> None:
+        """Handle interactive authentication flow
 
-                process.stdin.write(code.upper() + '\n')
-                process.stdin.flush()
+        Args:
+            process (subprocess.Popen): The process
 
-                # Check if code was accepted
-                next_line = process.stdout.readline()
-                sys.stdout.write(next_line)
-                sys.stdout.flush()
+        Raises:
+            ConnectionError: If there was an error during authentication
+        """
+        def handle_password_required():
+            assert process.stdout is not None
+            assert process.stdin is not None
 
-                if next_line and re.search(responses[0], next_line):
-                    raise ConnectionError("Invalid authentication code")
+            password = self._open_temp_prompt("Code", "Please enter your password", True)
 
-            elif response == 1:  # Steam Guard app
-                pass  # Just continue
+            if password is None:
+                raise ConnectionError("Invalid password")
 
-            elif response == 2:  # Password prompt
-                password = self._open_temp_prompt("Code", "Please enter your password", True)
+            process.stdin.write(password + '\n')
+            process.stdin.flush()
 
-                if password is None:
-                    raise ConnectionError("Invalid password")
+        def handle_steam_guard():
+            pass
 
-                process.stdin.write(password + '\n')
-                process.stdin.flush()
-                self._handle_authentication(process)
-                break
+        def handle_two_factor():
+            assert process.stdout is not None
+            assert process.stdin is not None
 
-            elif response == 3:  # Success
-                break
+            code = self._open_temp_prompt("Code", "Please enter your 2FA login code", False)
 
-            elif response == 4:  # Error
-                raise ConnectionError("Could not login to steam account")
+            if code is None:
+                raise ConnectionError("Invalid authentication code")
+
+            process.stdin.write(code.upper() + '\n')
+            process.stdin.flush()
+
+            # Check if code was accepted
+            next_line = process.stdout.readline()
+            sys.stdout.write(next_line)
+            sys.stdout.flush()
+
+        match state:
+            case ProcessState.AUTH_PASSWORD_REQUIRED:
+                handle_password_required()
+            case ProcessState.AUTH_STEAM_GUARD:
+                handle_steam_guard()
+            case ProcessState.AUTH_TWO_FACTOR:
+                handle_two_factor()
+            case _:
+                sys.stdout.write(f"Unexpected authentication state: {state}")
 
     def _open_temp_prompt(self, title: str, prompt: str, is_hidden: bool) -> str | None:
         """Opens a prompt widget with the requested title and prompt to enter information
