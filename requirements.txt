@@ -4,3 +4,4 @@ pywin32-ctypes==0.2.0
 requests==2.27.1
 ordered-set
 flake8
+cx-Freeze

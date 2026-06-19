@@ -29,9 +29,8 @@ lint:
 	$(FLAKE8) src/
 
 clean:
-	rm -rf *.pyc __pycache__ build/ aoe2de_patcher.dist/ manifests/ download/ backup/
+	rm -rf *.pyc __pycache__ build/ dist/ manifests/ download/ backup/
 
 build: clean
-	$(PYTHON) -m pip install nuitka
-	$(PYTHON) -m nuitka --enable-plugin=tk-inter --include-data-dir=res=res --standalone --follow-imports --remove-output --windows-console-mode=disable src/aoe2de_patcher.py
-	cp -r res/* aoe2de_patcher.dist/res/
+	$(PYTHON) -m pip install cx-Freeze
+	$(PYTHON) setup.py build
