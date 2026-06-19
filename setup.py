@@ -1,5 +1,6 @@
 import sys
 from cx_Freeze import Executable, setup
+from src.version import VERSION_STRING
 
 base = None
 if sys.platform == "win32":
@@ -20,7 +21,7 @@ build_exe_options = {
 
 setup(
     name="aoe2de_patcher",
-    version="2.12",
+    version=VERSION_STRING,
     description="AoE2DE patcher",
     options={"build_exe": build_exe_options},
     executables=[
