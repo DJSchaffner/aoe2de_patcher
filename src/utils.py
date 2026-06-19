@@ -104,7 +104,7 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
         debug_info (bool): Flag for printing debug info
 
     Raises:
-            BaseException: If there was an error removing files
+            Exception: If there was an error removing files
     """
     changed_file_list = os.listdir(override_dir.absolute())
 
@@ -127,7 +127,7 @@ def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path,
                     print(f"Remove {(original_dir / file).absolute()}")
 
                 remove_file_or_dir(original_dir / file)
-    except BaseException as e:
+    except Exception as e:
         raise e
 
 
@@ -146,15 +146,28 @@ def base_path() -> pathlib.Path:
     Returns:
         pathlib.Path: The base path of the executable or project
     """
-    # Check for compiled version via pyinstaller or similar
+    # Check for pyinstaller
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        return pathlib.Path(sys._MEIPASS)
+
+    # Check for cx_Freeze
+    if getattr(sys, 'frozen', False) and sys.platform == 'win32':
+        # On Windows, the executable is in the root directory
+        return pathlib.Path(sys.executable).parent
+
     if getattr(sys, 'frozen', False):
-        return pathlib.Path(pathlib.sys._MEIPASS)
+        # On Unix-like systems, check for common cx_Freeze structures
+        base = pathlib.Path(sys.executable).parent
+        if (base / 'lib').exists():
+            return base
+        return base
+
     # Check for nuitka
-    elif "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
-        return pathlib.Path(pathlib.sys.executable).parent
+    if "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
+        return pathlib.Path(sys.executable).parent
+
     # Running as script (expects to be inside root/src)
-    else:
-        return pathlib.Path(__file__).parent.parent
+    return pathlib.Path(__file__).parent.parent
 
 
 def resource_path(relative_path: str) -> pathlib.Path:
