@@ -1,11 +1,12 @@
 import sys
 import json
+from typing import Any
 
 import requests
 
 
 class WebHelper:
-    def query_latest_version(self):
+    def query_latest_version(self) -> tuple[int, int]:
         """Returns the latest version of the patch tool.
 
         Returns:
@@ -17,7 +18,7 @@ class WebHelper:
 
         return major, minor
 
-    def query_patches(self):
+    def query_patches(self) -> list[dict]:
         """Query a list of all patches.
 
         Returns:
@@ -30,7 +31,7 @@ class WebHelper:
 
         return result
 
-    def _query_website(self, url: str, headers: dict | None = None, ignore_success: bool = False):
+    def _query_website(self, url: str, headers: dict | None = None, ignore_success: bool = False) -> Any:
         """Query a website with the given headers.
 
         Args:
@@ -51,7 +52,7 @@ class WebHelper:
 
         return response
 
-    def _is_response_successful(self, response: requests.Response):
+    def _is_response_successful(self, response: requests.Response) -> bool:
         """Checks if a response returned successfully.
 
         Args:
@@ -62,7 +63,7 @@ class WebHelper:
         """
         return response.status_code == 200
 
-    def _print_response_error(self, response: requests.Response):
+    def _print_response_error(self, response: requests.Response) -> None:
         """Print the according error for a response.
 
         Args:
