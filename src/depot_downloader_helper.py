@@ -35,7 +35,7 @@ class DepotDownloaderHelper:
         Raises:
             ConnectionError: If there was an error during authentication
         """
-        args = ["dotnet", str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
+        args = ["dotnet", str(utils.tools_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
 
         # Spawn process and store in queue
         process = subprocess.Popen(
@@ -91,18 +91,23 @@ class DepotDownloaderHelper:
         ]
 
         while True:
-            state = process.poll()
-            # Process finished
-            if state is not None:
-                # Without error
-                if state == 0:
-                    return
-
-                # With error
-                raise ConnectionError("Download failed")
-
             line = process.stdout.readline()
             if not line:
+                state = process.poll()
+                # Process terminated
+                if state is not None:
+                    # Without error
+                    if state == 0:
+                        return
+
+                    # Probably wrong .NET version
+                    if state == 2147516566:
+                        raise ConnectionError(f"Download failed with code: {state}\nPossibly outdated .NET version?")
+
+                    # With other error
+                    raise ConnectionError(f"Download failed with code: {state}")
+
+                # No new content but process is alive
                 time.sleep(0.1)
                 continue
 
