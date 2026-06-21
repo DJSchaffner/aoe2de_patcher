@@ -17,7 +17,7 @@ docker/run.sh pip freeze --find-links --all > docker/requirements-freeze.txt
 
 docker/run.sh python3 -m nuitka \
 	--enable-plugin=tk-inter \
-	--include-data-dir=res=res \
+	--include-data-dir=tools=tools \
 	--standalone \
 	--follow-imports \
 	--remove-output \
