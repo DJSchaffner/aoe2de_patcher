@@ -29,7 +29,7 @@ lint:
 	$(FLAKE8) src/
 
 clean:
-	rm -rf *.pyc __pycache__ build/ dist/ manifests/ download/ backup/
+	rm -rf *.pyc __pycache__ build/ dist/ manifests/ download/ backup/ log.txt
 
 build: clean
 	$(PYTHON) -m pip install cx-Freeze
