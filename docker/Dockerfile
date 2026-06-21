@@ -31,16 +31,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && \
     rm -rf /var/lib/apt/lists/*
 
+COPY requirements.txt /tmp/requirements.txt
+
 ENV VIRTUAL_ENV /venv/py3
 ENV PATH ${VIRTUAL_ENV}/bin:${PATH}
 
 RUN python3 -m venv ${VIRTUAL_ENV} && \
 	pip install -U --no-cache-dir pip setuptools wheel && \
-	pip install --no-cache-dir \
-		pexpect==4.8.0 \
-		requests==2.27.1 \
-		nuitka==1.4.2 \
-		ordered-set==4.1.0
+	grep -vE '^(pypiwin32|pywin32|pywin32-ctypes)$' /tmp/requirements.txt > /tmp/requirements-linux.txt && \
+	pip install --no-cache-dir -r /tmp/requirements-linux.txt && \
+	rm -f /tmp/requirements-linux.txt
 
 ARG UID
 ARG UNAME
@@ -58,8 +58,8 @@ RUN export WINEDLLOVERRIDES="winemenubuilder.exe,mscoree,mshtml=" && \
 	wine reg add 'HKCU\Software\Wine\DllOverrides' /v mshtml /t REG_SZ /d '' /f && \
 	wineserver -w
 
-RUN wget https://www.python.org/ftp/python/3.10.6/python-3.10.6-amd64.exe && \
-	xvfb-run wine python-3.10.6-amd64.exe /passive InstallAllUsers=1 PrependPath=1 && \
+RUN wget https://www.python.org/ftp/python/3.14.3/python-3.14.3-amd64.exe && \
+	xvfb-run wine python-3.14.3-amd64.exe /passive InstallAllUsers=1 PrependPath=1 && \
 	wineserver -w
 
-RUN xvfb-run wine pip3 install pypiwin32==223 pywin32==304 pywin32-ctypes==0.2.0 && wineserver -w
+RUN xvfb-run wine pip3 install pypiwin32==223 pywin32==311 pywin32-ctypes==0.2.0 && wineserver -w
