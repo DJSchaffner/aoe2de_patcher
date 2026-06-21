@@ -15,11 +15,4 @@ docker build -f docker/Dockerfile -t "${DOCKER_TAG}" \
 
 docker/run.sh pip freeze --find-links --all > docker/requirements-freeze.txt
 
-docker/run.sh python3 -m nuitka \
-	--enable-plugin=tk-inter \
-	--include-data-dir=tools=tools \
-	--standalone \
-	--follow-imports \
-	--remove-output \
-	--windows-disable-console \
-	src/aoe2de_patcher.py
+docker/run.sh python3 -m setup.py build
