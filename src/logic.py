@@ -24,7 +24,7 @@ class Manifest():
 
 
 class Logic:
-    app_id = 813780
+    APP_ID = 813780
 
     def __init__(self):
         self.webhook = WebHelper()
@@ -260,7 +260,7 @@ class Logic:
         Raises:
             ConnectionError: If there was an error during authentication
         """
-        args = ["-app", str(self.app_id),
+        args = ["-app", str(self.APP_ID),
                 "-depot", str(depot_id),
                 "-manifest", str(manifest_id),
                 "-username", username,
@@ -282,7 +282,7 @@ class Logic:
         Raises:
             ConnectionError: If there was an error during authentication
         """
-        args = ["-app", str(self.app_id),
+        args = ["-app", str(self.APP_ID),
                 "-depot", str(depot_id),
                 "-manifest", str(manifest_id),
                 "-username", username,
