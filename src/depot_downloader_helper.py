@@ -35,7 +35,7 @@ class DepotDownloaderHelper:
         Raises:
             ConnectionError: If there was an error during authentication
         """
-        args = ["dotnet", str(utils.resource_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
+        args = ["dotnet", str(utils.tools_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
 
         # Spawn process and store in queue
         process = subprocess.Popen(
