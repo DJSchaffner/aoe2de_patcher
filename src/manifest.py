@@ -29,7 +29,7 @@ def read_manifest(file: pathlib.Path) -> Manifest:
         match = re.match(pattern, line)
 
         if match is None:
-            raise ValueError(f"Could not match patter '{pattern}' against line '{line}'")
+            raise ValueError(f"Could not match pattern '{pattern}' against line '{line}'")
 
         return match
 
@@ -55,7 +55,7 @@ def read_manifest(file: pathlib.Path) -> Manifest:
             groups = expectMatch(r".* : (\d+) \/ (.+)", line).groups()
             id = int(groups[0])
             date = str(groups[1])    # (Temporary) workaround since date isn't used anyways.
-            # Date format seems to be localized... @TODO find a way to universally parse datestring
+            # Date format seems to be localized... @TODO find a way to universally parse date string
             # date = time.mktime(time.strptime(groups[1], "%d.%m.%Y %H:%M:%S"))
 
             # Fourth line contains number of files
