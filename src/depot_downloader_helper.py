@@ -102,7 +102,7 @@ class DepotDownloaderHelper:
 
                     # Probably wrong .NET version
                     if state == 2147516566:
-                        raise ConnectionError("Download failed. Possibly outdated .NET version?")
+                        raise ConnectionError(f"Download failed with code: {state}\nPossibly outdated .NET version?")
 
                     # With other error
                     raise ConnectionError(f"Download failed with code: {state}")
