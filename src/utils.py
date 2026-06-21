@@ -170,16 +170,16 @@ def base_path() -> pathlib.Path:
     return pathlib.Path(__file__).parent.parent
 
 
-def resource_path(relative_path: str) -> pathlib.Path:
-    """Construct the resource patch for a resource.
+def tools_path(relative_path: str) -> pathlib.Path:
+    """Construct the path for a tool.
 
     Args:
-        relative_path (str): The path relative to the resource path
+        relative_path (str): The path relative to the tools path
 
     Returns:
-        pathlib.Path: The path to the given resource
+        pathlib.Path: The path to the given tool
     """
-    return base_path() / "res" / relative_path
+    return base_path() / "tools" / relative_path
 
 
 def clear() -> None:

@@ -15,7 +15,7 @@ build_exe_options = {
         "tkinter.scrolledtext",
         "tkinter.ttk",
     ],
-    "include_files": [("res", "res")],
+    "include_files": [("tools", "tools")],
     "include_msvcr": True,
 }
 
