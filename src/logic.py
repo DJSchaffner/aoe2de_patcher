@@ -37,12 +37,13 @@ class Logic:
             if username == "":
                 raise Exception("Please enter a username")
 
-            if self.installed_version == target_version:
+            installed_version = self._get_game_version()
+            if installed_version == target_version:
                 raise Exception("The selected version is already installed")
 
             print("Starting download phase...")
 
-            self._download_patch(username, target_version)
+            self._download_patch(username, installed_version, target_version)
 
             print("Finished downloading files")
 
@@ -101,10 +102,9 @@ class Logic:
             raise Exception("Invalid game directory")
 
         self.game_dir = dir
-        self.installed_version = self._get_game_version()
 
         print(f"Game directory set to: {dir.absolute()}")
-        print(f"Installed version detected: {self.installed_version}")
+        print(f"Installed version detected: {self._get_game_version()}")
 
     def get_patch_list(self) -> list[dict]:
         """Returns the patch list.
@@ -119,7 +119,7 @@ class Logic:
         """
         self.depot_downloader_helper.cancel_downloads()
 
-    def _download_patch(self, username: str, target_version: int) -> None:
+    def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
         """Download the given patch using the steam account credentials.
 
         Args:
@@ -157,18 +157,18 @@ class Logic:
         print("Generating list of changes")
 
         # Filter list of patches for current and target version
-        filtered_patches = list(filter(lambda x: x["version"] == self.installed_version or x["version"] == target_version, self.patch_list))
+        filtered_patches = list(filter(lambda x: x["version"] == installed_version or x["version"] == target_version, self.patch_list))
 
         # One of the two patches is not in the list of patches. Most likely the installed version, cannot patch
         if len(filtered_patches) != 2:
             raise Exception("The installed version currently doesn't support downgrading. Please be patient or notify me on GitHub!")
 
         # Store current and target patch
-        current_patch = list(filter(lambda x: x["version"] == self.installed_version, self.patch_list))[0]
+        current_patch = list(filter(lambda x: x["version"] == installed_version, self.patch_list))[0]
         target_patch = list(filter(lambda x: x["version"] == target_version, filtered_patches))[0]
 
         # Only support patching via filelists to an older version atm
-        if self.installed_version < target_version:
+        if installed_version < target_version:
             raise Exception("Patching forward is currently unavailable. Please use Steam to get to the latest version and then patch backwards")
 
         # Iterate depots of current and target patch together
