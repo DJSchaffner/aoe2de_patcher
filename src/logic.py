@@ -120,12 +120,12 @@ class Logic:
         self.depot_downloader_helper.cancel_downloads()
 
     def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
-        """Download the given patch using the steam account credentials.
+        """Download the given patch using the steam account username.
 
         Args:
             username (str): The username
-            patch (dict): The dict containing patch info
-            language (Languages): The selected language
+            installed_version (int): The currently installed version
+            target_version (int): The target version
         """
         # dotnet is required to proceed
         if not (utils.check_dotnet()):
