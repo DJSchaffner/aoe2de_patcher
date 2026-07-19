@@ -18,22 +18,22 @@ def get_version_number(path: pathlib.Path) -> tuple[int, int, int, int]:
     """
     # Untested under linux, but I would assume it works..
     # TODO: Test
-    pe = pefile.PE(path, fast_load=True)
-    pe.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_RESOURCE"]])
+    with pefile.PE(path, fast_load=True) as pe:
+        pe.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_RESOURCE"]])
 
-    if not hasattr(pe, "VS_FIXEDFILEINFO") or not pe.VS_FIXEDFILEINFO:
-        raise ValueError("Could not find VS_FIXEDFILEINFO in binary")
+        if not hasattr(pe, "VS_FIXEDFILEINFO") or not pe.VS_FIXEDFILEINFO:
+            raise ValueError("Could not find VS_FIXEDFILEINFO in binary")
 
-    file_info = pe.VS_FIXEDFILEINFO[0]
+        file_info = pe.VS_FIXEDFILEINFO[0]
 
-    version_number = (
-        file_info.FileVersionMS >> 16,
-        file_info.FileVersionMS & 0xFFFF,
-        file_info.FileVersionLS >> 16,
-        file_info.FileVersionLS & 0xFFFF
-    )
+        version_number = (
+            file_info.FileVersionMS >> 16,
+            file_info.FileVersionMS & 0xFFFF,
+            file_info.FileVersionLS >> 16,
+            file_info.FileVersionLS & 0xFFFF
+        )
 
-    return version_number
+        return version_number
 
 
 def log(text_widget: Text, text: str) -> None:
