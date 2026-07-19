@@ -63,12 +63,12 @@ def main():
     parser.add_argument("--depots", nargs="+", type=int, required=True,
                         help="Depot IDs to track, e.g. --depots 813781 813782")
     parser.add_argument("--exe-depot-id", type=int, required=True)
-    parser.add_argument("--out", default="remote/patches.json")
+    parser.add_argument("--patches", default="remote/patches.json")
     args = parser.parse_args()
 
     app_id = args.app_id
     depot_ids = args.depots
-    patches_path = Path(args.out)
+    patches_path = Path(args.patches)
     exe_depot_id = args.exe_depot_id
 
     last_patch_depots = load_last_patch(patches_path)
