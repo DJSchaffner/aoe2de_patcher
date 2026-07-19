@@ -10,6 +10,9 @@ permissions:
 jobs:
   poll:
     runs-on: ubuntu-latest
+    env:
+      STEAM_USERNAME: ${{ secrets.STEAM_USERNAME }}
+      STEAM_PASSWORD: ${{ secrets.STEAM_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,18 +22,48 @@ jobs:
         with:
           python-version: '3.14.3'
 
-      - run: pip install steam
+      - run: pip install steam pefile
 
       - id: poll
         run: >
           python scripts/poll_pics.py
-          --out remote/patches.json
+          --app-id ${{ vars.APP_ID }}
+          --depots ${{ vars.DEPOTS }}
+          --exe-depot-id ${{ vars.EXE_DEPOT_Id }}
 
-      - name: Commit if changed
+      - name: Cache DepotDownloader auth
+        if: steps.poll.outputs.exe_changed == 'true'
+        uses: actions/cache@v4
+        with:
+          path: .DepotDownloader
+          key: depotdownloader-auth-${{ runner.os }}
+
+      - name: Install DepotDownloader
         if: steps.poll.outputs.changed == 'true'
         run: |
+          wget -q https://github.com/SteamRE/DepotDownloader/releases/latest/download/DepotDownloader-linux-x64.zip
+          unzip -q DepotDownloader-linux-x64.zip -d depotdownloader
+
+      - id: version
+        if: steps.poll.outputs.changed == 'true'
+        run: >
+          python scripts/extract_version.py
+          --app-id ${{ vars.APP_ID }}
+          --depot-id ${{ vars.EXE_DEPOT_ID }}
+          --manifest-id ${{ steps.poll.outputs.exe_manifest }}
+
+      - name: Write patch and commit
+        if: steps.poll.outputs.changed == 'true'
+        run: |
+          python scripts/write_patch.py \
+            --depots '${{ steps.poll.outputs.depots }}' \
+            --game-version "${{ steps.version.outputs.game_version }}"
           git config user.email "bot@users.noreply.github.com"
           git config user.name "manifest-bot"
-          git add remote/patches.json
-          git commit -m "manifest update: ${{ steps.poll.outputs.version }}"
-          git push origin master
+          if git diff --quiet remote/patches.json; then
+            echo "No changes to commit."
+          else
+            git add remote/patches.json
+            git commit -m "manifest update: game version ${{ steps.version.outputs.game_version }}"
+            git push origin master
+          fi
