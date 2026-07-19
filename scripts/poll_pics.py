@@ -1,24 +1,12 @@
 import json
 import argparse
 import os
-import time
 from pathlib import Path
 from steam.client import SteamClient
 
 
-APP_ID = 813780
-DEPOT_IDS = [
-    813781,
-    813782,
-    813783,
-    813784,
-    813786,
-    813787
-]
-
-
-def load_patches(path: Path) -> dict:
-    """Load the current content of the patches JSON or an empty one if it doesn't exist.
+def load_last_patch(path: Path) -> dict:
+    """Load the content of the last patch from the patches JSON or an empty one if it doesn"t exist.
 
     Args:
         path (Path): The path to the patches file
@@ -26,13 +14,19 @@ def load_patches(path: Path) -> dict:
     Returns:
         dict: A dictionary containing the currently documented patches
     """
-    if path.exists():
-        with open(path) as f:
-            return json.load(f)
-    return {"patches": []}
+    if not path.exists():
+        return {}
+
+    with open(path) as f:
+        data = json.load(f)
+
+    if not data.get("patches"):
+        return {}
+
+    return {d["depot_id"]: d["manifest_id"] for d in data["patches"][-1]["depots"]}
 
 
-def fetch_current_build() -> tuple[int, dict]:
+def fetch_current_build(app_id: int) -> tuple[int, dict]:
     """Fetches the current build id and a list of depots with their current manifest ids.
 
     Raises:
@@ -43,18 +37,18 @@ def fetch_current_build() -> tuple[int, dict]:
     """
     client = SteamClient()
     client.anonymous_login()
-    info = client.get_product_info(apps=[APP_ID])
+    info = client.get_product_info(apps=[app_id])
 
     if info is None:
         raise Exception("Could not get current app info.")
 
-    depots: dict = info['apps'][APP_ID]['depots']
-    build_id = int(depots.get('branches', {}).get('public', {}).get('buildid'))
+    depots: dict = info["apps"][app_id]["depots"]
+    build_id = int(depots.get("branches", {}).get("public", {}).get("buildid"))
 
     result = {}
     for depot_id, depot in depots.items():
-        if depot_id.isdigit() and isinstance(depot, dict) and 'manifests' in depot:
-            gid = depot['manifests'].get('public', {}).get('gid')
+        if depot_id.isdigit() and isinstance(depot, dict) and "manifests" in depot:
+            gid = depot["manifests"].get("public", {}).get("gid")
             if gid:
                 result[int(depot_id)] = int(gid)
 
@@ -65,58 +59,49 @@ def fetch_current_build() -> tuple[int, dict]:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--out', default='remote/patches.json')
-    patches_path = Path(parser.parse_args().out)
+    parser.add_argument("--app-id", type=int, required=True)
+    parser.add_argument("--depots", nargs="+", type=int, required=True,
+                        help="Depot IDs to track, e.g. --depots 813781 813782")
+    parser.add_argument("--exe-depot-id", type=int, required=True)
+    parser.add_argument("--out", default="remote/patches.json")
+    args = parser.parse_args()
 
-    data = load_patches(patches_path)
-    build_id, manifests = fetch_current_build()
+    app_id = args.app_id
+    depot_ids = args.depots
+    patches_path = Path(args.out)
+    exe_depot_id = args.exe_depot_id
 
-    last_patch = data['patches'][-1] if data['patches'] else None
-    last_depots = {}
-    if last_patch:
-        last_depots = {x['depot_id']: x['manifest_id'] for x in last_patch['depots']}
+    last_patch_depots = load_last_patch(patches_path)
+    _, manifests = fetch_current_build(app_id)
 
-    changes = []
-    new_depot_entries = []
-    for depot_id in DEPOT_IDS:
-        new_manifest = manifests.get(depot_id)
-        if new_manifest is None:
-            continue
+    exe_manifest = manifests.get(exe_depot_id)
+    new_depot_entries = [
+        {"depot_id": d, "manifest_id": m}
+        for d, m in manifests.items() if d in depot_ids
+    ]
 
-        new_depot_entries.append({"depot_id": depot_id, "manifest_id": new_manifest})
-        if last_depots.get(depot_id) != new_manifest:
-            changes.append(f"depot {depot_id}: {last_depots.get(depot_id)} -> {new_manifest}")
+    gh_output = os.environ.get("GITHUB_OUTPUT")
 
-    gh_output = os.environ.get('GITHUB_OUTPUT')
-
-    if not changes:
+    is_changed = last_patch_depots.get(exe_depot_id) != exe_manifest
+    if not is_changed:
         print("No changes detected.")
 
         # Write output for GitHub Actions
         if gh_output:
-            with open(gh_output, 'a') as f:
+            with open(gh_output, "a") as f:
                 f.write("changed=false\n")
 
         return
 
-    data['patches'].append({
-        "version": build_id,
-        "date": int(time.time()),
-        "depots": new_depot_entries
-    })
-
-    patches_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(patches_path, 'w') as f:
-        json.dump(data, f, indent=4)
-
-    summary = "; ".join(changes)
-    print(f"Changes detected: {summary}")
+    print("Changes detected.")
+    print(f"exe_manifest: {exe_manifest}")
 
     # Write output for GitHub Actions
     if gh_output:
-        with open(gh_output, 'a') as f:
+        with open(gh_output, "a") as f:
             f.write("changed=true\n")
-            f.write(f"version={build_id}\n")
+            f.write(f"exe_manifest={exe_manifest}\n")
+            f.write(f"depots={json.dumps(new_depot_entries)}\n")
 
 
 if __name__ == '__main__':
