@@ -7,7 +7,7 @@ import pefile
 from tkinter import Text
 
 
-def get_version_number(path: pathlib.Path) -> tuple[int, int, int, int]:
+def get_binary_version(path: pathlib.Path) -> tuple[int, int, int, int]:
     """Retrieve the version number of a binary file.
 
     Args:
@@ -34,6 +34,17 @@ def get_version_number(path: pathlib.Path) -> tuple[int, int, int, int]:
         )
 
         return version_number
+
+
+def get_game_version(game_dir: pathlib.Path) -> int:
+    """Retrieve the game version from the executable file.
+
+    Returns:
+        int: The detected game version
+    """
+    metadata = get_binary_version(game_dir / "AoE2DE_s.exe")
+
+    return (metadata[1] - 101) * 65536 + metadata[2]
 
 
 def log(text_widget: Text, text: str) -> None:
