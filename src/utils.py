@@ -2,6 +2,7 @@ import sys
 import os
 import pathlib
 import shutil
+import pefile
 
 from tkinter import Text
 
@@ -15,20 +16,23 @@ def get_version_number(path: pathlib.Path) -> tuple:
     Returns:
         tuple: Windows version number
     """
-    try:
-        # with native python
-        from utils_win32 import get_version_number_win32
-        version_number = get_version_number_win32(str(path))
-    except Exception:
-        # with python in wine
-        import subprocess
-        process = subprocess.Popen(
-            ["wine", "python", "/opt/aoe2de_patcher/src/utils_win32.py", str(path)],
-            stdout=subprocess.PIPE,
-            text=True
-        )
-        assert process.stdout is not None
-        version_number = tuple(int(x) for x in process.stdout.read().strip().split())
+    # Untested under linux, but I would assume it works..
+    # TODO: Test
+    pe = pefile.PE(path, fast_load=True)
+    pe.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_RESOURCE"]])
+
+    if not hasattr(pe, "VS_FIXEDFILEINFO") or not pe.VS_FIXEDFILEINFO:
+        raise ValueError("Could not find VS_FIXEDFILEINFO in binary")
+
+    file_info = pe.VS_FIXEDFILEINFO[0]
+
+    version_number = (
+        file_info.FileVersionMS >> 16,
+        file_info.FileVersionMS & 0xFFFF,
+        file_info.FileVersionLS >> 16,
+        file_info.FileVersionLS & 0xFFFF
+    )
+
     return version_number
 
 
