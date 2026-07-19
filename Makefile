@@ -19,7 +19,7 @@ help:
 	@echo   make lint      - Run lint checks \(flake8\)
 	@echo   make clean     - Remove temporary files
 	@echo   make build     - Build into standalone executable
-	@echo   make build     - Build into standalone executable and create zip archive
+	@echo   make release   - Build into standalone executable and create zip archive for release
 
 venv:
 	python -m pip install virtualenv
