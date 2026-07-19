@@ -37,7 +37,7 @@ class Logic:
             if username == "":
                 raise Exception("Please enter a username")
 
-            installed_version = self._get_game_version()
+            installed_version = utils.get_game_version(self.game_dir)
             if installed_version == target_version:
                 raise Exception("The selected version is already installed")
 
@@ -348,13 +348,3 @@ class Logic:
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
 
         return current_manifest.files
-
-    def _get_game_version(self) -> int:
-        """Retrieve the game version from the executable file. Requires game directory to be set.
-
-        Returns:
-            int: The detected game version
-        """
-        metadata = utils.get_version_number(self.game_dir / "AoE2DE_s.exe")
-
-        return (metadata[1] - 101) * 65536 + metadata[2]
