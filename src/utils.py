@@ -7,7 +7,7 @@ import pefile
 from tkinter import Text
 
 
-def get_version_number(path: pathlib.Path) -> tuple:
+def get_version_number(path: pathlib.Path) -> tuple[int, int, int, int]:
     """Retrieve the version number of a binary file.
 
     Args:
