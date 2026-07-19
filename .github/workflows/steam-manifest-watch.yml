@@ -1,0 +1,36 @@
+name: steam-manifest-watch
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14.3'
+
+      - run: pip install steam
+
+      - id: poll
+        run: >
+          python scripts/poll_pics.py
+          --out remote/patches.json
+
+      - name: Commit if changed
+        if: steps.poll.outputs.changed == 'true'
+        run: |
+          git config user.email "bot@users.noreply.github.com"
+          git config user.name "manifest-bot"
+          git add remote/patches.json
+          git commit -m "manifest update: ${{ steps.poll.outputs.version }}"
+          git push origin master
