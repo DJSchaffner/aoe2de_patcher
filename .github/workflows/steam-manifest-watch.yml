@@ -30,7 +30,7 @@ jobs:
           python scripts/poll_pics.py
           --app-id ${{ vars.APP_ID }}
           --depots ${{ vars.DEPOTS }}
-          --exe-depot-id ${{ vars.EXE_DEPOT_Id }}
+          --exe-depot-id ${{ vars.EXE_DEPOT_ID }}
 
       - name: Cache DepotDownloader auth
         if: steps.poll.outputs.changed == 'true'
