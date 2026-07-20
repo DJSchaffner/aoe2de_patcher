@@ -37,7 +37,7 @@ jobs:
         if: steps.poll.outputs.changed == 'true'
         uses: actions/cache@v4
         with:
-          path: .DepotDownloader
+          path: ~/.local/share/IsolatedStorage
           key: depotdownloader-auth-${{ runner.os }}
 
       - name: Install DepotDownloader
