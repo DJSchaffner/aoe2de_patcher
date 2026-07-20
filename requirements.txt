@@ -1,7 +1,5 @@
-pypiwin32==223
-pywin32==311
-pywin32-ctypes==0.2.0
-requests==2.34.2
+pefile
+requests
 ordered-set
 flake8
 cx-Freeze

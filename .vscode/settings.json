@@ -1,3 +1,11 @@
 {
-  "flake8.args": ["--ignore", "E111,E114,E501,E121,E722"]
+  "flake8.args": [
+    "--ignore",
+    "E111,E114,E501,E121,E722"
+  ],
+  "cSpell.words": [
+    "depotdownloader",
+    "FIXEDFILEINFO",
+    "PYTHONPATH"
+  ]
 }
