@@ -1,16 +1,71 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Python: Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "src/aoe2de_patcher.py",
-      "console": "integratedTerminal",
-      //"gevent": true
-    }
-  ]
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Main",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/aoe2de_patcher.py",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Python: Script - Manifest Watch",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/poll_pics.py",
+            "args": [
+                "--app-id",
+                "813780",
+                "--depots",
+                "813781",
+                "813782",
+                "813783",
+                "813784",
+                "813786",
+                "813787",
+                "--exe-depot-id",
+                "813781"
+            ],
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Python: Script - Extract Version",
+            "type": "debugpy",
+            "cwd": "${workspaceFolder}",
+            "request": "launch",
+            "program": "scripts/extract_version.py",
+            "args": [
+                "--app-id",
+                "813780",
+                "--depot-id",
+                "813781",
+                "--manifest-id",
+                "3067258457468070797",
+                "--download-dir",
+                "temp/extract_version",
+                "--depotdownloader",
+                "tools/DepotDownloader/DepotDownloader.exe"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Python: Script - Write Patch",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "scripts/write_patch.py",
+            "args": [
+                "--depots",
+                "[{\"depot_id\": 813781,\"manifest_id\": 3067258457468070797},{\"depot_id\": 813782,\"manifest_id\": 3503932408267359574},{\"depot_id\": 813783,\"manifest_id\": 8547122694393480152},{\"depot_id\": 813784,\"manifest_id\": 8087696953400240386},{\"depot_id\": 813787,\"manifest_id\": 3172067902980343375}]",
+                "--game-version",
+                "180059"
+            ],
+            "console": "integratedTerminal",
+        }
+    ]
 }
