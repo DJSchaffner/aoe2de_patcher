@@ -32,7 +32,7 @@ lint:
 	$(FLAKE8) src/
 
 clean:
-	rm -rf *.pyc __pycache__ build/ dist/ manifests/ download/ backup/ log.txt $(ARCHIVE_DIR) release*.zip
+	rm -rf *.pyc __pycache__ build/ dist/ manifests/ download/ backup/ temp/ log.txt $(ARCHIVE_DIR) release*.zip
 
 build: clean
 	$(PYTHON) -m pip install cx-Freeze

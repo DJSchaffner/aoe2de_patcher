@@ -7,6 +7,10 @@ import pefile
 from tkinter import Text
 
 
+def get_exe_name() -> str:
+    return "AoE2DE_s.exe"
+
+
 def get_binary_version(path: pathlib.Path) -> tuple[int, int, int, int]:
     """Retrieve the version number of a binary file.
 
@@ -42,7 +46,7 @@ def get_game_version(game_dir: pathlib.Path) -> int:
     Returns:
         int: The detected game version
     """
-    metadata = get_binary_version(game_dir / "AoE2DE_s.exe")
+    metadata = get_binary_version(game_dir / get_exe_name())
 
     return (metadata[1] - 101) * 65536 + metadata[2]
 
