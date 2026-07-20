@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.14.3'
 
-      - run: pip install steam pefile
+      - run: pip install steam[client] pefile
 
       - id: poll
         run: >
