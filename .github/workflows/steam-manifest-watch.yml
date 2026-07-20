@@ -34,7 +34,7 @@ jobs:
           --exe-depot-id ${{ vars.EXE_DEPOT_Id }}
 
       - name: Cache DepotDownloader auth
-        if: steps.poll.outputs.exe_changed == 'true'
+        if: steps.poll.outputs.changed == 'true'
         uses: actions/cache@v4
         with:
           path: .DepotDownloader
