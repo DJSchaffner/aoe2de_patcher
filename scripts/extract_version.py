@@ -4,7 +4,7 @@ import os
 
 from pathlib import Path
 
-from src.utils import get_game_version
+from src.utils import get_exe_name, get_game_version
 
 
 def main():
@@ -16,7 +16,10 @@ def main():
     p.add_argument("--depotdownloader", default="./depotdownloader/DepotDownloader")
     args = p.parse_args()
 
-    filelist = Path("filelist.txt")
+    download_dir = Path(args.download_dir)
+    download_dir.mkdir(parents=True, exist_ok=True)
+    filelist = Path(download_dir) / "filelist.txt"
+    filelist.write_text(get_exe_name() + "\n")
 
     subprocess.run([
         args.depotdownloader,
