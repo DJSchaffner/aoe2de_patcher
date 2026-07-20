@@ -3,6 +3,7 @@ on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch: {}
+  push: # TODO: Remove
 
 permissions:
   contents: write
