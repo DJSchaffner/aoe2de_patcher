@@ -67,5 +67,5 @@ jobs:
           else
             git add remote/patches.json
             git commit -m "manifest update: game version ${{ steps.version.outputs.game_version }}"
-            git push origin master
+            git push origin ${{ github.ref_name }}
           fi
