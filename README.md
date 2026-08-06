@@ -62,7 +62,7 @@ A: Yes, we provide a docker container. You need to build from source with `docke
 - Add a progress bar
 - Add colored text to better identify important messages in log
 - Make backups optional
-- Investigate downloading without credentials (-beta)
+- Add option to also patch DLCs
 - If you have any other suggestions, feel free to open a ticket and tag it with 'enhancement'
 
 # Used third party libraries
