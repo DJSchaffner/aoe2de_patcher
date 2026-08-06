@@ -1,5 +1,6 @@
 [![Github download latest release](https://img.shields.io/github/v/release/djschaffner/aoe2de_patcher?style=for-the-badge&label=Download)](https://github.com/DJSchaffner/aoe2de_patcher/releases/latest/download/aoe2de_patcher.zip)
 ![Github all releases downloads](https://img.shields.io/github/downloads/djschaffner/aoe2de_patcher/total?style=for-the-badge&label=total%20downloads)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/DJSchaffner/aoe2de_patcher/steam-manifest-watch.yml?style=for-the-badge&label=Update%20check)
 
 # AoE2 DE Patcher - WIP
 
