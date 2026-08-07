@@ -21,12 +21,12 @@ Currently only suited for downgrading. To upgrade, please use steam to get to th
 - Start aoe2de_patcher.exe
 - Select desired game version & language (Language setting only affects cutscenes / campaign voice overs)
 - Select the game directory
-- Enter your steam login credentials
+- Enter your steam username
 - Click \<Patch>
-- If prompted, enter the 2FA code
+- Follow instructions if prompted (password, 2FA code, Authenticator app, ...)
 - To restore the previous game version hit \<Restore> after patching (Make sure the game is not open in steam anymore since it will show an error then)
 
-This whole process might take a while to finish, please wait until it says - **DONE!**.
+This whole process might take a while to finish, please wait until a popup appears saying - **DONE!**.
 
 # Notes
 
@@ -52,7 +52,8 @@ Q: *Do I have to download a new version of the tool when a patch for AoE release
 A: Usually not. If there is a new version available you will be informed when you start the tool.
 
 Q: *Can I use it on Linux?*  
-A: Yes, we provide a docker container. You need to build from source with `docker/build.sh`, then run the patcher with `docker/run.sh aoe2de_patcher.dist/aoe2de_patcher.bin`.
+A: Yes, we provide a docker container. You need to build from source with `docker/build.sh`, then run the patcher with `docker/run.sh aoe2de_patcher.dist/aoe2de_patcher.bin`.  
+_(Disclaimer: There have recently been untested changes to this, so things might be broken. Please report any issues you have)_
 
 # Planned features
 
@@ -73,4 +74,4 @@ A: Yes, we provide a docker container. You need to build from source with `docke
 
 *The downloaded files are from steam directly and not hosted by me.*  
 
-*This project is not done yet. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a ticket with the bug you encountered and a short description on how it occurred.*  
+*This project is in development. There may be bugs and issues and it's possible not everything is working as intended. If you encounter any bugs please open a ticket with the bug you encountered and a short description on how it occurred.*  
