@@ -3,7 +3,7 @@
 ![Latest supported game version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fgithub.com%2FDJSchaffner%2Faoe2de_patcher%2Fraw%2Frefs%2Fheads%2Fmaster%2Fremote%2Fpatches.json&query=%24.patches%5B-1%3A%5D.version&style=for-the-badge&label=Game%20Version)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/DJSchaffner/aoe2de_patcher/steam-manifest-watch.yml?branch=master&style=for-the-badge&label=Update%20check)
 
-# AoE2 DE Patcher - WIP
+# AoE2 DE Patcher
 
 Patches AoE2 DE to any officially released version (Steam version only!)  
 
