@@ -9,6 +9,7 @@ import manifest
 import utils.utils as utils
 import utils.path_utils as path_utils
 import utils.file_utils as file_utils
+import utils.vdf_utils as vdf_utils
 
 
 class Logic:
@@ -44,22 +45,22 @@ class Logic:
                 raise Exception("The selected version is already installed")
 
             print("Starting download phase...")
-
             self._download_patch(username, installed_version, target_version)
-
             print("Finished downloading files")
 
             print("Starting backup...")
-
             self._backup()
-
             print("Finished backup")
 
             print("Patching files...")
-
             self._move_patch()
-
             print("Finished patching files")
+
+            # For windows we want to trigger steam installation script on next run
+            if (utils.is_windows_platform()):
+                print("Resetting installation state...")
+                self._flag_for_install()
+                print("Finished resetting installation state")
         except Exception:
             raise
 
@@ -91,6 +92,12 @@ class Logic:
                 raise Exception("Error restoring files!")
         except Exception:
             raise Exception("Error removing files!")
+
+        # For windows we want to trigger steam installation script on next run
+        if (utils.is_windows_platform()):
+            print("Resetting installation state...")
+            self._flag_for_install()
+            print("Finished resetting installation state")
 
     def set_game_dir(self, dir: Path) -> None:
         """Tries to set the game directory, if successful return True. Otherwise return False.
@@ -350,3 +357,24 @@ class Logic:
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
 
         return current_manifest.files
+
+    def _flag_for_install(self) -> None:
+        """Flag the game installation to run the install script on next launch.
+        """
+        # Find vdf file
+        vdf_files = file_utils.find_files(self.game_dir, "*.vdf")
+
+        if not vdf_files:
+            raise Exception("Could not find install script")
+
+        if len(vdf_files) > 1:
+            print("Warning: Found more than one install script. Picking first one.")
+
+        # Parse vdf file
+        install_script_file = vdf_files[0]
+        install_script = vdf_utils.parse(install_script_file)
+        has_run_keys = vdf_utils.find_has_run_keys(install_script)
+
+        # Reset all found registry keys
+        for value_name, registry_path in has_run_keys:
+            utils.delete_registry_value(registry_path, value_name)
