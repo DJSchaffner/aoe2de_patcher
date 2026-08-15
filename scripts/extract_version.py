@@ -4,7 +4,7 @@ import os
 
 from pathlib import Path
 
-from src.utils import get_exe_name, get_game_version
+from src.utils.utils import get_exe_name, get_game_version
 
 
 def main():
