@@ -1,8 +1,8 @@
 import sys
 import os
-import pathlib
 import shutil
 import pefile
+from pathlib import Path
 
 from tkinter import Text
 
@@ -11,11 +11,11 @@ def get_exe_name() -> str:
     return "AoE2DE_s.exe"
 
 
-def get_binary_version(path: pathlib.Path) -> tuple[int, int, int, int]:
+def get_binary_version(path: Path) -> tuple[int, int, int, int]:
     """Retrieve the version number of a binary file.
 
     Args:
-        path (pathlib.Path): The path to the file
+        path (Path): The path to the file
 
     Returns:
         tuple: Windows version number
@@ -40,7 +40,7 @@ def get_binary_version(path: pathlib.Path) -> tuple[int, int, int, int]:
         return version_number
 
 
-def get_game_version(game_dir: pathlib.Path) -> int:
+def get_game_version(game_dir: Path) -> int:
     """Retrieve the game version from the executable file.
 
     Returns:
@@ -64,12 +64,12 @@ def log(text_widget: Text, text: str) -> None:
     text_widget.see("end")
 
 
-def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: str) -> None:
+def copy_file_or_dir(source_dir: Path, target_dir: Path, file: str) -> None:
     """Copies a file or a directory recursively into the target directory.
 
     Args:
-        source_dir (pathlib.Path): The source directory
-        target_dir (pathlib.Path): The target directory
+        source_dir (Path): The source directory
+        target_dir (Path): The target directory
         file (str): The file or directory name
     """
     if (source_dir / file).is_dir():
@@ -78,11 +78,11 @@ def copy_file_or_dir(source_dir: pathlib.Path, target_dir: pathlib.Path, file: s
         shutil.copy((source_dir / file).absolute(), (target_dir / file).absolute())
 
 
-def remove_file_or_dir(path: pathlib.Path) -> None:
+def remove_file_or_dir(path: Path) -> None:
     """Removes a file or directory recursively. Does not throw an error if file does not exist.
 
     Args:
-        path (pathlib.Path): The path to be removed
+        path (Path): The path to be removed
     """
     if path.is_dir():
         shutil.rmtree(path.absolute(), ignore_errors=True)
@@ -90,13 +90,13 @@ def remove_file_or_dir(path: pathlib.Path) -> None:
         path.unlink(missing_ok=True)
 
 
-def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_dir: pathlib.Path, debug_info: bool) -> None:
+def backup_files(original_dir: Path, override_dir: Path, backup_dir: Path, debug_info: bool) -> None:
     """Recursively performs backup of original_dir to backup_dir assuming all files/folder from override_dir will be patched.
 
     Args:
-        original_dir (pathlib.Path): The original directory
-        override_dir (pathlib.Path): The directory containing files / directories that will be overridden
-        backup_dir (pathlib.Path): The directory where the backup will be placed
+        original_dir (Path): The original directory
+        override_dir (Path): The directory containing files / directories that will be overridden
+        backup_dir (Path): The directory where the backup will be placed
         debug_info (bool): Flag for printing debug info
     """
     changed_file_list = list(set(os.listdir(original_dir.absolute())).intersection(set(os.listdir(override_dir.absolute()))))
@@ -114,12 +114,12 @@ def backup_files(original_dir: pathlib.Path, override_dir: pathlib.Path, backup_
             copy_file_or_dir(original_dir, backup_dir, file)
 
 
-def remove_patched_files(original_dir: pathlib.Path, override_dir: pathlib.Path, debug_info: bool) -> None:
+def remove_patched_files(original_dir: Path, override_dir: Path, debug_info: bool) -> None:
     """Recursively removes all patched files assuming original_dir has been patched with all files from override_dir.
 
     Args:
-        original_dir (pathlib.Path): The original directory
-        override_dir (pathlib.Path): The directory containing the files that have been overridden
+        original_dir (Path): The original directory
+        override_dir (Path): The directory containing the files that have been overridden
         debug_info (bool): Flag for printing debug info
 
     Raises:
@@ -159,44 +159,44 @@ def check_dotnet() -> bool:
     return not (shutil.which("dotnet") is None)
 
 
-def base_path() -> pathlib.Path:
+def base_path() -> Path:
     """Construct the base path to the exe / project.
 
     Returns:
-        pathlib.Path: The base path of the executable or project
+        Path: The base path of the executable or project
     """
     # Check for pyinstaller
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        return pathlib.Path(sys._MEIPASS)
+        return Path(getattr(sys, '_MEIPASS'))
 
     # Check for cx_Freeze
     if getattr(sys, 'frozen', False) and sys.platform == 'win32':
         # On Windows, the executable is in the root directory
-        return pathlib.Path(sys.executable).parent
+        return Path(sys.executable).parent
 
     if getattr(sys, 'frozen', False):
         # On Unix-like systems, check for common cx_Freeze structures
-        base = pathlib.Path(sys.executable).parent
+        base = Path(sys.executable).parent
         if (base / 'lib').exists():
             return base
         return base
 
     # Check for nuitka
     if "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
-        return pathlib.Path(sys.executable).parent
+        return Path(sys.executable).parent
 
     # Running as script (expects to be inside root/src)
-    return pathlib.Path(__file__).parent.parent
+    return Path(__file__).parent.parent
 
 
-def tools_path(relative_path: str) -> pathlib.Path:
+def get_tools_path(relative_path: str) -> Path:
     """Construct the path for a tool.
 
     Args:
         relative_path (str): The path relative to the tools path
 
     Returns:
-        pathlib.Path: The path to the given tool
+        Path: The path to the given tool
     """
     return base_path() / "tools" / relative_path
 
