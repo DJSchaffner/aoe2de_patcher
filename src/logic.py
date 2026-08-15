@@ -1,5 +1,4 @@
 import os
-import pathlib
 import shutil
 import tempfile
 from pathlib import Path
@@ -7,7 +6,9 @@ from pathlib import Path
 from depot_downloader_helper import DepotDownloaderHelper
 from web_helper import WebHelper
 import manifest
-import utils
+import utils.utils as utils
+import utils.path_utils as path_utils
+import utils.file_utils as file_utils
 
 
 class Logic:
@@ -17,9 +18,9 @@ class Logic:
         self.webhook = WebHelper()
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
-        self.download_dir = utils.base_path() / "download"
-        self.manifest_dir = utils.base_path() / "manifests"
-        self.backup_dir = utils.base_path() / "backup"
+        self.download_dir = path_utils.get_base_path() / "download"
+        self.manifest_dir = path_utils.get_base_path() / "manifests"
+        self.backup_dir = path_utils.get_base_path() / "backup"
         self.patch_list = self.webhook.query_patches()
         self.depot_downloader_helper = DepotDownloaderHelper()
 
@@ -78,7 +79,7 @@ class Logic:
         # Remove added files from the path
         try:
             print("Removing patched files...")
-            utils.remove_patched_files(self.game_dir, self.download_dir, True)
+            file_utils.remove_patched_files(self.game_dir, self.download_dir, True)
             print("Finished removing patched files")
 
             # Copy backed up files to game path again
@@ -129,7 +130,7 @@ class Logic:
             target_version (int): The target version
         """
         # dotnet is required to proceed
-        if not (utils.check_dotnet()):
+        if not (utils.is_dotnet_available()):
             raise Exception("DOTNET Core required but not found!")
 
         update_list = []
@@ -233,7 +234,7 @@ class Logic:
                     raise Exception("Error removing previous backup directory")
             self.backup_dir.mkdir()
 
-            utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
+            file_utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
         except Exception:
             raise
 

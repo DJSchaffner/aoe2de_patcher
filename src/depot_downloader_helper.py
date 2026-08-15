@@ -9,7 +9,7 @@ import time
 import tkinter
 import tkinter.simpledialog
 
-import utils
+import utils.path_utils as path_utils
 
 
 class ProcessState(Enum):
@@ -35,7 +35,7 @@ class DepotDownloaderHelper:
         Raises:
             ConnectionError: If there was an error during authentication
         """
-        args = ["dotnet", str(utils.get_tools_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
+        args = ["dotnet", str(path_utils.get_tools_path('DepotDownloader/DepotDownloader.dll').absolute())] + options
 
         # Spawn process and store in queue
         process = subprocess.Popen(

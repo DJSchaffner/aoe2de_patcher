@@ -1,67 +1,6 @@
-import sys
 import os
 import shutil
-import pefile
 from pathlib import Path
-
-from tkinter import Text
-
-
-def get_exe_name() -> str:
-    return "AoE2DE_s.exe"
-
-
-def get_binary_version(path: Path) -> tuple[int, int, int, int]:
-    """Retrieve the version number of a binary file.
-
-    Args:
-        path (Path): The path to the file
-
-    Returns:
-        tuple: Windows version number
-    """
-    # Untested under linux, but I would assume it works..
-    # TODO: Test
-    with pefile.PE(path, fast_load=True) as pe:
-        pe.parse_data_directories(directories=[pefile.DIRECTORY_ENTRY["IMAGE_DIRECTORY_ENTRY_RESOURCE"]])
-
-        if not hasattr(pe, "VS_FIXEDFILEINFO") or not pe.VS_FIXEDFILEINFO:
-            raise ValueError("Could not find VS_FIXEDFILEINFO in binary")
-
-        file_info = pe.VS_FIXEDFILEINFO[0]
-
-        version_number = (
-            file_info.FileVersionMS >> 16,
-            file_info.FileVersionMS & 0xFFFF,
-            file_info.FileVersionLS >> 16,
-            file_info.FileVersionLS & 0xFFFF
-        )
-
-        return version_number
-
-
-def get_game_version(game_dir: Path) -> int:
-    """Retrieve the game version from the executable file.
-
-    Returns:
-        int: The detected game version
-    """
-    metadata = get_binary_version(game_dir / get_exe_name())
-
-    return (metadata[1] - 101) * 65536 + metadata[2]
-
-
-def log(text_widget: Text, text: str) -> None:
-    """Logs a given string to the text widget.
-
-    Args:
-        text_widget (Text): The text widget
-        text (str): The text
-    """
-    text_widget.configure(state="normal")
-    text_widget.insert("end", text)
-    text_widget.configure(state="disabled")
-    text_widget.see("end")
 
 
 def copy_file_or_dir(source_dir: Path, target_dir: Path, file: str) -> None:
@@ -88,6 +27,19 @@ def remove_file_or_dir(path: Path) -> None:
         shutil.rmtree(path.absolute(), ignore_errors=True)
     else:
         path.unlink(missing_ok=True)
+
+
+def find_files(path: Path, pattern: str = "*") -> list[Path]:
+    """Finds all files matching the given pattern in a directory.
+
+    Args:
+        path (Path): The directory to scan
+        pattern (str): The pattern to match
+
+    Returns:
+        list[str]: A list of matching files
+    """
+    return [x for x in path.glob(pattern) if x.is_file()]
 
 
 def backup_files(original_dir: Path, override_dir: Path, backup_dir: Path, debug_info: bool) -> None:
@@ -148,60 +100,3 @@ def remove_patched_files(original_dir: Path, override_dir: Path, debug_info: boo
                 remove_file_or_dir(original_dir / file)
     except Exception as e:
         raise e
-
-
-def check_dotnet() -> bool:
-    """Checks if dotnet is available.
-
-    Returns:
-        bool: True if dotnet is available
-    """
-    return not (shutil.which("dotnet") is None)
-
-
-def base_path() -> Path:
-    """Construct the base path to the exe / project.
-
-    Returns:
-        Path: The base path of the executable or project
-    """
-    # Check for pyinstaller
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        return Path(getattr(sys, '_MEIPASS'))
-
-    # Check for cx_Freeze
-    if getattr(sys, 'frozen', False) and sys.platform == 'win32':
-        # On Windows, the executable is in the root directory
-        return Path(sys.executable).parent
-
-    if getattr(sys, 'frozen', False):
-        # On Unix-like systems, check for common cx_Freeze structures
-        base = Path(sys.executable).parent
-        if (base / 'lib').exists():
-            return base
-        return base
-
-    # Check for nuitka
-    if "__compiled__" in globals() or hasattr(sys, 'nuitka_version_info'):
-        return Path(sys.executable).parent
-
-    # Running as script (expects to be inside root/src)
-    return Path(__file__).parent.parent
-
-
-def get_tools_path(relative_path: str) -> Path:
-    """Construct the path for a tool.
-
-    Args:
-        relative_path (str): The path relative to the tools path
-
-    Returns:
-        Path: The path to the given tool
-    """
-    return base_path() / "tools" / relative_path
-
-
-def clear() -> None:
-    """Clear the screen of the console.
-    """
-    _ = os.system('cls')

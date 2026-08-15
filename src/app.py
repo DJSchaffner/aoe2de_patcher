@@ -11,7 +11,7 @@ import tkinter.messagebox
 
 import redirector
 from logic import Logic
-from utils import base_path
+from utils.path_utils import get_base_path
 
 
 class App():
@@ -32,7 +32,7 @@ class App():
             self.logic.cancel_downloads()
 
             # Log text box content to file
-            with open(base_path() / "log.txt", "w+") as file:
+            with open(get_base_path() / "log.txt", "w+") as file:
                 file.write(self.text_box.get(1.0, "end-1c"))
 
             self.window.destroy()
