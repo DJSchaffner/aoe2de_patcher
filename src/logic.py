@@ -1,12 +1,15 @@
 import os
-import pathlib
 import shutil
 import tempfile
+from pathlib import Path
 
 from depot_downloader_helper import DepotDownloaderHelper
 from web_helper import WebHelper
 import manifest
-import utils
+import utils.utils as utils
+import utils.path_utils as path_utils
+import utils.file_utils as file_utils
+import utils.vdf_utils as vdf_utils
 
 
 class Logic:
@@ -16,9 +19,9 @@ class Logic:
         self.webhook = WebHelper()
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
-        self.download_dir = utils.base_path() / "download"
-        self.manifest_dir = utils.base_path() / "manifests"
-        self.backup_dir = utils.base_path() / "backup"
+        self.download_dir = path_utils.get_base_path() / "download"
+        self.manifest_dir = path_utils.get_base_path() / "manifests"
+        self.backup_dir = path_utils.get_base_path() / "backup"
         self.patch_list = self.webhook.query_patches()
         self.depot_downloader_helper = DepotDownloaderHelper()
 
@@ -30,7 +33,7 @@ class Logic:
             target_version (int): The version to patch to
         """
         try:
-            # Check some stuff
+            # Check some stuff prerequisites
             if not hasattr(self, "game_dir") or self.game_dir is None:
                 raise Exception("Please select a game directory")
 
@@ -42,22 +45,22 @@ class Logic:
                 raise Exception("The selected version is already installed")
 
             print("Starting download phase...")
-
             self._download_patch(username, installed_version, target_version)
-
             print("Finished downloading files")
 
             print("Starting backup...")
-
             self._backup()
-
             print("Finished backup")
 
             print("Patching files...")
-
             self._move_patch()
-
             print("Finished patching files")
+
+            # For windows we want to trigger steam installation script on next run
+            if (utils.is_windows_platform()):
+                print("Resetting installation state...")
+                self._flag_for_install()
+                print("Finished resetting installation state")
         except Exception:
             raise
 
@@ -77,7 +80,7 @@ class Logic:
         # Remove added files from the path
         try:
             print("Removing patched files...")
-            utils.remove_patched_files(self.game_dir, self.download_dir, True)
+            file_utils.remove_patched_files(self.game_dir, self.download_dir, True)
             print("Finished removing patched files")
 
             # Copy backed up files to game path again
@@ -90,11 +93,17 @@ class Logic:
         except Exception:
             raise Exception("Error removing files!")
 
-    def set_game_dir(self, dir: pathlib.Path) -> None:
+        # For windows we want to trigger steam installation script on next run
+        if (utils.is_windows_platform()):
+            print("Resetting installation state...")
+            self._flag_for_install()
+            print("Finished resetting installation state")
+
+    def set_game_dir(self, dir: Path) -> None:
         """Tries to set the game directory, if successful return True. Otherwise return False.
 
         Args:
-            dir (pathlib.Path): The directory to be set
+            dir (Path): The directory to be set
         """
         aoe_binary = dir / "AoE2DE_s.exe"
 
@@ -128,7 +137,7 @@ class Logic:
             target_version (int): The target version
         """
         # dotnet is required to proceed
-        if not (utils.check_dotnet()):
+        if not (utils.is_dotnet_available()):
             raise Exception("DOTNET Core required but not found!")
 
         update_list = []
@@ -175,29 +184,30 @@ class Logic:
         for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
             # Check if depot id changes (VCRedist for example does change sometimes)
             # (Temporary?) solution just skip non-matching depot since old depots are no longer available and hope it still works
-            if current_depot["depot_id"] == target_depot["depot_id"]:
-                depot_id = current_depot["depot_id"]
-                current_manifest_id = current_depot["manifest_id"]
-                target_manifest_id = target_depot["manifest_id"]
-
-                changes = self._get_filelist(username, depot_id, current_manifest_id, target_manifest_id)
-
-                # Files have changed, store changes to temp file and add to update list
-                if changes is not None:
-                    # Create temp file
-                    tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
-
-                    # Store file name for deletion later on
-                    tmp_files.append(tmp.name)
-
-                    # Write content to file
-                    tmp.write("\n".join(changes))
-                    tmp.close()
-
-                    # Add update element to list
-                    update_list.append({'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name})
-            else:
+            if current_depot["depot_id"] != target_depot["depot_id"]:
                 print(f"Depot ID not matching, discarding pair ({current_depot['depot_id']}, {target_depot['depot_id']})")
+                continue
+
+            depot_id = current_depot["depot_id"]
+            current_manifest_id = current_depot["manifest_id"]
+            target_manifest_id = target_depot["manifest_id"]
+
+            changes = self._get_filelist(username, depot_id, current_manifest_id, target_manifest_id)
+
+            # Files have changed, store changes to temp file and add to update list
+            if changes is not None:
+                # Create temp file
+                tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+
+                # Store file name for deletion later on
+                tmp_files.append(tmp.name)
+
+                # Write content to file
+                tmp.write("\n".join(changes))
+                tmp.close()
+
+                # Add update element to list
+                update_list.append({'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name})
 
         print("Downloading files")
 
@@ -231,7 +241,7 @@ class Logic:
                     raise Exception("Error removing previous backup directory")
             self.backup_dir.mkdir()
 
-            utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
+            file_utils.backup_files(self.game_dir, self.download_dir, self.backup_dir, True)
         except Exception:
             raise
 
@@ -294,8 +304,8 @@ class Logic:
         if current_manifest_id == target_manifest_id:
             return None
 
-        removed = []
-        modified = []
+        removed_names = []
+        modified_names = []
 
         # Download manifests
         self._download_manifest(username, depot_id, current_manifest_id)
@@ -318,19 +328,18 @@ class Logic:
         diff_added_names = set([x[0] for x in diff_added])
 
         # Find all removed files (Remove files with same name but different hash)
-        removed = set.difference(diff_removed_names, diff_added_names)
+        removed_names = set.difference(diff_removed_names, diff_added_names)
 
         # Find all modified files (Retain files with same name but different hash)
-        modified = set.intersection(diff_removed_names, diff_added_names)
+        modified_names = set.intersection(diff_removed_names, diff_added_names)
 
         changes = []
-
-        changes += removed
-        changes += modified
+        changes += removed_names
+        changes += modified_names
 
         return changes
 
-    def _get_filelist_current(self, username: str, password: str, depot_id: int, manifest_id: int) -> list[str]:
+    def _get_filelist_current(self, username: str, depot_id: int, manifest_id: int) -> list[str]:
         """Get a list of all files current files of a depot.
 
         Args:
@@ -348,3 +357,24 @@ class Logic:
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
 
         return current_manifest.files
+
+    def _flag_for_install(self) -> None:
+        """Flag the game installation to run the install script on next launch.
+        """
+        # Find vdf file
+        vdf_files = file_utils.find_files(self.game_dir, "*.vdf")
+
+        if not vdf_files:
+            raise Exception("Could not find install script")
+
+        if len(vdf_files) > 1:
+            print("Warning: Found more than one install script. Picking first one.")
+
+        # Parse vdf file
+        install_script_file = vdf_files[0]
+        install_script = vdf_utils.parse(install_script_file)
+        has_run_keys = vdf_utils.find_has_run_keys(install_script)
+
+        # Reset all found registry keys
+        for value_name, registry_path in has_run_keys:
+            utils.delete_registry_value(registry_path, value_name)

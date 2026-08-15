@@ -3,3 +3,4 @@ requests
 ordered-set
 flake8
 cx-Freeze
+vdf
