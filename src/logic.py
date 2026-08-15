@@ -2,6 +2,7 @@ import os
 import pathlib
 import shutil
 import tempfile
+from pathlib import Path
 
 from depot_downloader_helper import DepotDownloaderHelper
 from web_helper import WebHelper
@@ -30,7 +31,7 @@ class Logic:
             target_version (int): The version to patch to
         """
         try:
-            # Check some stuff
+            # Check some stuff prerequisites
             if not hasattr(self, "game_dir") or self.game_dir is None:
                 raise Exception("Please select a game directory")
 
@@ -90,11 +91,11 @@ class Logic:
         except Exception:
             raise Exception("Error removing files!")
 
-    def set_game_dir(self, dir: pathlib.Path) -> None:
+    def set_game_dir(self, dir: Path) -> None:
         """Tries to set the game directory, if successful return True. Otherwise return False.
 
         Args:
-            dir (pathlib.Path): The directory to be set
+            dir (Path): The directory to be set
         """
         aoe_binary = dir / "AoE2DE_s.exe"
 
@@ -175,29 +176,30 @@ class Logic:
         for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
             # Check if depot id changes (VCRedist for example does change sometimes)
             # (Temporary?) solution just skip non-matching depot since old depots are no longer available and hope it still works
-            if current_depot["depot_id"] == target_depot["depot_id"]:
-                depot_id = current_depot["depot_id"]
-                current_manifest_id = current_depot["manifest_id"]
-                target_manifest_id = target_depot["manifest_id"]
-
-                changes = self._get_filelist(username, depot_id, current_manifest_id, target_manifest_id)
-
-                # Files have changed, store changes to temp file and add to update list
-                if changes is not None:
-                    # Create temp file
-                    tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
-
-                    # Store file name for deletion later on
-                    tmp_files.append(tmp.name)
-
-                    # Write content to file
-                    tmp.write("\n".join(changes))
-                    tmp.close()
-
-                    # Add update element to list
-                    update_list.append({'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name})
-            else:
+            if current_depot["depot_id"] != target_depot["depot_id"]:
                 print(f"Depot ID not matching, discarding pair ({current_depot['depot_id']}, {target_depot['depot_id']})")
+                continue
+
+            depot_id = current_depot["depot_id"]
+            current_manifest_id = current_depot["manifest_id"]
+            target_manifest_id = target_depot["manifest_id"]
+
+            changes = self._get_filelist(username, depot_id, current_manifest_id, target_manifest_id)
+
+            # Files have changed, store changes to temp file and add to update list
+            if changes is not None:
+                # Create temp file
+                tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
+
+                # Store file name for deletion later on
+                tmp_files.append(tmp.name)
+
+                # Write content to file
+                tmp.write("\n".join(changes))
+                tmp.close()
+
+                # Add update element to list
+                update_list.append({'depot_id': depot_id, 'manifest_id': target_manifest_id, 'filelist': tmp.name})
 
         print("Downloading files")
 
@@ -294,8 +296,8 @@ class Logic:
         if current_manifest_id == target_manifest_id:
             return None
 
-        removed = []
-        modified = []
+        removed_names = []
+        modified_names = []
 
         # Download manifests
         self._download_manifest(username, depot_id, current_manifest_id)
@@ -318,19 +320,18 @@ class Logic:
         diff_added_names = set([x[0] for x in diff_added])
 
         # Find all removed files (Remove files with same name but different hash)
-        removed = set.difference(diff_removed_names, diff_added_names)
+        removed_names = set.difference(diff_removed_names, diff_added_names)
 
         # Find all modified files (Retain files with same name but different hash)
-        modified = set.intersection(diff_removed_names, diff_added_names)
+        modified_names = set.intersection(diff_removed_names, diff_added_names)
 
         changes = []
-
-        changes += removed
-        changes += modified
+        changes += removed_names
+        changes += modified_names
 
         return changes
 
-    def _get_filelist_current(self, username: str, password: str, depot_id: int, manifest_id: int) -> list[str]:
+    def _get_filelist_current(self, username: str, depot_id: int, manifest_id: int) -> list[str]:
         """Get a list of all files current files of a depot.
 
         Args:
