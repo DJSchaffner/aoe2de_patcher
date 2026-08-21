@@ -340,7 +340,7 @@ class Logic:
         return changes
 
     def _get_filelist_current(self, username: str, depot_id: int, manifest_id: int) -> list[str]:
-        """Get a list of all files current files of a depot.
+        """Get a list of all current files of a depot.
 
         Args:
             username (str): The username
