@@ -1,6 +1,6 @@
-from dataclasses import dataclass
-import pathlib
 import re
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 
@@ -16,11 +16,11 @@ class Manifest():
     files: list[str]
 
 
-def read_manifest(file: pathlib.Path) -> Manifest:
+def read_manifest(file: Path) -> Manifest:
     """Parse a given manifest file and return a manifest object.
 
     Args:
-        file (pathlib.Path): Path to the manifest file
+        file (Path): Path to the manifest file
 
     Returns:
         Manifest: The parsed manifest object
