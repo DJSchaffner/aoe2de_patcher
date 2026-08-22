@@ -107,7 +107,7 @@ class App():
         """
         target_major, target_minor = self.logic.webhook.query_latest_version()
 
-        if self.version_major < target_major or self.version_minor < target_minor:
+        if (self.version_major, self.version_minor) < (target_major, target_minor):
             print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
             print("Please update because this version might no longer work!")
 
