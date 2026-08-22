@@ -1,3 +1,4 @@
+from asyncio import CancelledError
 import sys
 import pathlib
 import threading
@@ -8,6 +9,8 @@ import tkinter.scrolledtext as scrolledtext
 import tkinter.ttk as ttk
 import tkinter.filedialog
 import tkinter.messagebox
+import tkinter.simpledialog
+from queue import Empty, Queue
 
 import redirector
 from logic import Logic
@@ -16,11 +19,17 @@ from utils.path_utils import get_base_path
 
 class App():
     def __init__(self, version_major: int, version_minor: int):
-        self.logic = Logic()
-        self.patch_list = list(reversed(self.logic.get_patch_list()))
+        self._ui_queue = Queue()
+        self._ui_thread_id = threading.get_ident()
+        self._worker = None
+        self._close_requested = False
+        self._closed = False
 
         self.version_major = version_major
         self.version_minor = version_minor
+
+        self.logic = Logic(self._request_prompt)
+        self.patch_list = list(reversed(self.logic.get_patch_list()))
 
         # Set up GUI
         self.window = tk.Tk()
@@ -29,13 +38,9 @@ class App():
         self.window.resizable(False, False)
 
         def on_closing():
-            self.logic.cancel_downloads()
-
-            # Log text box content to file
-            with open(get_base_path() / "log.txt", "w+") as file:
-                file.write(self.text_box.get(1.0, "end-1c"))
-
-            self.window.destroy()
+            self._close_requested = True
+            if self._worker is not None and self._worker.is_alive():
+                self.logic.cancel_downloads()
 
         self.window.protocol("WM_DELETE_WINDOW", on_closing)
 
@@ -82,12 +87,13 @@ class App():
         self.text_box.pack(expand=True, fill="both")
 
         # Redirect stdout to the text box
-        sys.stdout = redirector.StdoutRedirector(self.text_box)
+        sys.stdout = redirector.StdoutRedirector(self._enqueue_log)
 
     def start(self) -> None:
         """Start the application.
         """
         self._check_version()
+        self.window.after(50, self._process_ui_queue)
         self.window.mainloop()
 
     def _select_game_dir(self) -> None:
@@ -115,41 +121,155 @@ class App():
         """Start patching the game with the downloaded files.
         """
         # Retrieve selected patch
-        selected_patch = next((p for p in self.patch_list if str(p['version']) in self.selected_patch_title.get()), None)
+        selected_index = self.cmb_select_patch.current()
+        selected_patch = self.patch_list[selected_index] if selected_index >= 0 else None
         if selected_patch is None:
             tkinter.messagebox.showerror(title="ERROR", message="Could not retrieve selected patch version")
             return
 
+        username = self.ent_username.get()
+
         def work():
-            self._disable_input()
-
             try:
-                self.logic.patch(self.ent_username.get(), selected_patch["version"])
-                tkinter.messagebox.showinfo(message="Patching done")
+                self._enqueue_ui(self._worker_started)
+                self.logic.patch(username, selected_patch["version"])
+                self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Patching done"))
+            except CancelledError:
+                # Ignore error happening during cancellation
+                pass
             except Exception as e:
-                tkinter.messagebox.showerror(title="ERROR", message=str(e))
+                error_message = str(e)
+                self._enqueue_ui(lambda: tkinter.messagebox.showerror(title="ERROR", message=error_message))
+            finally:
+                self._enqueue_ui(self._worker_finished)
 
-            self._enable_input()
-
-        t = threading.Thread(target=work)
-        t.start()
+        self._worker = threading.Thread(target=work)
+        self._worker.start()
 
     def _restore(self) -> None:
         """Restores the game directory using the backed up files and downloaded files.
         """
         def work():
-            self._disable_input()
+            try:
+                self._enqueue_ui(self._worker_started)
+                self.logic.restore()
+                self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Restore done"))
+            except CancelledError:
+                # Ignore error happening during cancellation
+                pass
+            except Exception as e:
+                error_message = str(e)
+                self._enqueue_ui(lambda: tkinter.messagebox.showerror(title="ERROR", message=error_message))
+            finally:
+                self._enqueue_ui(self._worker_finished)
+
+        self._worker = threading.Thread(target=work)
+        self._worker.start()
+
+    def _enqueue_ui(self, callback) -> None:
+        """Queue a callback for execution on the UI thread.
+
+        Args:
+            callback: The callback to execute on the UI thread
+        """
+        self._ui_queue.put(callback)
+
+    def _process_ui_queue(self) -> None:
+        """Execute callbacks queued for the UI thread.
+        """
+        while True:
+            try:
+                callback = self._ui_queue.get_nowait()
+                callback()
+            except Empty:
+                break
+
+        if self._close_requested and (self._worker is None or not self._worker.is_alive()):
+            self._close_window()
+        elif not self._closed:
+            self.window.after(50, self._process_ui_queue)
+
+    def _request_prompt(self, title: str, prompt: str, is_hidden: bool) -> str | None:
+        """Requests to queue a prompt to the ui thread.
+
+        Args:
+            title (str): The prompt title
+            prompt (str): The prompt text
+            is_hidden (bool): If the entered text should be hidden
+
+        Returns:
+            str | None: The entered string or None if invalid or cancelled
+        """
+        def create_prompt(title: str, prompt: str, is_hidden: bool) -> str | None:
+            temp = tkinter.Tk()
+            temp.withdraw()
 
             try:
-                self.logic.restore()
-                tkinter.messagebox.showinfo(message="Restore done")
-            except Exception as e:
-                tkinter.messagebox.showerror(title="ERROR", message=str(e))
+                return tkinter.simpledialog.askstring(
+                    title=title,
+                    prompt=prompt,
+                    parent=temp,
+                    show="*" if is_hidden else None
+                )
+            finally:
+                temp.destroy()
 
+        if threading.get_ident() == self._ui_thread_id:
+            return create_prompt(title, prompt, is_hidden)
+
+        response = []
+        event = threading.Event()
+
+        def show_prompt():
+            response.append(create_prompt(title, prompt, is_hidden))
+            event.set()
+
+        self._enqueue_ui(show_prompt)
+        event.wait()
+        return response[0]
+
+    def _enqueue_log(self, text: str) -> None:
+        """Queue log text for display in the UI text box.
+
+        Args:
+            text (str): The text to append to the log
+        """
+        self._enqueue_ui(lambda: self._append_log(text))
+
+    def _append_log(self, text: str) -> None:
+        """Append text to the UI log text box.
+
+        Args:
+            text (str): The text to append
+        """
+        self.text_box.configure(state="normal")
+        self.text_box.insert("end", text)
+        self.text_box.configure(state="disabled")
+        self.text_box.see("end")
+
+    def _worker_started(self) -> None:
+        self._disable_input()
+
+    def _worker_finished(self) -> None:
+        """Handle completion of a patch or restore worker.
+        """
+        self._worker = None
+        if not self._close_requested:
             self._enable_input()
 
-        t = threading.Thread(target=work)
-        t.start()
+    def _close_window(self) -> None:
+        """Save the UI log and close the application window.
+        """
+        if self._closed:
+            return
+
+        self._closed = True
+
+        with open(get_base_path() / "log.txt", "w+") as file:
+            file.write(self.text_box.get(1.0, "end-1c"))
+
+        sys.stdout = sys.__stdout__
+        self.window.destroy()
 
     def _disable_input(self) -> None:
         """Disables User input for certain Buttons / Entries.

@@ -4,8 +4,6 @@ import shutil
 import pefile
 from pathlib import Path
 
-from tkinter import Text
-
 
 def is_dotnet_available() -> bool:
     """Checks if dotnet is available.
@@ -62,19 +60,6 @@ def get_game_version(game_dir: Path) -> int:
     metadata = get_binary_version(game_dir / get_exe_name())
 
     return (metadata[1] - 101) * 65536 + metadata[2]
-
-
-def log(text_widget: Text, text: str) -> None:
-    """Logs a given string to the text widget.
-
-    Args:
-        text_widget (Text): The text widget
-        text (str): The text
-    """
-    text_widget.configure(state="normal")
-    text_widget.insert("end", text)
-    text_widget.configure(state="disabled")
-    text_widget.see("end")
 
 
 def delete_registry_value(registry_path: str, value_name: str) -> None:
