@@ -43,7 +43,7 @@ class WebHelper:
         """
 
         # Doesn't work with cloudflare blocking access
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
 
         if (not ignore_success) and (not self._is_response_successful(response)):
             self._print_response_error(response)
