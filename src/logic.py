@@ -1,4 +1,5 @@
 from asyncio import CancelledError
+from collections.abc import Callable
 import os
 import shutil
 import tempfile
@@ -16,7 +17,7 @@ import utils.vdf_utils as vdf_utils
 class Logic:
     APP_ID = 813780
 
-    def __init__(self):
+    def __init__(self, prompt_handler: Callable[[str, str, bool], str | None]):
         self.webhook = WebHelper()
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
@@ -25,7 +26,7 @@ class Logic:
         self.manifest_dir = path_utils.get_base_path() / "manifests"
         self.backup_dir = path_utils.get_base_path() / "backup"
         self.patch_list = self.webhook.query_patches()
-        self.depot_downloader_helper = DepotDownloaderHelper()
+        self.depot_downloader_helper = DepotDownloaderHelper(prompt_handler)
 
     def patch(self, username: str, target_version: int) -> None:
         """Start patching the game with the downloaded files.
