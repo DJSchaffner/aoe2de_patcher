@@ -47,20 +47,29 @@ class Logic:
             if installed_version == target_version:
                 raise Exception("The selected version is already installed")
 
+            self._raise_if_cancelled()
+
             print("Starting download phase...")
             self._download_patch(username, installed_version, target_version)
             print("Finished downloading files")
+
+            self._raise_if_cancelled()
 
             print("Starting backup...")
             self._backup()
             print("Finished backup")
 
+            self._raise_if_cancelled()
+
             print("Patching files...")
             self._move_patch()
             print("Finished patching files")
 
+            self._raise_if_cancelled()
+
             # For windows we want to trigger steam installation script on next run
             if (utils.is_windows_platform()):
+                self._raise_if_cancelled()
                 print("Resetting installation state...")
                 self._flag_for_install()
                 print("Finished resetting installation state")
@@ -89,6 +98,8 @@ class Logic:
             file_utils.remove_patched_files(self.game_dir, self.download_dir, True)
             print("Finished removing patched files")
 
+            self._raise_if_cancelled()
+
             # Copy backed up files to game path again
             try:
                 print("Restoring backup...")
@@ -98,6 +109,8 @@ class Logic:
                 raise Exception("Error restoring files!")
         except Exception:
             raise Exception("Error removing files!")
+
+        self._raise_if_cancelled()
 
         # For windows we want to trigger steam installation script on next run
         if (utils.is_windows_platform()):
@@ -134,6 +147,10 @@ class Logic:
         """
         self.cancel_requested = True
         self.depot_downloader_helper.cancel_downloads()
+
+    def _raise_if_cancelled(self) -> None:
+        if self.cancel_requested:
+            raise CancelledError
 
     def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
         """Download the given patch using the steam account username.
@@ -189,6 +206,7 @@ class Logic:
 
         # Iterate depots of current and target patch together
         for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
+            self._raise_if_cancelled()
             # Check if depot id changes (VCRedist for example does change sometimes)
             # (Temporary?) solution just skip non-matching depot since old depots are no longer available and hope it still works
             if current_depot["depot_id"] != target_depot["depot_id"]:
@@ -203,6 +221,7 @@ class Logic:
 
             # Files have changed, store changes to temp file and add to update list
             if changes is not None:
+                self._raise_if_cancelled()
                 # Create temp file
                 tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
@@ -221,6 +240,7 @@ class Logic:
         try:
             # Loop all necessary updates
             for element in update_list:
+                self._raise_if_cancelled()
                 # Stop if a download didn't succeed
                 self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
         finally:
@@ -317,7 +337,9 @@ class Logic:
 
         # Download manifests
         self._download_manifest(username, depot_id, current_manifest_id)
+        self._raise_if_cancelled()
         self._download_manifest(username, depot_id, target_manifest_id)
+        self._raise_if_cancelled()
 
         # Read manifest files
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{current_manifest_id}.txt")
@@ -360,6 +382,7 @@ class Logic:
         """
         # Download manifests
         self._download_manifest(username, depot_id, manifest_id)
+        self._raise_if_cancelled()
 
         # Read manifest files
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
@@ -385,4 +408,5 @@ class Logic:
 
         # Reset all found registry keys
         for value_name, registry_path in has_run_keys:
+            self._raise_if_cancelled()
             utils.delete_registry_value(registry_path, value_name)
