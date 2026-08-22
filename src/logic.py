@@ -1,3 +1,4 @@
+from asyncio import CancelledError
 import os
 import shutil
 import tempfile
@@ -19,6 +20,7 @@ class Logic:
         self.webhook = WebHelper()
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
+        self.cancel_requested = False
         self.download_dir = path_utils.get_base_path() / "download"
         self.manifest_dir = path_utils.get_base_path() / "manifests"
         self.backup_dir = path_utils.get_base_path() / "backup"
@@ -62,6 +64,9 @@ class Logic:
                 self._flag_for_install()
                 print("Finished resetting installation state")
         except Exception:
+            if self.cancel_requested:
+                raise CancelledError
+
             raise
 
     def restore(self) -> None:
@@ -126,6 +131,7 @@ class Logic:
     def cancel_downloads(self) -> None:
         """Performs cleanup for logic object.
         """
+        self.cancel_requested = True
         self.depot_downloader_helper.cancel_downloads()
 
     def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
@@ -211,14 +217,15 @@ class Logic:
 
         print("Downloading files")
 
-        # Loop all necessary updates
-        for element in update_list:
-            # Stop if a download didn't succeed
-            self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
-
-        # Remove created temp files
-        for tmp in tmp_files:
-            os.unlink(tmp)
+        try:
+            # Loop all necessary updates
+            for element in update_list:
+                # Stop if a download didn't succeed
+                self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
+        finally:
+            # Remove created temp files (Also after exception occurred)
+            for tmp in tmp_files:
+                os.unlink(tmp)
 
     def _move_patch(self) -> None:
         """Move downloaded patch files to game directory.
