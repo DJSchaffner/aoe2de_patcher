@@ -123,9 +123,9 @@ class App():
     def _check_version(self) -> None:
         """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
         """
-        target_major, target_minor = self.logic.webhook.query_latest_version()
+        latest_major, latest_minor = self.logic.webhook.query_latest_version()
 
-        if (self.version_major, self.version_minor) < (target_major, target_minor):
+        if (self.version_major, self.version_minor) < (latest_major, latest_minor):
             print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
             print("Please update because this version might no longer work!")
 
