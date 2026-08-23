@@ -323,6 +323,8 @@ class App():
         self.horizontal_scrollbar.set(*self.text_box.xview())
 
     def _worker_started(self) -> None:
+        """Handle start of a patch or restore worker.
+        """
         self._disable_input()
 
     def _worker_finished(self) -> None:
