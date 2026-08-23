@@ -1,26 +1,35 @@
+from asyncio import CancelledError
 import sys
 import pathlib
 import threading
 import time
 
 import tkinter as tk
-import tkinter.scrolledtext as scrolledtext
 import tkinter.ttk as ttk
 import tkinter.filedialog
 import tkinter.messagebox
+import tkinter.simpledialog
+from queue import Empty, Queue
 
 import redirector
 from logic import Logic
 from utils.path_utils import get_base_path
+from utils.utils import get_game_version
 
 
 class App():
     def __init__(self, version_major: int, version_minor: int):
-        self.logic = Logic()
-        self.patch_list = list(reversed(self.logic.get_patch_list()))
+        self._ui_queue = Queue()
+        self._ui_thread_id = threading.get_ident()
+        self._worker = None
+        self._close_requested = False
+        self._closed = False
 
         self.version_major = version_major
         self.version_minor = version_minor
+
+        self.logic = Logic(self._request_prompt, self._update_status)
+        self.patch_list = list(reversed(self.logic.get_patch_list()))
 
         # Set up GUI
         self.window = tk.Tk()
@@ -29,13 +38,8 @@ class App():
         self.window.resizable(False, False)
 
         def on_closing():
-            self.logic.cancel_downloads()
-
-            # Log text box content to file
-            with open(get_base_path() / "log.txt", "w+") as file:
-                file.write(self.text_box.get(1.0, "end-1c"))
-
-            self.window.destroy()
+            self._close_requested = True
+            self._cancel()
 
         self.window.protocol("WM_DELETE_WINDOW", on_closing)
 
@@ -58,11 +62,17 @@ class App():
 
         patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', time.gmtime(p['date']))}" for p in self.patch_list]
 
+        self.installed_version = tk.StringVar(value="-")
+        self.lbl_installed_version = ttk.Label(master=self.upper_frame, text="Installed version")
+        self.lbl_installed_version.grid(row=0, column=0, sticky="e")
+        self.val_installed_version = ttk.Label(master=self.upper_frame, textvariable=self.installed_version)
+        self.val_installed_version.grid(row=0, column=1, sticky="w")
+
         self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Target version")
-        self.lbl_select_patch.grid(row=0, column=0, sticky="e")
+        self.lbl_select_patch.grid(row=1, column=0, sticky="e")
         self.cmb_select_patch = ttk.Combobox(self.upper_frame, state="readonly", textvariable=self.selected_patch_title, values=[p for p in patch_titles])
         self.cmb_select_patch.current(0)    # Set default value
-        self.cmb_select_patch.grid(row=0, column=1, sticky="ew")
+        self.cmb_select_patch.grid(row=1, column=1, sticky="ew")
 
         self.lbl_username = ttk.Label(master=self.upper_frame, text="Username")
         self.lbl_username.grid(row=2, column=0, sticky="e")
@@ -78,17 +88,58 @@ class App():
         self.btn_game_dir = ttk.Button(master=self.upper_frame, text="Set Game directory", command=self._select_game_dir)
         self.btn_game_dir.grid(row=2, column=5, sticky="nesw")
 
-        self.text_box = scrolledtext.ScrolledText(master=self.lower_frame, state="disabled")
-        self.text_box.pack(expand=True, fill="both")
+        self.log_frame = tk.Frame(master=self.lower_frame)
+        self.log_frame.pack(expand=True, fill="both")
+
+        self.text_box = tk.Text(
+            master=self.log_frame,
+            state="disabled",
+            wrap="none",
+            yscrollcommand=lambda *args: self.vertical_scrollbar.set(*args),
+            xscrollcommand=lambda *args: self.horizontal_scrollbar.set(*args)
+        )
+        self.text_box.grid(row=0, column=0, sticky="nesw")
+
+        self.vertical_scrollbar = ttk.Scrollbar(
+            master=self.log_frame,
+            orient="vertical",
+            command=self.text_box.yview
+        )
+        self.vertical_scrollbar.grid(row=0, column=1, sticky="ns")
+
+        self.horizontal_scrollbar = ttk.Scrollbar(
+            master=self.log_frame,
+            orient="horizontal",
+            command=self.text_box.xview
+        )
+        self.horizontal_scrollbar.grid(row=1, column=0, sticky="ew")
+        self.log_frame.rowconfigure(0, weight=1)
+        self.log_frame.columnconfigure(0, weight=1)
+
+        self.status = tk.StringVar(value="Ready")
+        self.status_bar = ttk.Label(master=self.lower_frame, textvariable=self.status, anchor="w", relief="sunken")
+        self.status_bar.pack(side="bottom", fill="x", pady=(5, 0))
 
         # Redirect stdout to the text box
-        sys.stdout = redirector.StdoutRedirector(self.text_box)
+        sys.stdout = redirector.StdoutRedirector(self._enqueue_log)
 
     def start(self) -> None:
         """Start the application.
         """
-        self._check_version()
+        self.window.after(50, self._process_ui_queue)
+        self._start_version_check()
         self.window.mainloop()
+
+    def _start_version_check(self) -> None:
+        """Check for a newer release without blocking the UI.
+        """
+        def check_version():
+            try:
+                self._check_version()
+            except Exception as e:
+                print(f"Could not check for a newer version: {e}")
+
+        threading.Thread(target=check_version, daemon=True).start()
 
     def _select_game_dir(self) -> None:
         """Open a file dialog for the user to select the game folder and send the result to logic.
@@ -99,15 +150,21 @@ class App():
         if dir != "":
             try:
                 self.logic.set_game_dir(pathlib.Path(dir))
+                self._update_installed_version()
             except Exception as e:
                 tkinter.messagebox.showerror(title="ERROR", message=str(e))
+
+    def _update_installed_version(self) -> None:
+        """Update the installed game version displayed in the UI.
+        """
+        self.installed_version.set(str(get_game_version(self.logic.game_dir)))
 
     def _check_version(self) -> None:
         """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
         """
-        target_major, target_minor = self.logic.webhook.query_latest_version()
+        latest_major, latest_minor = self.logic.webhook.query_latest_version()
 
-        if self.version_major < target_major or self.version_minor < target_minor:
+        if (self.version_major, self.version_minor) < (latest_major, latest_minor):
             print("There is a new version available at https://github.com/DJSchaffner/aoe2de_patcher")
             print("Please update because this version might no longer work!")
 
@@ -115,47 +172,187 @@ class App():
         """Start patching the game with the downloaded files.
         """
         # Retrieve selected patch
-        selected_patch = next((p for p in self.patch_list if str(p['version']) in self.selected_patch_title.get()), None)
+        selected_index = self.cmb_select_patch.current()
+        selected_patch = self.patch_list[selected_index] if selected_index >= 0 else None
         if selected_patch is None:
             tkinter.messagebox.showerror(title="ERROR", message="Could not retrieve selected patch version")
             return
 
+        username = self.ent_username.get()
+
         def work():
-            self._disable_input()
-
             try:
-                self.logic.patch(self.ent_username.get(), selected_patch["version"])
-                tkinter.messagebox.showinfo(message="Patching done")
+                self._enqueue_ui(self._worker_started)
+                self.logic.patch(username, selected_patch["version"])
+                self._enqueue_ui(self._update_installed_version)
+                self._enqueue_ui(lambda: self._set_status("Completed"))
+                self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Patching done"))
+            except CancelledError:
+                # Ignore error happening during cancellation
+                self._enqueue_ui(lambda: self._set_status("Cancelled"))
             except Exception as e:
-                tkinter.messagebox.showerror(title="ERROR", message=str(e))
+                error_message = str(e)
+                self._enqueue_ui(lambda: self._set_status("Error"))
+                self._enqueue_ui(lambda: tkinter.messagebox.showerror(title="ERROR", message=error_message))
+            finally:
+                self._enqueue_ui(self._worker_finished)
 
-            self._enable_input()
-
-        t = threading.Thread(target=work)
-        t.start()
+        self._worker = threading.Thread(target=work)
+        self._worker.start()
 
     def _restore(self) -> None:
         """Restores the game directory using the backed up files and downloaded files.
         """
         def work():
-            self._disable_input()
+            try:
+                self._enqueue_ui(self._worker_started)
+                self.logic.restore()
+                self._enqueue_ui(self._update_installed_version)
+                self._enqueue_ui(lambda: self._set_status("Completed"))
+                self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Restore done"))
+            except CancelledError:
+                # Ignore error happening during cancellation
+                self._enqueue_ui(lambda: self._set_status("Cancelled"))
+            except Exception as e:
+                error_message = str(e)
+                self._enqueue_ui(lambda: self._set_status("Error"))
+                self._enqueue_ui(lambda: tkinter.messagebox.showerror(title="ERROR", message=error_message))
+            finally:
+                self._enqueue_ui(self._worker_finished)
+
+        self._worker = threading.Thread(target=work)
+        self._worker.start()
+
+    def _cancel(self) -> None:
+        """Request cancellation of the active worker.
+        """
+        if self._worker is not None and self._worker.is_alive():
+            self.logic.cancel_downloads()
+
+    def _enqueue_ui(self, callback) -> None:
+        """Queue a callback for execution on the UI thread.
+
+        Args:
+            callback: The callback to execute on the UI thread
+        """
+        self._ui_queue.put(callback)
+
+    def _update_status(self, message: str) -> None:
+        """Queue a status update for the UI thread.
+        """
+        self._enqueue_ui(lambda: self._set_status(message))
+
+    def _set_status(self, message: str) -> None:
+        """Set the status text.
+        """
+        self.status.set(message)
+
+    def _process_ui_queue(self) -> None:
+        """Execute callbacks queued for the UI thread.
+        """
+        while True:
+            try:
+                callback = self._ui_queue.get_nowait()
+                callback()
+            except Empty:
+                break
+
+        if self._close_requested and (self._worker is None or not self._worker.is_alive()):
+            self._close_window()
+        elif not self._closed:
+            self.window.after(50, self._process_ui_queue)
+
+    def _request_prompt(self, title: str, prompt: str, is_hidden: bool) -> str | None:
+        """Requests to queue a prompt to the ui thread.
+
+        Args:
+            title (str): The prompt title
+            prompt (str): The prompt text
+            is_hidden (bool): If the entered text should be hidden
+
+        Returns:
+            str | None: The entered string or None if invalid or cancelled
+        """
+        def create_prompt(title: str, prompt: str, is_hidden: bool) -> str | None:
+            temp = tkinter.Tk()
+            temp.withdraw()
 
             try:
-                self.logic.restore()
-                tkinter.messagebox.showinfo(message="Restore done")
-            except Exception as e:
-                tkinter.messagebox.showerror(title="ERROR", message=str(e))
+                return tkinter.simpledialog.askstring(
+                    title=title,
+                    prompt=prompt,
+                    parent=temp,
+                    show="*" if is_hidden else None
+                )
+            finally:
+                temp.destroy()
 
+        if threading.get_ident() == self._ui_thread_id:
+            return create_prompt(title, prompt, is_hidden)
+
+        response = []
+        event = threading.Event()
+
+        def show_prompt():
+            response.append(create_prompt(title, prompt, is_hidden))
+            event.set()
+
+        self._enqueue_ui(show_prompt)
+        event.wait()
+        return response[0]
+
+    def _enqueue_log(self, text: str) -> None:
+        """Queue log text for display in the UI text box.
+
+        Args:
+            text (str): The text to append to the log
+        """
+        self._enqueue_ui(lambda: self._append_log(text))
+
+    def _append_log(self, text: str) -> None:
+        """Append text to the UI log text box.
+
+        Args:
+            text (str): The text to append
+        """
+        self.text_box.configure(state="normal")
+        self.text_box.insert("end", text)
+        self.text_box.configure(state="disabled")
+        self.text_box.see("end")
+        self.text_box.update_idletasks()
+        self.horizontal_scrollbar.set(*self.text_box.xview())
+
+    def _worker_started(self) -> None:
+        """Handle start of a patch or restore worker.
+        """
+        self._disable_input()
+
+    def _worker_finished(self) -> None:
+        """Handle completion of a patch or restore worker.
+        """
+        self._worker = None
+        if not self._close_requested:
             self._enable_input()
 
-        t = threading.Thread(target=work)
-        t.start()
+    def _close_window(self) -> None:
+        """Save the UI log and close the application window.
+        """
+        if self._closed:
+            return
+
+        self._closed = True
+
+        with open(get_base_path() / "log.txt", "w+") as file:
+            file.write(self.text_box.get(1.0, "end-1c"))
+
+        sys.stdout = sys.__stdout__
+        self.window.destroy()
 
     def _disable_input(self) -> None:
         """Disables User input for certain Buttons / Entries.
         """
         self.cmb_select_patch.config(state="disabled")
-        self.btn_patch.config(state="disabled")
+        self.btn_patch.config(text="Cancel", command=self._cancel, state="enabled")
         self.btn_restore.config(state="disabled")
         self.btn_game_dir.config(state="disabled")
         self.ent_username.config(state="disabled")
@@ -164,7 +361,7 @@ class App():
         """Enables User input for certain Buttons / Entries.
         """
         self.cmb_select_patch.config(state="readonly")
-        self.btn_patch.config(state="enabled")
+        self.btn_patch.config(text="Patch", command=self._patch, state="enabled")
         self.btn_restore.config(state="enabled")
         self.btn_game_dir.config(state="enabled")
         self.ent_username.config(state="enabled")

@@ -1,3 +1,5 @@
+from asyncio import CancelledError
+from collections.abc import Callable
 import os
 import shutil
 import tempfile
@@ -15,15 +17,21 @@ import utils.vdf_utils as vdf_utils
 class Logic:
     APP_ID = 813780
 
-    def __init__(self):
+    def __init__(
+        self,
+        prompt_handler: Callable[[str, str, bool], str | None],
+        progress_handler: Callable[[str], None] | None = None
+    ):
         self.webhook = WebHelper()
+        self.progress_handler = progress_handler
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
+        self.cancel_requested = False
         self.download_dir = path_utils.get_base_path() / "download"
         self.manifest_dir = path_utils.get_base_path() / "manifests"
         self.backup_dir = path_utils.get_base_path() / "backup"
         self.patch_list = self.webhook.query_patches()
-        self.depot_downloader_helper = DepotDownloaderHelper()
+        self.depot_downloader_helper = DepotDownloaderHelper(prompt_handler)
 
     def patch(self, username: str, target_version: int) -> None:
         """Start patching the game with the downloaded files.
@@ -44,24 +52,45 @@ class Logic:
             if installed_version == target_version:
                 raise Exception("The selected version is already installed")
 
+            self._raise_if_cancelled()
+
+            print("Preparing download phase...")
+            self._report_progress("Preparing download...")
+            self._prepare_download()
+            print("Finished preparing download phase")
+
             print("Starting download phase...")
+            self._report_progress("Downloading files...")
             self._download_patch(username, installed_version, target_version)
             print("Finished downloading files")
 
+            self._raise_if_cancelled()
+
             print("Starting backup...")
+            self._report_progress("Backing up files...")
             self._backup()
             print("Finished backup")
 
+            self._raise_if_cancelled()
+
             print("Patching files...")
+            self._report_progress("Patching files...")
             self._move_patch()
             print("Finished patching files")
 
+            self._raise_if_cancelled()
+
             # For windows we want to trigger steam installation script on next run
             if (utils.is_windows_platform()):
+                self._raise_if_cancelled()
                 print("Resetting installation state...")
+                self._report_progress("Finalizing...")
                 self._flag_for_install()
                 print("Finished resetting installation state")
         except Exception:
+            if self.cancel_requested:
+                raise CancelledError
+
             raise
 
     def restore(self) -> None:
@@ -77,15 +106,24 @@ class Logic:
         if len(os.listdir(self.backup_dir.absolute())) == 0:
             raise Exception("No backup stored")
 
+        installed_version = utils.get_game_version(self.game_dir)
+        backup_version = utils.get_game_version(self.backup_dir)
+        if (installed_version == backup_version):
+            raise Exception("Installed version already matches backup version")
+
         # Remove added files from the path
         try:
             print("Removing patched files...")
+            self._report_progress("Removing patched files...")
             file_utils.remove_patched_files(self.game_dir, self.download_dir, True)
             print("Finished removing patched files")
+
+            self._raise_if_cancelled()
 
             # Copy backed up files to game path again
             try:
                 print("Restoring backup...")
+                self._report_progress("Restoring backup...")
                 shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
                 print("Finished restoring backup")
             except Exception:
@@ -93,9 +131,12 @@ class Logic:
         except Exception:
             raise Exception("Error removing files!")
 
+        self._raise_if_cancelled()
+
         # For windows we want to trigger steam installation script on next run
         if (utils.is_windows_platform()):
             print("Resetting installation state...")
+            self._report_progress("Finalizing...")
             self._flag_for_install()
             print("Finished resetting installation state")
 
@@ -113,7 +154,6 @@ class Logic:
         self.game_dir = dir
 
         print(f"Game directory set to: {dir.absolute()}")
-        print(f"Installed version detected: {utils.get_game_version(self.game_dir)}")
 
     def get_patch_list(self) -> list[dict]:
         """Returns the patch list.
@@ -123,12 +163,34 @@ class Logic:
         """
         return self.patch_list
 
+    def _report_progress(self, message: str) -> None:
+        """Report progress to progress handler.
+
+        Args:
+            message (str): The current progress
+        """
+        if self.progress_handler is not None:
+            self.progress_handler(message)
+
     def cancel_downloads(self) -> None:
         """Performs cleanup for logic object.
         """
+        self.cancel_requested = True
         self.depot_downloader_helper.cancel_downloads()
 
-    def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
+    def _raise_if_cancelled(self) -> None:
+        """Raise cancelled exception if cancel is requested.
+
+        Raises:
+            CancelledError: An empty cancellation error
+        """
+        if self.cancel_requested:
+            # Reset cancel request and raise
+            self.cancel_requested = False
+
+            raise CancelledError
+
+    def _prepare_download(self) -> None:
         """Download the given patch using the steam account username.
 
         Args:
@@ -139,9 +201,6 @@ class Logic:
         # dotnet is required to proceed
         if not (utils.is_dotnet_available()):
             raise Exception("DOTNET Core required but not found!")
-
-        update_list = []
-        tmp_files = []
 
         # Remove previous download folder if it exists
         # Create empty folders afterwards
@@ -163,7 +222,17 @@ class Logic:
 
         self.manifest_dir.mkdir()
 
+    def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
+        """Download the given patch using the steam account username.
+
+        Args:
+            username (str): The username
+            installed_version (int): The currently installed version
+            target_version (int): The target version
+        """
         print("Generating list of changes")
+        update_list = []
+        tmp_files = []
 
         # Filter list of patches for current and target version
         filtered_patches = list(filter(lambda x: x["version"] == installed_version or x["version"] == target_version, self.patch_list))
@@ -182,6 +251,7 @@ class Logic:
 
         # Iterate depots of current and target patch together
         for current_depot, target_depot in zip(current_patch["depots"], target_patch["depots"]):
+            self._raise_if_cancelled()
             # Check if depot id changes (VCRedist for example does change sometimes)
             # (Temporary?) solution just skip non-matching depot since old depots are no longer available and hope it still works
             if current_depot["depot_id"] != target_depot["depot_id"]:
@@ -196,6 +266,7 @@ class Logic:
 
             # Files have changed, store changes to temp file and add to update list
             if changes is not None:
+                self._raise_if_cancelled()
                 # Create temp file
                 tmp = tempfile.NamedTemporaryFile(mode="w", delete=False)
 
@@ -211,14 +282,16 @@ class Logic:
 
         print("Downloading files")
 
-        # Loop all necessary updates
-        for element in update_list:
-            # Stop if a download didn't succeed
-            self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
-
-        # Remove created temp files
-        for tmp in tmp_files:
-            os.unlink(tmp)
+        try:
+            # Loop all necessary updates
+            for element in update_list:
+                self._raise_if_cancelled()
+                # Stop if a download didn't succeed
+                self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
+        finally:
+            # Remove created temp files (Also after exception occurred)
+            for tmp in tmp_files:
+                os.unlink(tmp)
 
     def _move_patch(self) -> None:
         """Move downloaded patch files to game directory.
@@ -309,7 +382,9 @@ class Logic:
 
         # Download manifests
         self._download_manifest(username, depot_id, current_manifest_id)
+        self._raise_if_cancelled()
         self._download_manifest(username, depot_id, target_manifest_id)
+        self._raise_if_cancelled()
 
         # Read manifest files
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{current_manifest_id}.txt")
@@ -340,7 +415,7 @@ class Logic:
         return changes
 
     def _get_filelist_current(self, username: str, depot_id: int, manifest_id: int) -> list[str]:
-        """Get a list of all files current files of a depot.
+        """Get a list of all current files of a depot.
 
         Args:
             username (str): The username
@@ -352,6 +427,7 @@ class Logic:
         """
         # Download manifests
         self._download_manifest(username, depot_id, manifest_id)
+        self._raise_if_cancelled()
 
         # Read manifest files
         current_manifest = manifest.read_manifest(self.manifest_dir / f"manifest_{depot_id}_{manifest_id}.txt")
@@ -377,4 +453,5 @@ class Logic:
 
         # Reset all found registry keys
         for value_name, registry_path in has_run_keys:
+            self._raise_if_cancelled()
             utils.delete_registry_value(registry_path, value_name)

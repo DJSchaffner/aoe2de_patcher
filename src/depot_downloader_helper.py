@@ -1,3 +1,4 @@
+from collections.abc import Callable
 import os
 import sys
 import subprocess
@@ -6,8 +7,6 @@ from queue import Queue
 from enum import Enum
 
 import time
-import tkinter
-import tkinter.simpledialog
 
 import utils.path_utils as path_utils
 
@@ -23,8 +22,9 @@ class ProcessState(Enum):
 
 
 class DepotDownloaderHelper:
-    def __init__(self):
+    def __init__(self, prompt_handler: Callable[[str, str, bool], str | None]):
         self.process_queue = Queue()
+        self.prompt_handler = prompt_handler
 
     def execute(self, options: list) -> None:
         """Execute the DepotDownloader with the given options as arguments.
@@ -147,7 +147,7 @@ class DepotDownloaderHelper:
             assert process.stdout is not None
             assert process.stdin is not None
 
-            password = self._open_temp_prompt("Code", "Please enter your password", True)
+            password = self.prompt_handler("Code", "Please enter your password", True)
 
             if password is None:
                 raise ConnectionError("Invalid password")
@@ -162,7 +162,7 @@ class DepotDownloaderHelper:
             assert process.stdout is not None
             assert process.stdin is not None
 
-            code = self._open_temp_prompt("Code", "Please enter your 2FA login code", False)
+            code = self.prompt_handler("Code", "Please enter your 2FA login code", False)
 
             if code is None:
                 raise ConnectionError("Invalid authentication code")
@@ -179,26 +179,3 @@ class DepotDownloaderHelper:
                 handle_two_factor()
             case _:
                 sys.stdout.write(f"Unexpected authentication state: {state}")
-
-    def _open_temp_prompt(self, title: str, prompt: str, is_hidden: bool) -> str | None:
-        """Opens a prompt widget with the requested title and prompt to enter information.
-
-        Args:
-            title (str): The prompt window title
-            prompt (str): The prompt window text
-            is_hidden (bool): Flag to hide user input
-
-        Returns:
-            str | None: The entered string or None if invalid or cancelled
-        """
-        temp = tkinter.Tk()
-        temp.withdraw()
-        response = tkinter.simpledialog.askstring(
-            title=title,
-            prompt=prompt,
-            parent=temp,
-            show="*" if is_hidden else None
-        )
-        temp.destroy()
-
-        return response
