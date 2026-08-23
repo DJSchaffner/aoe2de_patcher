@@ -15,6 +15,7 @@ from queue import Empty, Queue
 import redirector
 from logic import Logic
 from utils.path_utils import get_base_path
+from utils.utils import get_game_version
 
 
 class App():
@@ -62,11 +63,17 @@ class App():
 
         patch_titles = [f"{p['version']} - {time.strftime('%d/%m/%Y', time.gmtime(p['date']))}" for p in self.patch_list]
 
+        self.installed_version = tk.StringVar(value="-")
+        self.lbl_installed_version = ttk.Label(master=self.upper_frame, text="Installed version")
+        self.lbl_installed_version.grid(row=0, column=0, sticky="e")
+        self.val_installed_version = ttk.Label(master=self.upper_frame, textvariable=self.installed_version)
+        self.val_installed_version.grid(row=0, column=1, sticky="w")
+
         self.lbl_select_patch = ttk.Label(master=self.upper_frame, text="Target version")
-        self.lbl_select_patch.grid(row=0, column=0, sticky="e")
+        self.lbl_select_patch.grid(row=1, column=0, sticky="e")
         self.cmb_select_patch = ttk.Combobox(self.upper_frame, state="readonly", textvariable=self.selected_patch_title, values=[p for p in patch_titles])
         self.cmb_select_patch.current(0)    # Set default value
-        self.cmb_select_patch.grid(row=0, column=1, sticky="ew")
+        self.cmb_select_patch.grid(row=1, column=1, sticky="ew")
 
         self.lbl_username = ttk.Label(master=self.upper_frame, text="Username")
         self.lbl_username.grid(row=2, column=0, sticky="e")
@@ -104,8 +111,14 @@ class App():
         if dir != "":
             try:
                 self.logic.set_game_dir(pathlib.Path(dir))
+                self._update_installed_version()
             except Exception as e:
                 tkinter.messagebox.showerror(title="ERROR", message=str(e))
+
+    def _update_installed_version(self) -> None:
+        """Update the installed game version displayed in the UI.
+        """
+        self.installed_version.set(str(get_game_version(self.logic.game_dir)))
 
     def _check_version(self) -> None:
         """Check if there is a newer version of the tool available. Notify the user with a box if that is the case.
@@ -132,6 +145,7 @@ class App():
             try:
                 self._enqueue_ui(self._worker_started)
                 self.logic.patch(username, selected_patch["version"])
+                self._enqueue_ui(self._update_installed_version)
                 self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Patching done"))
             except CancelledError:
                 # Ignore error happening during cancellation
@@ -152,6 +166,7 @@ class App():
             try:
                 self._enqueue_ui(self._worker_started)
                 self.logic.restore()
+                self._enqueue_ui(self._update_installed_version)
                 self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Restore done"))
             except CancelledError:
                 # Ignore error happening during cancellation
