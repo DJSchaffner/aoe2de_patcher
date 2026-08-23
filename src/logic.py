@@ -132,7 +132,6 @@ class Logic:
         self.game_dir = dir
 
         print(f"Game directory set to: {dir.absolute()}")
-        print(f"Installed version detected: {utils.get_game_version(self.game_dir)}")
 
     def get_patch_list(self) -> list[dict]:
         """Returns the patch list.
