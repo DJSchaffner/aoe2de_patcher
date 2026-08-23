@@ -54,27 +54,27 @@ class Logic:
 
             self._raise_if_cancelled()
 
-            self._report_progress("Preparing download...")
             print("Preparing download phase...")
+            self._report_progress("Preparing download...")
             self._prepare_download()
             print("Finished preparing download phase")
 
-            self._report_progress("Downloading files...")
             print("Starting download phase...")
+            self._report_progress("Downloading files...")
             self._download_patch(username, installed_version, target_version)
             print("Finished downloading files")
 
             self._raise_if_cancelled()
 
-            self._report_progress("Backing up files...")
             print("Starting backup...")
+            self._report_progress("Backing up files...")
             self._backup()
             print("Finished backup")
 
             self._raise_if_cancelled()
 
-            self._report_progress("Patching files...")
             print("Patching files...")
+            self._report_progress("Patching files...")
             self._move_patch()
             print("Finished patching files")
 
@@ -83,8 +83,8 @@ class Logic:
             # For windows we want to trigger steam installation script on next run
             if (utils.is_windows_platform()):
                 self._raise_if_cancelled()
-                self._report_progress("Finalizing...")
                 print("Resetting installation state...")
+                self._report_progress("Finalizing...")
                 self._flag_for_install()
                 print("Finished resetting installation state")
         except Exception:
@@ -113,8 +113,8 @@ class Logic:
 
         # Remove added files from the path
         try:
-            self._report_progress("Removing patched files...")
             print("Removing patched files...")
+            self._report_progress("Removing patched files...")
             file_utils.remove_patched_files(self.game_dir, self.download_dir, True)
             print("Finished removing patched files")
 
@@ -122,8 +122,8 @@ class Logic:
 
             # Copy backed up files to game path again
             try:
-                self._report_progress("Restoring backup...")
                 print("Restoring backup...")
+                self._report_progress("Restoring backup...")
                 shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
                 print("Finished restoring backup")
             except Exception:
@@ -135,8 +135,8 @@ class Logic:
 
         # For windows we want to trigger steam installation script on next run
         if (utils.is_windows_platform()):
-            self._report_progress("Finalizing...")
             print("Resetting installation state...")
+            self._report_progress("Finalizing...")
             self._flag_for_install()
             print("Finished resetting installation state")
 
