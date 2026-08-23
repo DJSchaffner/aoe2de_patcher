@@ -12,12 +12,7 @@ class WebHelper:
             major, minor: The latest version of the patch tool (ex: 2, 0)
         """
         url = "https://api.github.com/repos/DJSchaffner/aoe2de_patcher/releases/latest"
-        response = self._query_website(url, ignore_success=True)
-
-        if not self._is_response_successful(response):
-            print("Could not get latest version")
-            self._print_response_error(response)
-            return 0, 0
+        response = self._query_website(url)
 
         response_json = response.json()
         tag_name: str = response_json["tag_name"]
