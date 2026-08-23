@@ -46,20 +46,19 @@ Q: *What is the 2FA Code?*
 A: It's the code from your steam authenticator app if you have it enabled. Otherwise check your emails for a code.  
 
 Q: *Where is the AoE directory?*  
-A: Most likely it is this by default: *C:\Program Files (x86)\Steam\steamapps\common\AoE2DE* - It could be different for you though. 
+A: Most likely it is this by default: *C:\Program Files (x86)\Steam\steamapps\common\AoE2DE* - It could be different for you though.
 
 Q: *Do I have to download a new version of the tool when a patch for AoE releases?*  
 A: Usually not. If there is a new version available you will be informed when you start the tool.
 
 Q: *Can I use it on Linux?*  
 A: Yes, we provide a docker container. You need to build from source with `docker/build.sh`, then run the patcher with `docker/run.sh aoe2de_patcher.dist/aoe2de_patcher.bin`.  
-_(Disclaimer: There have recently been untested changes to this, so things might be broken. Please report any issues you have)_
+*(Disclaimer: There have recently been untested changes to this, so things might be broken. Please report any issues you have)*
 
 # Planned features
 
 - Investigate options to re-add upgrading mechanism
 - Get pre 35584 versions to work
-- Maybe add a \<cancel> button
 - Add a progress bar
 - Add colored text to better identify important messages in log
 - Make backups optional

@@ -39,8 +39,7 @@ class App():
 
         def on_closing():
             self._close_requested = True
-            if self._worker is not None and self._worker.is_alive():
-                self.logic.cancel_downloads()
+            self._cancel()
 
         self.window.protocol("WM_DELETE_WINDOW", on_closing)
 
@@ -166,6 +165,12 @@ class App():
         self._worker = threading.Thread(target=work)
         self._worker.start()
 
+    def _cancel(self) -> None:
+        """Request cancellation of the active worker.
+        """
+        if self._worker is not None and self._worker.is_alive():
+            self.logic.cancel_downloads()
+
     def _enqueue_ui(self, callback) -> None:
         """Queue a callback for execution on the UI thread.
 
@@ -275,7 +280,7 @@ class App():
         """Disables User input for certain Buttons / Entries.
         """
         self.cmb_select_patch.config(state="disabled")
-        self.btn_patch.config(state="disabled")
+        self.btn_patch.config(text="Cancel", command=self._cancel, state="enabled")
         self.btn_restore.config(state="disabled")
         self.btn_game_dir.config(state="disabled")
         self.ent_username.config(state="disabled")
@@ -284,7 +289,7 @@ class App():
         """Enables User input for certain Buttons / Entries.
         """
         self.cmb_select_patch.config(state="readonly")
-        self.btn_patch.config(state="enabled")
+        self.btn_patch.config(text="Patch", command=self._patch, state="enabled")
         self.btn_restore.config(state="enabled")
         self.btn_game_dir.config(state="enabled")
         self.ent_username.config(state="enabled")
