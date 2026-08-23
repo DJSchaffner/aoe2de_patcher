@@ -17,8 +17,13 @@ import utils.vdf_utils as vdf_utils
 class Logic:
     APP_ID = 813780
 
-    def __init__(self, prompt_handler: Callable[[str, str, bool], str | None]):
+    def __init__(
+        self,
+        prompt_handler: Callable[[str, str, bool], str | None],
+        progress_handler: Callable[[str], None] | None = None
+    ):
         self.webhook = WebHelper()
+        self.progress_handler = progress_handler
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
         self.cancel_requested = False
@@ -49,18 +54,26 @@ class Logic:
 
             self._raise_if_cancelled()
 
+            self._report_progress("Preparing download...")
+            print("Preparing download phase...")
+            self._prepare_download()
+            print("Finished preparing download phase")
+
+            self._report_progress("Downloading files...")
             print("Starting download phase...")
             self._download_patch(username, installed_version, target_version)
             print("Finished downloading files")
 
             self._raise_if_cancelled()
 
+            self._report_progress("Backing up files...")
             print("Starting backup...")
             self._backup()
             print("Finished backup")
 
             self._raise_if_cancelled()
 
+            self._report_progress("Patching files...")
             print("Patching files...")
             self._move_patch()
             print("Finished patching files")
@@ -70,6 +83,7 @@ class Logic:
             # For windows we want to trigger steam installation script on next run
             if (utils.is_windows_platform()):
                 self._raise_if_cancelled()
+                self._report_progress("Finalizing...")
                 print("Resetting installation state...")
                 self._flag_for_install()
                 print("Finished resetting installation state")
@@ -99,6 +113,7 @@ class Logic:
 
         # Remove added files from the path
         try:
+            self._report_progress("Removing patched files...")
             print("Removing patched files...")
             file_utils.remove_patched_files(self.game_dir, self.download_dir, True)
             print("Finished removing patched files")
@@ -107,6 +122,7 @@ class Logic:
 
             # Copy backed up files to game path again
             try:
+                self._report_progress("Restoring backup...")
                 print("Restoring backup...")
                 shutil.copytree(self.backup_dir.absolute(), self.game_dir.absolute(), dirs_exist_ok=True)
                 print("Finished restoring backup")
@@ -119,6 +135,7 @@ class Logic:
 
         # For windows we want to trigger steam installation script on next run
         if (utils.is_windows_platform()):
+            self._report_progress("Finalizing...")
             print("Resetting installation state...")
             self._flag_for_install()
             print("Finished resetting installation state")
@@ -146,6 +163,10 @@ class Logic:
         """
         return self.patch_list
 
+    def _report_progress(self, message: str) -> None:
+        if self.progress_handler is not None:
+            self.progress_handler(message)
+
     def cancel_downloads(self) -> None:
         """Performs cleanup for logic object.
         """
@@ -159,20 +180,17 @@ class Logic:
 
             raise CancelledError
 
-    def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
+    def _prepare_download(self) -> None:
         """Download the given patch using the steam account username.
 
-        Args:
-            username (str): The username
-            installed_version (int): The currently installed version
-            target_version (int): The target version
-        """
+                Args:
+                    username (str): The username
+                    installed_version (int): The currently installed version
+                    target_version (int): The target version
+                """
         # dotnet is required to proceed
         if not (utils.is_dotnet_available()):
             raise Exception("DOTNET Core required but not found!")
-
-        update_list = []
-        tmp_files = []
 
         # Remove previous download folder if it exists
         # Create empty folders afterwards
@@ -194,7 +212,17 @@ class Logic:
 
         self.manifest_dir.mkdir()
 
+    def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
+        """Download the given patch using the steam account username.
+
+        Args:
+            username (str): The username
+            installed_version (int): The currently installed version
+            target_version (int): The target version
+        """
         print("Generating list of changes")
+        update_list = []
+        tmp_files = []
 
         # Filter list of patches for current and target version
         filtered_patches = list(filter(lambda x: x["version"] == installed_version or x["version"] == target_version, self.patch_list))

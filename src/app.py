@@ -29,7 +29,7 @@ class App():
         self.version_major = version_major
         self.version_minor = version_minor
 
-        self.logic = Logic(self._request_prompt)
+        self.logic = Logic(self._request_prompt, self._update_status)
         self.patch_list = list(reversed(self.logic.get_patch_list()))
 
         # Set up GUI
@@ -91,6 +91,10 @@ class App():
 
         self.text_box = scrolledtext.ScrolledText(master=self.lower_frame, state="disabled")
         self.text_box.pack(expand=True, fill="both")
+
+        self.status = tk.StringVar(value="Ready")
+        self.status_bar = ttk.Label(master=self.lower_frame, textvariable=self.status, anchor="w", relief="sunken")
+        self.status_bar.pack(side="bottom", fill="x", pady=(5, 0))
 
         # Redirect stdout to the text box
         sys.stdout = redirector.StdoutRedirector(self._enqueue_log)
@@ -157,12 +161,14 @@ class App():
                 self._enqueue_ui(self._worker_started)
                 self.logic.patch(username, selected_patch["version"])
                 self._enqueue_ui(self._update_installed_version)
+                self._enqueue_ui(lambda: self._set_status("Completed"))
                 self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Patching done"))
             except CancelledError:
                 # Ignore error happening during cancellation
-                pass
+                self._enqueue_ui(lambda: self._set_status("Cancelled"))
             except Exception as e:
                 error_message = str(e)
+                self._enqueue_ui(lambda: self._set_status("Error"))
                 self._enqueue_ui(lambda: tkinter.messagebox.showerror(title="ERROR", message=error_message))
             finally:
                 self._enqueue_ui(self._worker_finished)
@@ -178,12 +184,14 @@ class App():
                 self._enqueue_ui(self._worker_started)
                 self.logic.restore()
                 self._enqueue_ui(self._update_installed_version)
+                self._enqueue_ui(lambda: self._set_status("Completed"))
                 self._enqueue_ui(lambda: tkinter.messagebox.showinfo(message="Restore done"))
             except CancelledError:
                 # Ignore error happening during cancellation
-                pass
+                self._enqueue_ui(lambda: self._set_status("Cancelled"))
             except Exception as e:
                 error_message = str(e)
+                self._enqueue_ui(lambda: self._set_status("Error"))
                 self._enqueue_ui(lambda: tkinter.messagebox.showerror(title="ERROR", message=error_message))
             finally:
                 self._enqueue_ui(self._worker_finished)
@@ -204,6 +212,16 @@ class App():
             callback: The callback to execute on the UI thread
         """
         self._ui_queue.put(callback)
+
+    def _update_status(self, message: str) -> None:
+        """Queue a status update for the UI thread.
+        """
+        self._enqueue_ui(lambda: self._set_status(message))
+
+    def _set_status(self, message: str) -> None:
+        """Set the status text.
+        """
+        self.status.set(message)
 
     def _process_ui_queue(self) -> None:
         """Execute callbacks queued for the UI thread.
