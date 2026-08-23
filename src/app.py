@@ -5,7 +5,6 @@ import threading
 import time
 
 import tkinter as tk
-import tkinter.scrolledtext as scrolledtext
 import tkinter.ttk as ttk
 import tkinter.filedialog
 import tkinter.messagebox
@@ -89,8 +88,33 @@ class App():
         self.btn_game_dir = ttk.Button(master=self.upper_frame, text="Set Game directory", command=self._select_game_dir)
         self.btn_game_dir.grid(row=2, column=5, sticky="nesw")
 
-        self.text_box = scrolledtext.ScrolledText(master=self.lower_frame, state="disabled")
-        self.text_box.pack(expand=True, fill="both")
+        self.log_frame = tk.Frame(master=self.lower_frame)
+        self.log_frame.pack(expand=True, fill="both")
+
+        self.text_box = tk.Text(
+            master=self.log_frame,
+            state="disabled",
+            wrap="none",
+            yscrollcommand=lambda *args: self.vertical_scrollbar.set(*args),
+            xscrollcommand=lambda *args: self.horizontal_scrollbar.set(*args)
+        )
+        self.text_box.grid(row=0, column=0, sticky="nesw")
+
+        self.vertical_scrollbar = ttk.Scrollbar(
+            master=self.log_frame,
+            orient="vertical",
+            command=self.text_box.yview
+        )
+        self.vertical_scrollbar.grid(row=0, column=1, sticky="ns")
+
+        self.horizontal_scrollbar = ttk.Scrollbar(
+            master=self.log_frame,
+            orient="horizontal",
+            command=self.text_box.xview
+        )
+        self.horizontal_scrollbar.grid(row=1, column=0, sticky="ew")
+        self.log_frame.rowconfigure(0, weight=1)
+        self.log_frame.columnconfigure(0, weight=1)
 
         self.status = tk.StringVar(value="Ready")
         self.status_bar = ttk.Label(master=self.lower_frame, textvariable=self.status, anchor="w", relief="sunken")
@@ -295,6 +319,8 @@ class App():
         self.text_box.insert("end", text)
         self.text_box.configure(state="disabled")
         self.text_box.see("end")
+        self.text_box.update_idletasks()
+        self.horizontal_scrollbar.set(*self.text_box.xview())
 
     def _worker_started(self) -> None:
         self._disable_input()
