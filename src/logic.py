@@ -150,6 +150,9 @@ class Logic:
 
     def _raise_if_cancelled(self) -> None:
         if self.cancel_requested:
+            # Reset cancel request and raise
+            self.cancel_requested = False
+
             raise CancelledError
 
     def _download_patch(self, username: str, installed_version: int, target_version: int) -> None:
