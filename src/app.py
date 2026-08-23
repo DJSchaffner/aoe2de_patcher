@@ -98,9 +98,20 @@ class App():
     def start(self) -> None:
         """Start the application.
         """
-        self._check_version()
         self.window.after(50, self._process_ui_queue)
+        self._start_version_check()
         self.window.mainloop()
+
+    def _start_version_check(self) -> None:
+        """Check for a newer release without blocking the UI.
+        """
+        def check_version():
+            try:
+                self._check_version()
+            except Exception as e:
+                print(f"Could not check for a newer version: {e}")
+
+        threading.Thread(target=check_version, daemon=True).start()
 
     def _select_game_dir(self) -> None:
         """Open a file dialog for the user to select the game folder and send the result to logic.
