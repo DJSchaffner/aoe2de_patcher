@@ -59,7 +59,6 @@ A: Yes, we provide a docker container. You need to build from source with `docke
 
 - Investigate options to re-add upgrading mechanism
 - Get pre 35584 versions to work
-- Add a progress bar
 - Add colored text to better identify important messages in log
 - Make backups optional
 - Add option to also patch DLCs
