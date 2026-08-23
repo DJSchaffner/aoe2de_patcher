@@ -11,7 +11,7 @@ class WebHelper:
         Returns:
             major, minor: The latest version of the patch tool (ex: 2, 0)
         """
-        url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/version.txt"
+        url = "https://raw.githubusercontent.com/DJSchaffner/aoe2de_patcher/master/remote/version.txt"
         response = self._query_website(url)
         major, minor = list(map(int, response.text.split(".")))
 
@@ -23,7 +23,7 @@ class WebHelper:
         Returns:
             list: A list of all documented patches
         """
-        url = "https://raw.githubusercontent.com/DJSchaffner/AoE2PatchReverter/master/remote/patches.json"
+        url = "https://raw.githubusercontent.com/DJSchaffner/aoe2de_patcher/master/remote/patches.json"
 
         response = self._query_website(url)
         result = json.loads(response.content)["patches"]
