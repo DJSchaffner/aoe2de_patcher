@@ -164,6 +164,11 @@ class Logic:
         return self.patch_list
 
     def _report_progress(self, message: str) -> None:
+        """Report progress to progress handler.
+
+        Args:
+            message (str): The current progress
+        """
         if self.progress_handler is not None:
             self.progress_handler(message)
 
@@ -174,6 +179,11 @@ class Logic:
         self.depot_downloader_helper.cancel_downloads()
 
     def _raise_if_cancelled(self) -> None:
+        """Raise cancelled exception if cancel is requested.
+
+        Raises:
+            CancelledError: An empty cancellation error
+        """
         if self.cancel_requested:
             # Reset cancel request and raise
             self.cancel_requested = False
@@ -183,11 +193,11 @@ class Logic:
     def _prepare_download(self) -> None:
         """Download the given patch using the steam account username.
 
-                Args:
-                    username (str): The username
-                    installed_version (int): The currently installed version
-                    target_version (int): The target version
-                """
+        Args:
+            username (str): The username
+            installed_version (int): The currently installed version
+            target_version (int): The target version
+        """
         # dotnet is required to proceed
         if not (utils.is_dotnet_available()):
             raise Exception("DOTNET Core required but not found!")
