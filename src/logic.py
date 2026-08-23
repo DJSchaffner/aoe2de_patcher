@@ -92,6 +92,11 @@ class Logic:
         if len(os.listdir(self.backup_dir.absolute())) == 0:
             raise Exception("No backup stored")
 
+        installed_version = utils.get_game_version(self.game_dir)
+        backup_version = utils.get_game_version(self.backup_dir)
+        if (installed_version == backup_version):
+            raise Exception("Installed version already matches backup version")
+
         # Remove added files from the path
         try:
             print("Removing patched files...")
