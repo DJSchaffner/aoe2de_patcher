@@ -3,7 +3,8 @@
         {
             "version": 32911,
             "date": 1573863016,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5086945717428610355
@@ -24,12 +25,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7517200994716262836
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 33059,
             "date": 1574269425,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3740461235896715802
@@ -50,12 +54,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7517200994716262836
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 33164,
             "date": 1574459918,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1431243674782800687
@@ -76,12 +83,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7517200994716262836
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 33315,
             "date": 1574882043,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4551806013785700412
@@ -102,12 +112,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7517200994716262836
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 34055,
             "date": 1576601852,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1023305576100689525
@@ -128,12 +141,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7517200994716262836
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 34223,
             "date": 1576781431,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1832443863060978062
@@ -154,12 +170,15 @@
                     "depot_id": 813787,
                     "manifest_id": 63978157596981076
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 34397,
             "date": 1578934052,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2447230105557243488
@@ -180,12 +199,15 @@
                     "depot_id": 813787,
                     "manifest_id": 63978157596981076
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 34699,
             "date": 1579627127,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2293886857398358195
@@ -206,12 +228,15 @@
                     "depot_id": 813787,
                     "manifest_id": 63978157596981076
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 35209,
             "date": 1581620009,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3738447339313542068
@@ -232,12 +257,15 @@
                     "depot_id": 813787,
                     "manifest_id": 63978157596981076
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 35584,
             "date": 1582833679,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1899389495594754724
@@ -258,12 +286,15 @@
                     "depot_id": 813787,
                     "manifest_id": 63978157596981076
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 36906,
             "date": 1588208822,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8916508292174982468
@@ -284,12 +315,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 37650,
             "date": 1590628009,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5303815810777152564
@@ -310,12 +344,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 37906,
             "date": 1591146545,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 620891448408726573
@@ -336,12 +373,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 39284,
             "date": 1595293551,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3406020475065138362
@@ -362,12 +402,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 39515,
             "date": 1595898482,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 931420861535745724
@@ -388,12 +431,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 40220,
             "date": 1598317807,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1659331822063219077
@@ -414,12 +460,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 40874,
             "date": 1600823188,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1864802177863909825
@@ -440,12 +489,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 41855,
             "date": 1603242186,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3663117992758843699
@@ -466,12 +518,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 42848,
             "date": 1605650927,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2371123859079716160
@@ -492,12 +547,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 43210,
             "date": 1606259262,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1858343067801121371
@@ -518,12 +576,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5736372012246284635
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 44725,
             "date": 1611612617,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 9184828380536441000
@@ -544,12 +605,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 44834,
             "date": 1611871470,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8425935300679735926
@@ -570,12 +634,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 45185,
             "date": 1613081349,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3555361710480609728
@@ -596,12 +663,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 45340,
             "date": 1613095602,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6134288641682885699
@@ -622,12 +692,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 46295,
             "date": 1616620269,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4496980931925643612
@@ -648,12 +721,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 47820,
             "date": 1620076124,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 506093535046295177
@@ -674,12 +750,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 50292,
             "date": 1625605883,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 7182024348262141944
@@ -700,12 +779,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 50700,
             "date": 1626125690,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2192306114566322222
@@ -726,12 +808,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7607395302731413450
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 51737,
             "date": 1628601611,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6142980909600696003
@@ -752,12 +837,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 53347,
             "date": 1631135098,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 7959981682396439424
@@ -778,12 +866,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 54480,
             "date": 1633466134,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 227091894632329987
@@ -804,12 +895,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 54684,
             "date": 1633565184,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3043173256717811310
@@ -830,12 +924,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 56005,
             "date": 1637190180,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5431317400070955900
@@ -856,12 +953,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 58259,
             "date": 1643666714,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2306918391587028771
@@ -882,12 +982,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 58850,
             "date": 1644445858,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6609335002580098295
@@ -908,12 +1011,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 59165,
             "date": 1645569121,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3107868773857832320
@@ -934,12 +1040,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4981592391279742850
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 61321,
             "date": 1651100760,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8706369178041085088
@@ -960,12 +1069,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5116336672481458508
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 61591,
             "date": 1651248240,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6851672380347726934
@@ -986,12 +1098,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5116336672481458508
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 62085,
             "date": 1654033440,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2176586667924974355
@@ -1012,12 +1127,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5116336672481458508
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 63482,
             "date": 1656458400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6495392747979442051
@@ -1038,12 +1156,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5116336672481458508
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 63581,
             "date": 1657062000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2164364554796430252
@@ -1064,12 +1185,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5116336672481458508
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 66692,
             "date": 1661814000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5760045920272352358
@@ -1090,12 +1214,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3542412750464954466
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 71094,
             "date": 1666047960,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4258274528285216452
@@ -1116,12 +1243,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3542412750464954466
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 73855,
             "date": 1670450460,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 7630583439117374040
@@ -1142,12 +1272,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3542412750464954466
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 75350,
             "date": 1675184400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4799988303402597454
@@ -1168,12 +1301,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4579495811316392226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 77209,
             "date": 1677106800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6950094054923418590
@@ -1194,12 +1330,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4579495811316392226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 78174,
             "date": 1678233600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6161302773321247948
@@ -1220,12 +1359,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4579495811316392226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 78757,
             "date": 1679349600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3518310464810898481
@@ -1246,12 +1388,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4579495811316392226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 81058,
             "date": 1681250700,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3896115712280215369
@@ -1272,12 +1417,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5484218079199858455
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 82587,
             "date": 1682632800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6259439921595383009
@@ -1298,12 +1446,15 @@
                     "depot_id": 813787,
                     "manifest_id": 5484218079199858455
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 83607,
             "date": 1684256400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3628398833011054373
@@ -1324,12 +1475,15 @@
                     "depot_id": 813787,
                     "manifest_id": 8353578221059929017
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 85208,
             "date": 1685570557,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1899686523019682562
@@ -1350,12 +1504,15 @@
                     "depot_id": 813787,
                     "manifest_id": 8353578221059929017
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 87863,
             "date": 1687903200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1866078048582611873
@@ -1376,12 +1533,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7470002296534019464
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 90260,
             "date": 1690408800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1947483433441501201
@@ -1402,12 +1562,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7470002296534019464
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 93001,
             "date": 1694037600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1169877624673459005
@@ -1428,12 +1591,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7522105936841825273
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 93870,
             "date": 1694730600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1812141722310198413
@@ -1454,12 +1620,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7522105936841825273
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 94056,
             "date": 1695067200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4722838075620321078
@@ -1480,12 +1649,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7522105936841825273
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 95810,
             "date": 1698771600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3568369477204818532
@@ -1506,12 +1678,15 @@
                     "depot_id": 813787,
                     "manifest_id": 2909034155685822333
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 96976,
             "date": 1699475400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8989596265564828427
@@ -1532,12 +1707,15 @@
                     "depot_id": 813787,
                     "manifest_id": 2909034155685822333
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 99311,
             "date": 1702335600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6838889952908811700
@@ -1558,12 +1736,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4169247168443454199
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 99404,
             "date": 1702490400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 7673739171887156079
@@ -1584,12 +1765,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4169247168443454199
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 104954,
             "date": 1708642800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5767571627324248032
@@ -1610,12 +1794,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4169247168443454199
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 107882,
             "date": 1710435600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4513437704973867881
@@ -1636,12 +1823,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 108769,
             "date": 1711472400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4980479042766673834
@@ -1662,12 +1852,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 109739,
             "date": 1712260800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4062602954975422668
@@ -1688,12 +1881,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 111772,
             "date": 1714496400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2433758800972367832
@@ -1714,12 +1910,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 113358,
             "date": 1715878800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3184369275034481580
@@ -1740,12 +1939,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 114480,
             "date": 1717711200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2227137805405012564
@@ -1766,12 +1968,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 117204,
             "date": 1719939600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 7749759555061373003
@@ -1792,12 +1997,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 118476,
             "date": 1721339400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8331859103595120959
@@ -1818,12 +2026,15 @@
                     "depot_id": 813787,
                     "manifest_id": 299991202501640371
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 125283,
             "date": 1729011600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3321023768623966794
@@ -1844,12 +2055,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7428729050565053467
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 127161,
             "date": 1729634400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8850044290271258396
@@ -1870,12 +2084,15 @@
                     "depot_id": 813787,
                     "manifest_id": 7428729050565053467
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 128442,
             "date": 1731607200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 310959618310262844
@@ -1896,12 +2113,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1359683082289875549
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 130746,
             "date": 1733853600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 9041722357962233916
@@ -1922,12 +2142,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1359683082289875549
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 133431,
             "date": 1738260000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 4885554643242153019
@@ -1948,12 +2171,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1359683082289875549
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 141935,
             "date": 1744304400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5294454452757157502
@@ -1974,12 +2200,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4299225476349701616
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 143191,
             "date": 1745859600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2501976745809171163
@@ -2000,12 +2229,15 @@
                     "depot_id": 813787,
                     "manifest_id": 4299225476349701616
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 143421,
             "date": 1746550800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 9213176984184373022
@@ -2026,12 +2258,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1385012369050727226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 144358,
             "date": 1747069200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1398877325236590595
@@ -2052,12 +2287,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1385012369050727226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 145651,
             "date": 1748451600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3062750357974097780
@@ -2078,12 +2316,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1385012369050727226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 147949,
             "date": 1750885200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5198519424719590169
@@ -2104,12 +2345,15 @@
                     "depot_id": 813787,
                     "manifest_id": 1385012369050727226
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 153015,
             "date": 1755018000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 5410639777054365060
@@ -2130,12 +2374,15 @@
                     "depot_id": 813787,
                     "manifest_id": 6398521384130700337
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 153638,
             "date": 1755709200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 8100556235445799279
@@ -2156,12 +2403,15 @@
                     "depot_id": 813787,
                     "manifest_id": 6398521384130700337
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 155976,
             "date": 1758056400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6326155336405253386
@@ -2182,12 +2432,15 @@
                     "depot_id": 813787,
                     "manifest_id": 6398521384130700337
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 158041,
             "date": 1760461200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 49296955481020023
@@ -2208,12 +2461,15 @@
                     "depot_id": 813787,
                     "manifest_id": 6398521384130700337
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 160062,
             "date": 1762452000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3522083303793551444
@@ -2234,12 +2490,15 @@
                     "depot_id": 813787,
                     "manifest_id": 6398521384130700337
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 162286,
             "date": 1764698400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1671013865339165813
@@ -2260,12 +2519,15 @@
                     "depot_id": 813787,
                     "manifest_id": 6398521384130700337
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 169123,
             "date": 1771347600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 7319783204277561121
@@ -2286,12 +2548,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 169409,
             "date": 1771455600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 2825430385869875697
@@ -2312,12 +2577,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 169652,
             "date": 1771869480,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6502078712933226275
@@ -2338,12 +2606,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 170934,
             "date": 1773334800,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3409677687579477561
@@ -2364,12 +2635,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 174992,
             "date": 1776978000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 679043139958949955
@@ -2390,12 +2664,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 175278,
             "date": 1777410000,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 6400287836003294924
@@ -2416,12 +2693,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 177723,
             "date": 1780419600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 636612982161083436
@@ -2442,12 +2722,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 178524,
             "date": 1780952400,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1021826227992967414
@@ -2468,12 +2751,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 179158,
             "date": 1781629200,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 1118240867928389162
@@ -2494,12 +2780,15 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         },
         {
             "version": 180059,
             "date": 1783443600,
-            "depots": [
+            "depots": {
+                "base": [
                 {
                     "depot_id": 813781,
                     "manifest_id": 3067258457468070797
@@ -2520,7 +2809,9 @@
                     "depot_id": 813787,
                     "manifest_id": 3172067902980343375
                 }
-            ]
+                ],
+                "dlc": {}
+            }
         }
     ]
 }
