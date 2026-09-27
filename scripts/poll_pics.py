@@ -37,7 +37,7 @@ def fetch_current_build(app_id: int) -> tuple[int, dict]:
     """
     client = SteamClient()
     client.anonymous_login()
-    info = client.get_product_info(apps=[app_id])
+    info = client.get_product_info(apps=[app_id], timeout=30)
 
     if info is None:
         raise Exception("Could not get current app info.")
