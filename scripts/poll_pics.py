@@ -37,7 +37,7 @@ def fetch_current_build(app_id: int) -> tuple[int, dict]:
     """
     client = SteamClient()
     client.anonymous_login()
-    info = client.get_product_info(apps=[app_id])
+    info = client.get_product_info(apps=[app_id], timeout=30)
 
     if info is None:
         raise Exception("Could not get current app info.")
@@ -57,6 +57,17 @@ def fetch_current_build(app_id: int) -> tuple[int, dict]:
     return build_id, result
 
 
+def write_output(**kwargs):
+    gh_output = os.environ.get('GITHUB_OUTPUT')
+
+    if not gh_output:
+        return
+
+    with open(gh_output, 'a') as f:
+        for key, value in kwargs.items():
+            f.write(f"{key}={value}\n")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--app-id", type=int, required=True)
@@ -72,36 +83,29 @@ def main():
     exe_depot_id = args.exe_depot_id
 
     last_patch_depots = load_last_patch(patches_path)
-    _, manifests = fetch_current_build(app_id)
 
-    exe_manifest = manifests.get(exe_depot_id)
-    new_depot_entries = [
-        {"depot_id": d, "manifest_id": m}
-        for d, m in manifests.items() if d in depot_ids
-    ]
+    try:
+        _, manifests = fetch_current_build(app_id)
 
-    gh_output = os.environ.get("GITHUB_OUTPUT")
+        exe_manifest = manifests.get(exe_depot_id)
+        new_depot_entries = [
+            {"depot_id": d, "manifest_id": m}
+            for d, m in manifests.items() if d in depot_ids
+        ]
 
-    is_changed = last_patch_depots.get(exe_depot_id) != exe_manifest
-    if not is_changed:
-        print("No changes detected.")
+        is_changed = last_patch_depots.get(exe_depot_id) != exe_manifest
+        if not is_changed:
+            print("No changes detected.")
+            write_output(changed="false")
+            return
 
-        # Write output for GitHub Actions
-        if gh_output:
-            with open(gh_output, "a") as f:
-                f.write("changed=false\n")
+        print("Changes detected.")
+        print(f"exe_manifest: {exe_manifest}")
 
-        return
-
-    print("Changes detected.")
-    print(f"exe_manifest: {exe_manifest}")
-
-    # Write output for GitHub Actions
-    if gh_output:
-        with open(gh_output, "a") as f:
-            f.write("changed=true\n")
-            f.write(f"exe_manifest={exe_manifest}\n")
-            f.write(f"depots={json.dumps(new_depot_entries)}\n")
+        write_output(changed="true", exe_manifest=exe_manifest, depots=json.dumps(new_depot_entries))
+    except Exception as e:
+        print(f"Skipping run because steam call failed. Exception: {e}")
+        write_output(changed="false")
 
 
 if __name__ == '__main__':

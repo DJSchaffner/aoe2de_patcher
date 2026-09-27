@@ -22,10 +22,10 @@ class Logic:
         prompt_handler: Callable[[str, str, bool], str | None],
         progress_handler: Callable[[str], None] | None = None
     ):
-        self.webhook = WebHelper()
-        self.progress_handler = progress_handler
         # The earliest patch that works was released after direct x update
         # @TODO Try to figure out a way to patch to earlier patches than this: time.struct_time((2020, 2, 17, 0, 0, 0, 0, 48, 0))
+        self.webhook = WebHelper()
+        self.progress_handler = progress_handler
         self.cancel_requested = False
         self.download_dir = path_utils.get_base_path() / "download"
         self.manifest_dir = path_utils.get_base_path() / "manifests"
@@ -286,7 +286,6 @@ class Logic:
             # Loop all necessary updates
             for element in update_list:
                 self._raise_if_cancelled()
-                # Stop if a download didn't succeed
                 self._download_depot(username, element['depot_id'], element['manifest_id'], element['filelist'])
         finally:
             # Remove created temp files (Also after exception occurred)
@@ -414,16 +413,16 @@ class Logic:
 
         return changes
 
-    def _get_filelist_current(self, username: str, depot_id: int, manifest_id: int) -> list[str]:
-        """Get a list of all current files of a depot.
+    def _get_filelist_for_manifest(self, username: str, depot_id: int, manifest_id: int) -> list[str]:
+        """Get a list of all files of a depot for a given manifest.
 
         Args:
             username (str): The username
             depot_id (int): The selected depot
-            manifest_id (int): The current manifest id for the depot
+            manifest_id (int): The manifest id for the depot
 
         Returns:
-            list: A list of current file names for the depot
+            list: A list of file names for the depot for the manifest
         """
         # Download manifests
         self._download_manifest(username, depot_id, manifest_id)

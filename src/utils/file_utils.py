@@ -98,5 +98,5 @@ def remove_patched_files(original_dir: Path, override_dir: Path, debug_info: boo
                     print(f"Remove {(original_dir / file).absolute()}")
 
                 remove_file_or_dir(original_dir / file)
-    except Exception as e:
-        raise e
+    except Exception:
+        raise
