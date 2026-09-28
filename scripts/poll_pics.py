@@ -40,7 +40,7 @@ def fetch_current_build(app_id: int) -> tuple[int, dict]:
     client.anonymous_login()
 
     try:
-        info = client.get_product_info(apps=[app_id], timeout=30)
+        info = client.get_product_info(apps=[app_id], timeout=1)
 
         if info is None:
             raise Exception("Could not get current app info.")
