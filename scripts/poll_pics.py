@@ -3,6 +3,7 @@ import argparse
 import os
 from pathlib import Path
 from steam.client import SteamClient
+from gevent.timeout import Timeout
 
 
 def load_last_patch(path: Path) -> dict:
@@ -37,22 +38,26 @@ def fetch_current_build(app_id: int) -> tuple[int, dict]:
     """
     client = SteamClient()
     client.anonymous_login()
-    info = client.get_product_info(apps=[app_id], timeout=30)
 
-    if info is None:
-        raise Exception("Could not get current app info.")
+    try:
+        info = client.get_product_info(apps=[app_id], timeout=30)
 
-    depots: dict = info["apps"][app_id]["depots"]
-    build_id = int(depots.get("branches", {}).get("public", {}).get("buildid"))
+        if info is None:
+            raise Exception("Could not get current app info.")
 
-    result = {}
-    for depot_id, depot in depots.items():
-        if depot_id.isdigit() and isinstance(depot, dict) and "manifests" in depot:
-            gid = depot["manifests"].get("public", {}).get("gid")
-            if gid:
-                result[int(depot_id)] = int(gid)
+        depots: dict = info["apps"][app_id]["depots"]
+        build_id = int(depots.get("branches", {}).get("public", {}).get("buildid"))
 
-    client.disconnect()
+        result = {}
+        for depot_id, depot in depots.items():
+            if depot_id.isdigit() and isinstance(depot, dict) and "manifests" in depot:
+                gid = depot["manifests"].get("public", {}).get("gid")
+                if gid:
+                    result[int(depot_id)] = int(gid)
+    except Timeout:
+        raise
+    finally:
+        client.disconnect()
 
     return build_id, result
 
@@ -103,8 +108,8 @@ def main():
         print(f"exe_manifest: {exe_manifest}")
 
         write_output(changed="true", exe_manifest=exe_manifest, depots=json.dumps(new_depot_entries))
-    except Exception as e:
-        print(f"Skipping run because steam call failed. Exception: {e}")
+    except Timeout as e:
+        print(f"Skipping run, because steam call timed out. Exception: {e}")
         write_output(changed="false")
 
 
